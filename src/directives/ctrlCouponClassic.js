@@ -109,6 +109,7 @@
       $scope.preSelectedCoupons.targeted = $filter('orderBy')($filter('filter')($scope.preSelectedCoupons.targeted, $scope.filterBy), $scope.sortBy);
       $scope.selectedCoupons.items.length = 0;
       $scope.selectedCoupons.targeted = $scope.preSelectedCoupons.targeted;
+      $scope.hasYoutechCoupon = gsnStore.getYoutechCoupons().length;
       loadMore();
     }
     
