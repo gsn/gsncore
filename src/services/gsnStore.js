@@ -159,7 +159,8 @@
               success: true,
               response: stores
             });
-            $rootScope.$broadcast("gsnevent:storelist-loaded");
+			if(stores.length > 0)
+				$rootScope.$broadcast("gsnevent:storelist-loaded");
           });
         });
       }
