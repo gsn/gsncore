@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.7.31
+ * version 1.7.32
  * gsncore repository
- * Build date: Tue Mar 15 2016 16:52:21 GMT-0500 (CDT)
+ * Build date: Thu Mar 31 2016 14:15:59 GMT+0300 (Belarus Standard Time)
  */
 ;(function() {
   'use strict';
@@ -4846,7 +4846,8 @@
               success: true,
               response: stores
             });
-            $rootScope.$broadcast("gsnevent:storelist-loaded");
+			if(stores.length > 0)
+				$rootScope.$broadcast("gsnevent:storelist-loaded");
           });
         });
       }
