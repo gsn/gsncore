@@ -92,6 +92,7 @@
     GoogleAnalyticAccountId2: null,
     GoogleSiteVerificationId: null,
     RegistrationFromEmailAddress: 'tech@grocerywebsites.com',
+    RegistrationEmailLogo:null,
     FacebookDisable: false,
     FacebookAppId: null,
     FacebookPermission: null,

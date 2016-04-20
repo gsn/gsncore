@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.7.35
+ * version 1.7.36
  * gsncore repository
- * Build date: Fri Apr 15 2016 14:39:10 GMT+0300 (Belarus Standard Time)
+ * Build date: Wed Apr 20 2016 15:32:00 GMT+0300 (Belarus Standard Time)
  */
 ;(function() {
   'use strict';
@@ -98,6 +98,7 @@
     GoogleAnalyticAccountId2: null,
     GoogleSiteVerificationId: null,
     RegistrationFromEmailAddress: 'tech@grocerywebsites.com',
+    RegistrationEmailLogo:null,
     FacebookDisable: false,
     FacebookAppId: null,
     FacebookPermission: null,
@@ -957,6 +958,10 @@
 
     returnObj.getRegistrationFromEmailAddress = function() {
       return gsn.config.RegistrationFromEmailAddress;
+    };
+
+    returnObj.getRegistrationEmailLogo = function() {
+      return gsn.config.RegistrationEmailLogo;
     };
 
     returnObj.htmlFind = function(html, find) {

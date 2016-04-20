@@ -217,6 +217,10 @@
       return gsn.config.RegistrationFromEmailAddress;
     };
 
+    returnObj.getRegistrationEmailLogo = function() {
+      return gsn.config.RegistrationEmailLogo;
+    };
+
     returnObj.htmlFind = function(html, find) {
       return angular.element('<div>' + html + '</div>').find(find).length;
     };
