@@ -90,6 +90,7 @@
 
         payload.ChainName = gsnApi.getChainName();
         payload.FromEmail = gsnApi.getRegistrationFromEmailAddress();
+        payload.emailLogo = gsnApi.getRegistrationEmailLogo();
         payload.ManufacturerCouponTotalSavings = '$' + $scope.totalSavings;
         payload.CopyrightYear = (new Date()).getFullYear();
         payload.UserName = gsnApi.isNull(payload.UserName, payload.Email);

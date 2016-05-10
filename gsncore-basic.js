@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.8.0
+ * version 1.8.1
  * gsncore repository
- * Build date: Wed May 04 2016 12:36:44 GMT-0500 (CDT)
+ * Build date: Fri May 06 2016 16:05:16 GMT+0300 (Belarus Standard Time)
  */
 ;(function() {
   'use strict';
@@ -96,6 +96,7 @@
     GoogleAnalyticAccountId1: null,
     GoogleSiteVerificationId: null,
     RegistrationFromEmailAddress: 'tech@grocerywebsites.com',
+    RegistrationEmailLogo: null,
     FacebookDisable: false,
     FacebookAppId: null,
     FacebookPermission: null,
@@ -862,7 +863,7 @@
         return url;
       }
 
-      return url.replace('clientapi.gsn2.com/', 'clientapi.gsngrocers.com/').replace('https://', $location.protocol() + '://');
+      return url.replace('https://', $location.protocol() + '://');
     };
 
     returnObj.getDefaultLayout = function(defaultUrl) {
@@ -954,6 +955,10 @@
     returnObj.getRegistrationFromEmailAddress = function() {
       return gsn.config.RegistrationFromEmailAddress;
     };
+
+    returnObj.getRegistrationEmailLogo = function() {
+      return gsn.config.RegistrationEmailLogo;
+    }; 
 
     returnObj.htmlFind = function(html, find) {
       return angular.element('<div>' + html + '</div>').find(find).length;
@@ -7872,13 +7877,13 @@
       scope.isAndroid = gsnApi.browser.isAndroid;
 
       // going to show this popUp only for iOs and Android users
-       if (!gsnApi.browser.isMobile && !(scope.isIOS||scope.isAndroid))
-         return;
+      if (!gsnApi.browser.isMobile && !(scope.isIOS || scope.isAndroid))
+        return;
 
-       if ($localStorage.hasMobileApp)
-         return;
+      if ($localStorage.hasMobileApp)
+        return;
 
-      var url = 'http://clientapi.gsngrocers.com/api/v1/content/meta/' + gsnApi.getChainId() + '/?name=home%20page&meta=mobileAppPage&type=text/html&nocache=';
+      var url = '//clientapi.gsn2.com/api/v1/content/meta/' + gsnApi.getChainId() + '/?name=home%20page&meta=mobileAppPage&type=text/html&nocache=';
       var today = new Date();
       var nocache = today.getFullYear() + '' + today.getMonth() + '' + today.getDate() + '' + today.getHours();
 
