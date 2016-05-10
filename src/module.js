@@ -213,7 +213,7 @@
 
     returnObj.getRegistrationEmailLogo = function() {
       return gsn.config.RegistrationEmailLogo;
-    }; 
+    };
 
     returnObj.htmlFind = function(html, find) {
       return angular.element('<div>' + html + '</div>').find(find).length;
@@ -225,6 +225,17 @@
 
     returnObj.toLowerCase = function(str) {
       return angular.lowercase(str);
+    };
+
+    returnObj.params = function(obj) {
+      var k = gsn.keys(obj);
+      var s = "";
+      for (var i = 0; i < k.length; i++) {
+        s += k[i] + "=" + encodeURIComponent(obj[k[i]]);
+        if (i != k.length - 1)
+          s += "&";
+      }
+      return s;
     };
 
     returnObj.goUrl = function(url, target) {

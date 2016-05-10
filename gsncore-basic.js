@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.8.3
+ * version 1.8.4
  * gsncore repository
- * Build date: Tue May 10 2016 07:43:42 GMT-0500 (CDT)
+ * Build date: Tue May 10 2016 10:22:08 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -958,7 +958,7 @@
 
     returnObj.getRegistrationEmailLogo = function() {
       return gsn.config.RegistrationEmailLogo;
-    }; 
+    };
 
     returnObj.htmlFind = function(html, find) {
       return angular.element('<div>' + html + '</div>').find(find).length;
@@ -970,6 +970,17 @@
 
     returnObj.toLowerCase = function(str) {
       return angular.lowercase(str);
+    };
+
+    returnObj.params = function(obj) {
+      var k = gsn.keys(obj);
+      var s = "";
+      for (var i = 0; i < k.length; i++) {
+        s += k[i] + "=" + encodeURIComponent(obj[k[i]]);
+        if (i != k.length - 1)
+          s += "&";
+      }
+      return s;
     };
 
     returnObj.goUrl = function(url, target) {
@@ -2584,8 +2595,18 @@
       $scope.print = function(timeout) {
         setTimeout($window.print, timeout || 5000);
       }
+
       $scope.getTitle = function() {
         return angular.element('title').text();
+      }
+
+      $scope.getSharePath = function(params) {
+        var query = $location.search();
+        params = params || {};
+        angular.copy(query, params);
+        params.cache = 'no'
+
+        return gsnApi.getFullPath($scope.currentPath + '?' + gsnApi.params(params));
       }
 
       $scope.doToggleCartItem = function(evt, item, linkedItem) {

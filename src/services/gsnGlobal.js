@@ -161,8 +161,18 @@
       $scope.print = function(timeout) {
         setTimeout($window.print, timeout || 5000);
       }
+
       $scope.getTitle = function() {
         return angular.element('title').text();
+      }
+
+      $scope.getSharePath = function(params) {
+        var query = $location.search();
+        params = params || {};
+        angular.copy(query, params);
+        params.cache = 'no'
+
+        return gsnApi.getFullPath($scope.currentPath + '?' + gsnApi.params(params));
       }
 
       $scope.doToggleCartItem = function(evt, item, linkedItem) {
