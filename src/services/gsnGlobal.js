@@ -161,6 +161,9 @@
       $scope.print = function(timeout) {
         setTimeout($window.print, timeout || 5000);
       }
+      $scope.getTitle = function() {
+        return angular.element('title').text();
+      }
 
       $scope.doToggleCartItem = function(evt, item, linkedItem) {
         /// <summary>Toggle the shoping list item checked state</summary>

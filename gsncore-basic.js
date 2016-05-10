@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.8.2
+ * version 1.8.3
  * gsncore repository
- * Build date: Tue May 10 2016 02:16:17 GMT-0500 (CDT)
+ * Build date: Tue May 10 2016 07:43:42 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -2583,6 +2583,9 @@
       $scope.goOutPromt = $scope.goOutPrompt;
       $scope.print = function(timeout) {
         setTimeout($window.print, timeout || 5000);
+      }
+      $scope.getTitle = function() {
+        return angular.element('title').text();
       }
 
       $scope.doToggleCartItem = function(evt, item, linkedItem) {
