@@ -1,4 +1,4 @@
-﻿(function (angular, undefined) {
+﻿(function(angular, undefined) {
   'use strict';
 
   var myDirectiveName = 'ctrlMyPantry';
@@ -26,7 +26,7 @@
     };
 
     function activate() {
-      gsnProfile.getMyPantry().then(function (result) {
+      gsnProfile.getMyPantry2().then(function(result) {
         if (result.success) {
           $scope.vm.products = result.response;
           $scope.vm.productsByCategory = gsnApi.groupBy(result.response, 'DepartmentName');
@@ -35,9 +35,9 @@
     }
 
 
-    $scope.selectFilter = function (filterGroup, filterItem) {
+    $scope.selectFilter = function(filterGroup, filterItem) {
       var hasAllItems = true;
-      angular.forEach(filterGroup, function (item) {
+      angular.forEach(filterGroup, function(item) {
         if (item.selected) {
           hasAllItems = false;
         }
@@ -49,7 +49,7 @@
     $scope.activate();
     //#region Internal Methods        
 
-    //#endregion
+  //#endregion
   }
 
 })(angular);
