@@ -16,7 +16,11 @@
     var couponClasses = [];
     var coupons = [];
 
-    activate();
+	activate();
+	
+	$rootScope.$on('gsnevent:circular-loaded', function(event, data) {
+      if (!service.activated) activate();
+    });    
 
     return service;
 
@@ -181,7 +185,7 @@
       }
 
       if (gcprinter.isChrome) {
-        gcprinter.detectWithSocket(2000, pluginSuccess, continousDetect, 1);
+        gcprinter.checkInstall(pluginSuccess, continousDetect);
       } else {
         // use faster checkInstall method for non-chrome
         setTimeout(function() {

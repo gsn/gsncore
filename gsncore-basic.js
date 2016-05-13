@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.8.5
+ * version 1.8.6
  * gsncore repository
- * Build date: Wed May 11 2016 08:54:44 GMT-0500 (CDT)
+ * Build date: Fri May 13 2016 14:42:13 GMT+0300 (Belarus Standard Time)
  */
 ;(function() {
   'use strict';
@@ -2127,7 +2127,11 @@
     var couponClasses = [];
     var coupons = [];
 
-    activate();
+	activate();
+	
+	$rootScope.$on('gsnevent:circular-loaded', function(event, data) {
+      if (!service.activated) activate();
+    });    
 
     return service;
 
@@ -2292,7 +2296,7 @@
       }
 
       if (gcprinter.isChrome) {
-        gcprinter.detectWithSocket(2000, pluginSuccess, continousDetect, 1);
+        gcprinter.checkInstall(pluginSuccess, continousDetect);
       } else {
         // use faster checkInstall method for non-chrome
         setTimeout(function() {
