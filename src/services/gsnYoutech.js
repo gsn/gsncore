@@ -146,7 +146,7 @@
             $saveData.availableCouponById[couponId] = true;
             $saveData.takenCouponById[couponId] = null;
             deferred.resolve({
-              success: true,
+              success: response.Success,
               response: response
             });
             $rootScope.$broadcast('gsnevent:youtech-cardcoupon-removed', couponId);
