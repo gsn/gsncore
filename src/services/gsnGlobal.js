@@ -170,7 +170,6 @@
         var query = $location.search();
         params = params || {};
         angular.copy(query, params);
-        params.cache = 'no'
 
         return gsnApi.getFullPath($scope.currentPath + '?' + gsnApi.params(params));
       }
