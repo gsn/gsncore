@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.8.7
+ * version 1.8.8
  * gsncore repository
- * Build date: Wed May 18 2016 14:25:30 GMT-0500 (CDT)
+ * Build date: Wed May 25 2016 09:19:33 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -4553,7 +4553,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         var query = $location.search();
         params = params || {};
         angular.copy(query, params);
-        params.cache = 'no'
 
         return gsnApi.getFullPath($scope.currentPath + '?' + gsnApi.params(params));
       }
