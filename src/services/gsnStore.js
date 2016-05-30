@@ -602,6 +602,7 @@
         return;
       }
       _cp.processCompleted = new Date();
+	  $rootScope.$broadcast('gsnevent:circular-processed');
     }
 
     function processCircular(circ, items, circularTypes, staticCirculars, circularByTypes) {

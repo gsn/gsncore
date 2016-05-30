@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.8.8
+ * version 1.8.9
  * gsncore repository
- * Build date: Wed May 25 2016 09:19:33 GMT-0500 (CDT)
+ * Build date: Mon May 30 2016 14:56:57 GMT+0300 (Belarus Standard Time)
  */
 ;(function() {
   'use strict';
@@ -5484,6 +5484,7 @@
         return;
       }
       _cp.processCompleted = new Date();
+	  $rootScope.$broadcast('gsnevent:circular-processed');
     }
 
     function processCircular(circ, items, circularTypes, staticCirculars, circularByTypes) {
