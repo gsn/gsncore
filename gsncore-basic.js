@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.8.9
+ * version 1.8.10
  * gsncore repository
- * Build date: Mon May 30 2016 14:56:57 GMT+0300 (Belarus Standard Time)
+ * Build date: Thu Jun 02 2016 13:50:27 GMT+0300 (Belarus Standard Time)
  */
 ;(function() {
   'use strict';
@@ -1037,6 +1037,8 @@
         var shoppingList = $rootScope.gsnProfile.getShoppingList();
         if (shoppingList) {
           var result = shoppingList.getItem(item);
+		  if(result)
+			result.NewQuantity = result.Quantity || 1;
           return result || item;
         }
       }
