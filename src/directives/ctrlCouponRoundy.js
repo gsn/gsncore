@@ -59,6 +59,7 @@
     $scope.sortByName = 'About to Expire';
     $scope.filterByComplex = '';
     $scope.filterBy = $location.search().q;
+    $scope.filterIds = $location.search().ids;
     $scope.couponType = $scope.couponType || 'digital';  // 'digital', 'printable', 'instore'
     $scope.itemsPerPage = ($location.search()).itemsperpage || ($location.search()).itemsPerPage || $scope.itemsPerPage || 20;
 
@@ -152,6 +153,11 @@
       }
     }
 
+    function filterByIds(item) {
+      var ids = $scope.filterIds.split(',');
+      return $scope.gsn.indexOf(ids, item.Id);
+    }
+
     function activate() {
       loadCoupons();
 
@@ -174,16 +180,24 @@
 
       for (var key in $scope.filterByComplex) {
         var value = $scope.filterByComplex[key];
-        if (typeof value == 'string' || value instanceof String)
+        if (typeof value == 'string' || value instanceof String) {
           $scope.filterByComplex[key] = value.replace(/&#39;/g, "'");
+        }
       }
 
       var isTargetEnable = ($scope.filterByComplex.length !== "" || gsn.config.DisableLimitedTimeCoupons) ? null : { IsTargeted: false };
+
+      if ($scope.filterIds) {
+        $scope.preSelectedCoupons.items = $filter('filter')($scope.preSelectedCoupons.items, filterByIds);
+      }
+
       // apply filter
       $scope.preSelectedCoupons.items = $filter('filter')($filter('filter')($scope.preSelectedCoupons.items, $scope.filterBy), isTargetEnable);
       $scope.preSelectedCoupons.items = $filter('filter')($filter('filter')($scope.preSelectedCoupons.items, $scope.filterByComplex), isTargetEnable);
       $scope.preSelectedCoupons.items = $filter('orderBy')($filter('filter')($scope.preSelectedCoupons.items, $scope.filterBy), $scope.sortBy);
       $scope.preSelectedCoupons.targeted = $filter('orderBy')($filter('filter')($scope.preSelectedCoupons.targeted, $scope.filterBy), $scope.sortBy);
+      
+
       $scope.selectedCoupons.items.length = 0;
 
       if (!gsn.config.DisableLimitedTimeCoupons)
