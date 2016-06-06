@@ -59,7 +59,7 @@
     $scope.sortByName = 'About to Expire';
     $scope.filterByComplex = '';
     $scope.filterBy = $location.search().q;
-    $scope.filterCodes = $location.search().codes;
+    $scope.filterIds = $location.search().ids;
     $scope.couponType = $scope.couponType || 'digital';  // 'digital', 'printable', 'instore'
     $scope.itemsPerPage = ($location.search()).itemsperpage || ($location.search()).itemsPerPage || $scope.itemsPerPage || 20;
 
@@ -153,9 +153,9 @@
       }
     }
 
-    function filterByCodes(item) {
-      var ids = $scope.filterCodes.split(',');
-      return ids.indexOf(ids, item.ProductCode) >= 0;
+    function filterByIds(item) {
+      var ids = $scope.filterIds.split(',');
+      return ids.indexOf(ids, item.Id) >= 0;
     }
 
     function activate() {
@@ -187,8 +187,8 @@
 
       var isTargetEnable = ($scope.filterByComplex.length !== "" || gsn.config.DisableLimitedTimeCoupons) ? null : { IsTargeted: false };
 
-      if ($scope.filterCodes) {
-        $scope.preSelectedCoupons.items = $filter('filter')($scope.preSelectedCoupons.items, filterByCodes);
+      if ($scope.filterIds) {
+        $scope.preSelectedCoupons.items = $filter('filter')($scope.preSelectedCoupons.items, filterByIds);
       }
 
       // apply filter
