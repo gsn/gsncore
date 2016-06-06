@@ -155,7 +155,7 @@
 
     function filterByIds(item) {
       var ids = $scope.filterIds.split(',');
-      return $scope.gsn.indexOf(ids, item.Id);
+      return ids.indexOf(ids, item.Id);
     }
 
     function activate() {
