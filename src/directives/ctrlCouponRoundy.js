@@ -155,7 +155,7 @@
 
     function filterByIds(item) {
       var ids = $scope.filterIds.split(',');
-      return ids.indexOf(item.Id) >= 0;
+      return ids.indexOf(item.Id + '') >= 0;
     }
 
     function activate() {
