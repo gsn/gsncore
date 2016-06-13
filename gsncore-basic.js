@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.8.10
+ * version 1.8.11
  * gsncore repository
- * Build date: Thu Jun 02 2016 13:50:27 GMT+0300 (Belarus Standard Time)
+ * Build date: Mon Jun 13 2016 17:02:29 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -8222,8 +8222,6 @@
 
               item.BrandName = gsnApi.isNull(item.BrandName, '');
 
-
-
               if (item.IsCoupon) {
 
                 // since the server does not return a product code, we get it from local coupon index
@@ -8263,6 +8261,10 @@
                   item.EndDate = $scope.circular.Circulars[0].EndDate;
                   $scope.circularCoupons.push(item);
                 }
+
+                // repopulate image url
+                item.SmallImageUrl = item.SmallImageUrl || circCoupon.SmallImageUrl;
+                item.ImageUrl = item.ImageUrl || circCoupon.ImageUrl;
               }
 
               if (gsnApi.isNull(item.PriceString, '').length <= 0) {

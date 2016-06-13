@@ -115,8 +115,6 @@
 
               item.BrandName = gsnApi.isNull(item.BrandName, '');
 
-
-
               if (item.IsCoupon) {
 
                 // since the server does not return a product code, we get it from local coupon index
@@ -156,6 +154,10 @@
                   item.EndDate = $scope.circular.Circulars[0].EndDate;
                   $scope.circularCoupons.push(item);
                 }
+
+                // repopulate image url
+                item.SmallImageUrl = item.SmallImageUrl || circCoupon.SmallImageUrl;
+                item.ImageUrl = item.ImageUrl || circCoupon.ImageUrl;
               }
 
               if (gsnApi.isNull(item.PriceString, '').length <= 0) {
