@@ -139,6 +139,9 @@
                   if (item.ItemTypeId == 10) {
                     $scope.instoreCoupons.push(coupon);
                   }
+
+                  item.SmallImageUrl = item.SmallImageUrl || coupon.SmallImageUrl;
+                  item.ImageUrl = item.ImageUrl || coupon.ImageUrl;
                 }
 
                 $scope.coupons.push(item);
@@ -148,16 +151,18 @@
               } else {
                 // determine if circular item is a c oupon
                 var circCoupon = gsnStore.getItem(item.ItemId);
-                if (circCoupon && circCoupon.CouponImageUrl) {
-                  item.CouponImageUrl = circCoupon.CouponImageUrl;
-                  item.Description2 = circCoupon.ItemDescription;
-                  item.EndDate = $scope.circular.Circulars[0].EndDate;
-                  $scope.circularCoupons.push(item);
-                }
+                if (circCoupon) {
+                  if (circCoupon.CouponImageUrl) {
+                    item.CouponImageUrl = circCoupon.CouponImageUrl;
+                    item.Description2 = circCoupon.ItemDescription;
+                    item.EndDate = $scope.circular.Circulars[0].EndDate;
+                    $scope.circularCoupons.push(item);
+                  }
 
-                // repopulate image url
-                item.SmallImageUrl = item.SmallImageUrl || circCoupon.SmallImageUrl;
-                item.ImageUrl = item.ImageUrl || circCoupon.ImageUrl;
+                  // repopulate image url
+                  item.SmallImageUrl = item.SmallImageUrl || circCoupon.SmallImageUrl;
+                  item.ImageUrl = item.ImageUrl || circCoupon.ImageUrl;
+                }
               }
 
               if (gsnApi.isNull(item.PriceString, '').length <= 0) {
