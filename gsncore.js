@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.8.19
+ * version 1.8.20
  * gsncore repository
- * Build date: Mon Jun 13 2016 18:32:02 GMT-0500 (CDT)
+ * Build date: Tue Jun 14 2016 18:44:06 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -14285,8 +14285,8 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
   //  og:title - The title of your object as it should appear within the graph, e.g., "The Rock". 
   ngModifyElementDirective({
     name: 'gsnOgTitle',
-    selector: 'meta[name="og:title"]',
-    html: '<meta name="og:title" content="" />',
+    selector: 'meta[property="og:title"]',
+    html: '<meta property="og:title" content="" />',
     get: function(e) {
       return e.attr('content');
     },
@@ -14298,8 +14298,8 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
   // og:type - The type of your object, e.g., "movie". See the complete list of supported types.
   ngModifyElementDirective({
     name: 'gsnOgType',
-    selector: 'meta[name="og:type"]',
-    html: '<meta name="og:type" content="" />',
+    selector: 'meta[property="og:type"]',
+    html: '<meta property="og:type" content="" />',
     get: function(e) {
       return e.attr('content');
     },
@@ -14311,8 +14311,8 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
   // og:image - An image URL which should represent your object within the graph. The image must be at least 50px by 50px and have a maximum aspect ratio of 3:1.
   ngModifyElementDirective({
     name: 'gsnOgImage',
-    selector: 'meta[name="og:image"]',
-    html: '<meta name="og:image" content="" />',
+    selector: 'meta[property="og:image"]',
+    html: '<meta property="og:image" content="" />',
     get: function(e) {
       return e.attr('content');
     },
@@ -14324,8 +14324,8 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
   // og:url - The canonical URL of your object that will be used as its permanent ID in the graph.
   ngModifyElementDirective({
     name: 'gsnOgUrl',
-    selector: 'meta[name="og:url"]',
-    html: '<meta name="og:url" content="" />',
+    selector: 'meta[property="og:url"]',
+    html: '<meta property="og:url" content="" />',
     get: function(e) {
       return e.attr('content');
     },
@@ -14337,8 +14337,8 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
   // og:description - the description.
   ngModifyElementDirective({
     name: 'gsnOgDescription',
-    selector: 'meta[name="og:description"]',
-    html: '<meta name="og:description" content="" />',
+    selector: 'meta[property="og:description"]',
+    html: '<meta property="og:description" content="" />',
     get: function(e) {
       return e.attr('content');
     },
