@@ -225,7 +225,9 @@
         var next = $route.routes[$location.path()];
         if (!next)
           next = {};
+
         // store the new route location
+        $scope.seo = next.seo;
         $scope.currentPath = angular.lowercase(gsnApi.isNull($location.path(), ''));
         $scope.friendlyPath = $scope.currentPath.replace('/', '').replace(/\/+/gi, '-');
         $scope.gvm.search = $location.search();
