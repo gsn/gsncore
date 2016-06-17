@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.8.20
+ * version 1.8.21
  * gsncore repository
- * Build date: Tue Jun 14 2016 18:44:06 GMT-0500 (CDT)
+ * Build date: Fri Jun 17 2016 11:32:01 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -2665,7 +2665,9 @@
         var next = $route.routes[$location.path()];
         if (!next)
           next = {};
+
         // store the new route location
+        $scope.seo = next.seo;
         $scope.currentPath = angular.lowercase(gsnApi.isNull($location.path(), ''));
         $scope.friendlyPath = $scope.currentPath.replace('/', '').replace(/\/+/gi, '-');
         $scope.gvm.search = $location.search();
