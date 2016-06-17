@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.8.21
+ * version 1.8.22
  * gsncore repository
- * Build date: Fri Jun 17 2016 11:32:01 GMT-0500 (CDT)
+ * Build date: Fri Jun 17 2016 18:14:54 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -4443,6 +4443,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       $scope.isOnList = gsnProfile.isOnList;
       $scope.getShoppingListCount = gsnProfile.getShoppingListCount;
       $scope.$win = $window;
+      $scope.seo = {};
       $scope._tk = $window._tk;
 
       $scope.validateRegistration = function(rsp) {
@@ -4612,7 +4613,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
           next = {};
 
         // store the new route location
-        $scope.seo = next.seo;
+        $scope.seo = next.seo || {};
         $scope.currentPath = angular.lowercase(gsnApi.isNull($location.path(), ''));
         $scope.friendlyPath = $scope.currentPath.replace('/', '').replace(/\/+/gi, '-');
         $scope.gvm.search = $location.search();
