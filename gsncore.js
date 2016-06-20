@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.8.22
+ * version 1.8.23
  * gsncore repository
- * Build date: Fri Jun 17 2016 18:14:54 GMT-0500 (CDT)
+ * Build date: Mon Jun 20 2016 09:21:00 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -10100,12 +10100,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         gsnApi.sortOn($scope.vm.childCategories, 'CategoryName');
 
         $scope.vm.childCategoryById = gsnApi.mapObject(gsnApi.groupBy($scope.vm.childCategories, 'ParentCategoryId'), 'key');
-
-        gsnStore.getSpecialAttributes().then(function (rst) {
-          if (rst.success) {
-            $scope.vm.healthKeys = rst.response;
-          }
-        });
       });
     }
 
@@ -10123,12 +10117,8 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       $timeout(doFilterSort, 500);
     });
 
-    $scope.$watch('vm.healthKey', function (newValue, oldValue) {
-      if ($scope.vm.showLoading) return;
-      $timeout(doFilterSort, 500);
-    });
     
-	$scope.$on('gsnevent:circular-processed', function(event, data) {
+	  $scope.$on('gsnevent:circular-processed', function(event, data) {
       if (!$scope.activated) activate();
     });    
 
@@ -10184,10 +10174,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
 
       if ($scope.vm.filteredProducts.items) {
         var result = $filter('filter')($scope.vm.filteredProducts.items, $scope.vm.filterBy || '');
-        if ($scope.vm.healthKey) {
-          result = $filter('filter')(result, { SpecialAttrs: ',' + $scope.vm.healthKey.Code + ',' });
-        }
-
         $scope.vm.filteredProducts.fitems = $filter('orderBy')(result, $scope.vm.sortBy || 'BrandName');
         $scope.allItems = [];
         loadMore();
