@@ -41,12 +41,8 @@
     $scope.itemsPerPage = 10;
     $scope.loadAll = $scope.loadAll || true;
     $scope.allItems = [];
-	$scope.activated = false;
 
     function activate() {
-	  $scope.activated = true;
-      if (!gsnStore.hasCompleteCircular()) return;
-		
       // activate depend on URL
       var catDefer = ($scope.vm.saleItemOnly) ? gsnStore.getSaleItemCategories : gsnStore.getInventoryCategories;
       catDefer().then(function (rsp) {
@@ -81,12 +77,6 @@
       $timeout(doFilterSort, 500);
     });
 
-    
-	  $scope.$on('gsnevent:circular-processed', function(event, data) {
-      if (!$scope.activated) activate();
-    });    
-
-    
     $scope.$watch('vm.levelOneCategory', function (newValue, oldValue) {
       $scope.vm.levelTwoCategory = null;
       $scope.vm.levelThreeCategory = null;
