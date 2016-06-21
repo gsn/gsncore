@@ -58,6 +58,7 @@
       $scope.isOnList = gsnProfile.isOnList;
       $scope.getShoppingListCount = gsnProfile.getShoppingListCount;
       $scope.$win = $window;
+      $scope.seo = {};
       $scope._tk = $window._tk;
 
       $scope.validateRegistration = function(rsp) {
@@ -227,7 +228,7 @@
           next = {};
 
         // store the new route location
-        $scope.seo = next.seo;
+        $scope.seo = next.seo || {};
         $scope.currentPath = angular.lowercase(gsnApi.isNull($location.path(), ''));
         $scope.friendlyPath = $scope.currentPath.replace('/', '').replace(/\/+/gi, '-');
         $scope.gvm.search = $location.search();
