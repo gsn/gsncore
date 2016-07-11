@@ -1,12 +1,12 @@
-﻿(function(angular, undefined) {
+(function(angular, undefined) {
 
   angular.module('gsn.core')
     .directive('gsnShoppingList', ['gsnApi', '$timeout', 'gsnProfile', '$routeParams', '$rootScope', 'gsnStore', '$location', 'gsnCouponPrinter', '$filter',
       function(gsnApi, $timeout, gsnProfile, $routeParams, $rootScope, gsnStore, $location, gsnCouponPrinter, $filter) {
         // Usage:  use to manipulate a shopping list on the UI
-        // 
+        //
         // Creates: 2014-01-13 TomN
-        // 
+        //
         var directive = {
           restrict: 'EA',
           scope: true,
@@ -60,7 +60,7 @@
                   $scope.doRefreshList();
                 }
               } else if (shoppingListId) {
-                // if not saved list and current shopping list, then 
+                // if not saved list and current shopping list, then
                 if ($attrs.gsnShoppingList != 'savedlists' && shoppingListId == gsnApi.getShoppingListId()) {
                   $scope.mylist = gsnProfile.getShoppingList();
                   $scope.doRefreshList();
@@ -90,7 +90,7 @@
             list.items.length = 0;
 
             // calculate the grouping
-            // and make list calculation 
+            // and make list calculation
             var items = list.allItems(),
               totalQuantity = 0;
 
@@ -123,6 +123,7 @@
                   item.ProductCode = coupon.ProductCode;
                   item.StartDate = coupon.StartDate;
                   item.EndDate = coupon.EndDate;
+                  item.Description2 = coupon.Description2;
 
                   // Get the temp quantity.
                   var tmpQuantity = gsnApi.isNaN(parseInt(coupon.Quantity), 0);
@@ -330,7 +331,7 @@
             }
 
             if (gsnApi.isNull($scope.mylist) || ($attrs.gsnShoppingList == 'savedlists')) {
-              // current list is null, reload    
+              // current list is null, reload
               $scope.reloadShoppingList();
               return;
             }
@@ -359,7 +360,7 @@
             $scope.circular = gsnStore.getCircularData();
           });
 
-          // Events for modal confirmation. 
+          // Events for modal confirmation.
           $scope.$on('gsnevent:shopping-list-saved', function() {
             $scope.shoppinglistsaved++;
           });
