@@ -2,7 +2,7 @@
   'use strict';
   var myModule = angular.module('gsn.core');
 
-  myModule.directive("gsnPopover", ['$window', '$interpolate', '$timeout', function ($window, $interpolate, $timeout) {
+  myModule.directive("gsnPopover", ['$window', '$interpolate', '$timeout', 'debounce', function ($window, $interpolate, $timeout, debounce) {
     // Usage:   provide mouse hover capability
     //
     // Creates: 2014-01-16
@@ -15,7 +15,7 @@
     function hidePopup(){
       $timeout(function() {
         angular.element('.gsn-popover').slideUp();
-      }, 500);
+      }, 1500);
     }
 
     function link(scope, element, attrs) {
@@ -30,6 +30,7 @@
       var popover = angular.element('.gsn-popover');
       if (popover.length > 0) {
         var myTimeout = undefined;
+        var myHidePopup = debounce(hidePopup, 1500);
         element.mousemove(function(e){
           angular.element('.gsn-popover .popover-title').html($interpolate('<div>' + title + '</div>')(scope).replace('data-ng-src', 'src'));
           angular.element('.gsn-popover .popover-content').html($interpolate('<div>' + text + '</div>')(scope).replace('data-ng-src', 'src'));
@@ -39,22 +40,9 @@
           var height = popover.show().height();
 
           angular.element('.gsn-popover').css( { top: e.clientY + 15, left: e.clientX + 15 }).show();
-          if (myTimeout){
-            clearTimeout(myTimeout);
-          }
-          myTimeout = setTimeout(hidePopup, 2500);
-        }).mouseleave(function(e){
-          if (myTimeout){
-            clearTimeout(myTimeout);
-          }
-          myTimeout = setTimeout(hidePopup, 1500);
-        });
-        popover.mousemove(function(e){
-          if (myTimeout){
-            clearTimeout(myTimeout);
-          }
-          myTimeout = setTimeout(hidePopup, 2500);
-        });
+          myHidePopup();
+        }).mouseleave(myHidePopup);
+        popover.mousemove(myHidePopup);
       } else { // fallback with qtip
         element.qtip({
           content: {
