@@ -1,12 +1,12 @@
-﻿(function (angular, undefined) {
+(function (angular, undefined) {
   'use strict';
   var myModule = angular.module('gsn.core');
 
   myModule.directive("gsnPopover", ['$window', '$interpolate', '$timeout', function ($window, $interpolate, $timeout) {
     // Usage:   provide mouse hover capability
-    // 
+    //
     // Creates: 2014-01-16
-    // 
+    //
     var directive = {
       link: link,
       restrict: 'AE'
@@ -42,18 +42,18 @@
           if (myTimeout){
             clearTimeout(myTimeout);
           }
-          myTimeout = setTimeout(hidePopup, 1500);
+          myTimeout = setTimeout(hidePopup, 2500);
         }).mouseleave(function(e){
           if (myTimeout){
             clearTimeout(myTimeout);
           }
-          myTimeout = setTimeout(hidePopup, 500);
+          myTimeout = setTimeout(hidePopup, 1500);
         });
         popover.mousemove(function(e){
           if (myTimeout){
             clearTimeout(myTimeout);
           }
-          myTimeout = setTimeout(hidePopup, 1500);
+          myTimeout = setTimeout(hidePopup, 2500);
         });
       } else { // fallback with qtip
         element.qtip({
@@ -78,7 +78,7 @@
             distance: 1500
           },
           position: {
-            // my: 'bottom left', 
+            // my: 'bottom left',
             at: 'bottom left'
           }
         });

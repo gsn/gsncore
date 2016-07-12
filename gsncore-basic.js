@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.8.27
+ * version 1.8.28
  * gsncore repository
- * Build date: Mon Jul 11 2016 15:40:23 GMT-0500 (CDT)
+ * Build date: Tue Jul 12 2016 14:23:30 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -7892,9 +7892,9 @@
 
   myModule.directive("gsnPopover", ['$window', '$interpolate', '$timeout', function ($window, $interpolate, $timeout) {
     // Usage:   provide mouse hover capability
-    // 
+    //
     // Creates: 2014-01-16
-    // 
+    //
     var directive = {
       link: link,
       restrict: 'AE'
@@ -7930,18 +7930,18 @@
           if (myTimeout){
             clearTimeout(myTimeout);
           }
-          myTimeout = setTimeout(hidePopup, 1500);
+          myTimeout = setTimeout(hidePopup, 2500);
         }).mouseleave(function(e){
           if (myTimeout){
             clearTimeout(myTimeout);
           }
-          myTimeout = setTimeout(hidePopup, 500);
+          myTimeout = setTimeout(hidePopup, 1500);
         });
         popover.mousemove(function(e){
           if (myTimeout){
             clearTimeout(myTimeout);
           }
-          myTimeout = setTimeout(hidePopup, 1500);
+          myTimeout = setTimeout(hidePopup, 2500);
         });
       } else { // fallback with qtip
         element.qtip({
@@ -7966,7 +7966,7 @@
             distance: 1500
           },
           position: {
-            // my: 'bottom left', 
+            // my: 'bottom left',
             at: 'bottom left'
           }
         });
@@ -7980,6 +7980,7 @@
     }
   }]);
 })(angular);
+
 (function (angular, undefined) {
   'use strict';
   var myModule = angular.module('gsn.core');
