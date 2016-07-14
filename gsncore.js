@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.8.26
+ * version 1.8.29
  * gsncore repository
- * Build date: Mon Jun 20 2016 10:46:33 GMT-0500 (CDT)
+ * Build date: Tue Jul 12 2016 14:41:22 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -12917,11 +12917,11 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
   'use strict';
   var myModule = angular.module('gsn.core');
 
-  myModule.directive("gsnPopover", ['$window', '$interpolate', '$timeout', function ($window, $interpolate, $timeout) {
+  myModule.directive("gsnPopover", ['$window', '$interpolate', '$timeout', 'debounce', function ($window, $interpolate, $timeout, debounce) {
     // Usage:   provide mouse hover capability
-    // 
+    //
     // Creates: 2014-01-16
-    // 
+    //
     var directive = {
       link: link,
       restrict: 'AE'
@@ -12930,7 +12930,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     function hidePopup(){
       $timeout(function() {
         angular.element('.gsn-popover').slideUp();
-      }, 500);
+      }, 1500);
     }
 
     function link(scope, element, attrs) {
@@ -12945,6 +12945,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       var popover = angular.element('.gsn-popover');
       if (popover.length > 0) {
         var myTimeout = undefined;
+        var myHidePopup = debounce(hidePopup, 1500);
         element.mousemove(function(e){
           angular.element('.gsn-popover .popover-title').html($interpolate('<div>' + title + '</div>')(scope).replace('data-ng-src', 'src'));
           angular.element('.gsn-popover .popover-content').html($interpolate('<div>' + text + '</div>')(scope).replace('data-ng-src', 'src'));
@@ -12954,22 +12955,9 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
           var height = popover.show().height();
 
           angular.element('.gsn-popover').css( { top: e.clientY + 15, left: e.clientX + 15 }).show();
-          if (myTimeout){
-            clearTimeout(myTimeout);
-          }
-          myTimeout = setTimeout(hidePopup, 1500);
-        }).mouseleave(function(e){
-          if (myTimeout){
-            clearTimeout(myTimeout);
-          }
-          myTimeout = setTimeout(hidePopup, 500);
-        });
-        popover.mousemove(function(e){
-          if (myTimeout){
-            clearTimeout(myTimeout);
-          }
-          myTimeout = setTimeout(hidePopup, 1500);
-        });
+          myHidePopup();
+        }).mouseleave(myHidePopup);
+        popover.mousemove(myHidePopup);
       } else { // fallback with qtip
         element.qtip({
           content: {
@@ -12993,7 +12981,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
             distance: 1500
           },
           position: {
-            // my: 'bottom left', 
+            // my: 'bottom left',
             at: 'bottom left'
           }
         });
@@ -13007,6 +12995,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     }
   }]);
 })(angular);
+
 (function (angular, undefined) {
   'use strict';
   var myModule = angular.module('gsn.core');
@@ -13141,9 +13130,9 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     .directive('gsnShoppingList', ['gsnApi', '$timeout', 'gsnProfile', '$routeParams', '$rootScope', 'gsnStore', '$location', 'gsnCouponPrinter', '$filter',
       function(gsnApi, $timeout, gsnProfile, $routeParams, $rootScope, gsnStore, $location, gsnCouponPrinter, $filter) {
         // Usage:  use to manipulate a shopping list on the UI
-        // 
+        //
         // Creates: 2014-01-13 TomN
-        // 
+        //
         var directive = {
           restrict: 'EA',
           scope: true,
@@ -13197,7 +13186,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
                   $scope.doRefreshList();
                 }
               } else if (shoppingListId) {
-                // if not saved list and current shopping list, then 
+                // if not saved list and current shopping list, then
                 if ($attrs.gsnShoppingList != 'savedlists' && shoppingListId == gsnApi.getShoppingListId()) {
                   $scope.mylist = gsnProfile.getShoppingList();
                   $scope.doRefreshList();
@@ -13227,7 +13216,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
             list.items.length = 0;
 
             // calculate the grouping
-            // and make list calculation 
+            // and make list calculation
             var items = list.allItems(),
               totalQuantity = 0;
 
@@ -13260,6 +13249,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
                   item.ProductCode = coupon.ProductCode;
                   item.StartDate = coupon.StartDate;
                   item.EndDate = coupon.EndDate;
+                  item.Description2 = coupon.Description2;
 
                   // Get the temp quantity.
                   var tmpQuantity = gsnApi.isNaN(parseInt(coupon.Quantity), 0);
@@ -13467,7 +13457,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
             }
 
             if (gsnApi.isNull($scope.mylist) || ($attrs.gsnShoppingList == 'savedlists')) {
-              // current list is null, reload    
+              // current list is null, reload
               $scope.reloadShoppingList();
               return;
             }
@@ -13496,7 +13486,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
             $scope.circular = gsnStore.getCircularData();
           });
 
-          // Events for modal confirmation. 
+          // Events for modal confirmation.
           $scope.$on('gsnevent:shopping-list-saved', function() {
             $scope.shoppinglistsaved++;
           });
