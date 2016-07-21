@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.8.30
+ * version 1.8.31
  * gsncore repository
- * Build date: Thu Jul 21 2016 11:07:44 GMT-0500 (CDT)
+ * Build date: Thu Jul 21 2016 11:25:13 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -13276,7 +13276,11 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
                   // repopulate image url
                   item.SmallImageUrl = item.SmallImageUrl || circCoupon.SmallImageUrl;
                   item.ImageUrl = item.ImageUrl || circCoupon.ImageUrl;
+
+                  // repopulate price string
+                  item.PriceString = circCoupon.PriceString;
                 }
+
               }
 
               if (gsnApi.isNull(item.PriceString, '').length <= 0) {

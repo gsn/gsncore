@@ -163,7 +163,11 @@
                   // repopulate image url
                   item.SmallImageUrl = item.SmallImageUrl || circCoupon.SmallImageUrl;
                   item.ImageUrl = item.ImageUrl || circCoupon.ImageUrl;
+
+                  // repopulate price string
+                  item.PriceString = circCoupon.PriceString;
                 }
+
               }
 
               if (gsnApi.isNull(item.PriceString, '').length <= 0) {
