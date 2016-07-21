@@ -1,4 +1,4 @@
-﻿(function(angular, undefined) {
+(function(angular, undefined) {
   'use strict';
 
   var myDirectiveName = 'ctrlCouponClassic';
@@ -206,7 +206,7 @@
     });
     $timeout(activate, 500);
 
-    //#region Internal Methods             
+    //#region Internal Methods
     function printManufacturerCoupon(evt, item) {
       $scope.printer.total = 1;
       gsnCouponPrinter.print([item]);
@@ -217,8 +217,6 @@
           label: item.Description,
           item: item
         });
-
-      gsn.emit('PrintNow', item);
     }
 
     function addCouponToCard(evt, item) {
