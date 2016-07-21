@@ -1,4 +1,4 @@
-﻿(function(angular, undefined) {
+(function(angular, undefined) {
   'use strict';
   var serviceId = 'gsnProfile';
   angular.module('gsn.core').service(serviceId, ['$rootScope', '$http', 'gsnApi', '$q', 'gsnList', 'gsnStore', '$location', '$timeout', '$sessionStorage', '$localStorage', 'gsnRoundyProfile', gsnProfile]);
@@ -113,7 +113,6 @@
         }
 
         shoppingList.addItem(item);
-        gsn.emit('AddItem', item);
       }
     };
 
@@ -140,8 +139,6 @@
       var shoppingList = returnObj.getShoppingList();
       if (shoppingList) {
         shoppingList.removeItem(item);
-
-        gsn.emit('RemoveItem', item);
       }
     };
 
@@ -184,7 +181,7 @@
 
       $profileDefer = $q.defer();
       if (gsnApi.isNull($savedData.profile, null) === null || callApi) {
-        // at this point, we already got the id so proceed to reset other data 
+        // at this point, we already got the id so proceed to reset other data
         $timeout(function() {
           // reset other data
           $savedData = {
@@ -319,7 +316,7 @@
     };
 
     // when user recover password
-    // it should call api and return server result 
+    // it should call api and return server result
     returnObj.recoverPassword = function(payload) {
       var deferred = $q.defer();
 

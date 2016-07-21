@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.8.29
+ * version 1.8.30
  * gsncore repository
- * Build date: Tue Jul 12 2016 14:41:22 GMT-0500 (CDT)
+ * Build date: Thu Jul 21 2016 11:07:44 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -55,15 +55,6 @@
     root.gsn = gsn;
   }
   gsn.root = root;
-
-  /**
-   * The semantic version number.
-   *
-   * @static
-   * @memberOf gsn
-   * @type string
-   */
-  gsn.VERSION = '1.0.4';
   gsn.previousGsn = previousGsn;
 
   // internal config
@@ -5756,7 +5747,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         }
 
         shoppingList.addItem(item);
-        gsn.emit('AddItem', item);
       }
     };
 
@@ -5783,8 +5773,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       var shoppingList = returnObj.getShoppingList();
       if (shoppingList) {
         shoppingList.removeItem(item);
-
-        gsn.emit('RemoveItem', item);
       }
     };
 
@@ -5827,7 +5815,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
 
       $profileDefer = $q.defer();
       if (gsnApi.isNull($savedData.profile, null) === null || callApi) {
-        // at this point, we already got the id so proceed to reset other data 
+        // at this point, we already got the id so proceed to reset other data
         $timeout(function() {
           // reset other data
           $savedData = {
@@ -5962,7 +5950,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     };
 
     // when user recover password
-    // it should call api and return server result 
+    // it should call api and return server result
     returnObj.recoverPassword = function(payload) {
       var deferred = $q.defer();
 
@@ -8845,7 +8833,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     });
     $timeout(activate, 500);
 
-    //#region Internal Methods             
+    //#region Internal Methods
     function printManufacturerCoupon(evt, item) {
       $scope.printer.total = 1;
       gsnCouponPrinter.print([item]);
@@ -8856,8 +8844,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
           label: item.Description,
           item: item
         });
-
-      gsn.emit('PrintNow', item);
     }
 
     function addCouponToCard(evt, item) {
@@ -8901,6 +8887,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
   }
 
 })(angular);
+
 (function (angular, undefined) {
   'use strict';
 

@@ -1,4 +1,4 @@
-﻿;(function() {
+;(function() {
   'use strict';
 
   // Baseline setup
@@ -49,15 +49,6 @@
     root.gsn = gsn;
   }
   gsn.root = root;
-
-  /**
-   * The semantic version number.
-   *
-   * @static
-   * @memberOf gsn
-   * @type string
-   */
-  gsn.VERSION = '1.0.4';
   gsn.previousGsn = previousGsn;
 
   // internal config
