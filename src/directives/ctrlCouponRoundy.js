@@ -368,7 +368,7 @@
         if (!isNaN(parseInt(key))) {
           var coupon = $scope.clippedCoupons[key];
           if (!gsnProfile.isOnList(coupon)) {
-            items.push(coupon;)
+            items.push(coupon);
           }
         }
       }
