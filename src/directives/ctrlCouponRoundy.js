@@ -5,7 +5,7 @@
   var myDirectiveName = 'ctrlCouponRoundy';
 
   angular.module('gsn.core')
-    .controller(myDirectiveName,  ['$scope', 'gsnStore', 'gsnApi', '$timeout', '$analytics', '$filter',  'gsnYoutech', 'gsnProfile', '$location', 'gsnCouponPrinter', 'gsnRoundyProfile', 'gsnList', myController])
+    .controller(myDirectiveName,  ['$scope', 'gsnStore', 'gsnApi', '$timeout', '$analytics', '$filter',  'gsnYoutech', 'gsnProfile', '$location', 'gsnCouponPrinter', 'gsnRoundyProfile', myController])
     .directive(myDirectiveName, myDirective);
 
   function myDirective() {
@@ -18,7 +18,7 @@
     return directive;
   }
 
-  function myController($scope, gsnStore, gsnApi, $timeout, $analytics, $filter, gsnYoutech, gsnProfile, $location, gsnCouponPrinter, gsnRoundyProfile, gsnList) {
+  function myController($scope, gsnStore, gsnApi, $timeout, $analytics, $filter, gsnYoutech, gsnProfile, $location, gsnCouponPrinter, gsnRoundyProfile) {
     $scope.activate = activate;
     $scope.addCouponToCard = addCouponToCard;
     $scope.printManufacturerCoupon = printManufacturerCoupon;
@@ -374,7 +374,7 @@
       }
 
       if (items.length > 0) {
-        gsnList.addItems(items);
+        gsnProfile.addItems(items);
       }
     }
 
