@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.8.32
+ * version 1.8.33
  * gsncore repository
- * Build date: Mon Jul 25 2016 12:09:47 GMT-0500 (CDT)
+ * Build date: Wed Jul 27 2016 17:24:11 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -14097,7 +14097,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
 
   var ngModifyElementDirective = function(opt) {
     // Usage: add meta dynamically
-    // 
+    //
     // Creates: 2013-12-12 TomN
     // 2014-06-22 TomN - fix global variable
     var options = angular.copy(opt);
@@ -14245,7 +14245,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
   });
 
   // Facebook OpenGraph integration
-  //  og:title - The title of your object as it should appear within the graph, e.g., "The Rock". 
+  //  og:title - The title of your object as it should appear within the graph, e.g., "The Rock".
   ngModifyElementDirective({
     name: 'gsnOgTitle',
     selector: 'meta[property="og:title"]',
@@ -14274,8 +14274,8 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
   // og:image - An image URL which should represent your object within the graph. The image must be at least 50px by 50px and have a maximum aspect ratio of 3:1.
   ngModifyElementDirective({
     name: 'gsnOgImage',
-    selector: 'meta[property="og:image"]',
-    html: '<meta property="og:image" content="" />',
+    selector: 'meta[id="default-og-image"]',
+    html: '<meta property="og:image" content="" id="default-og-image"/>',
     get: function(e) {
       return e.attr('content');
     },
@@ -14310,15 +14310,16 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     }
   });
 })(angular);
+
 (function(angular, undefined) {
   'use strict';
   var myModule = angular.module('gsn.core');
 
   myModule.directive('ngGiveHead', [function() {
     // Usage: ability to add to head element.  Becareful, since only one element is valid, this should only be use in layout html.
-    // 
+    //
     // Creates: 2013-12-12 TomN
-    // 
+    //
     var directive = {
       restrict: 'EA',
       link: link
@@ -14337,9 +14338,17 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
 
       var pNode = angular.element('head')[0];
       pNode.insertBefore(el[0], angular.element('title')[0]);
+
+      // When we go out of scope restore the original value.
+      scope.$on('$destroy', function() {
+        if (attrs.remove) {
+          pnode.removeChild(el[0]);
+        }
+      });
     }
   }]);
 })(angular);
+
 (function (angular, undefined) {
   'use strict';
   var myModule = angular.module('gsn.core');

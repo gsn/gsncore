@@ -1,12 +1,12 @@
-﻿(function(angular, undefined) {
+(function(angular, undefined) {
   'use strict';
   var myModule = angular.module('gsn.core');
 
   myModule.directive('ngGiveHead', [function() {
     // Usage: ability to add to head element.  Becareful, since only one element is valid, this should only be use in layout html.
-    // 
+    //
     // Creates: 2013-12-12 TomN
-    // 
+    //
     var directive = {
       restrict: 'EA',
       link: link
@@ -25,6 +25,13 @@
 
       var pNode = angular.element('head')[0];
       pNode.insertBefore(el[0], angular.element('title')[0]);
+
+      // When we go out of scope restore the original value.
+      scope.$on('$destroy', function() {
+        if (attrs.remove) {
+          pnode.removeChild(el[0]);
+        }
+      });
     }
   }]);
 })(angular);

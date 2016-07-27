@@ -1,10 +1,10 @@
-﻿(function(angular, undefined) {
+(function(angular, undefined) {
   'use strict';
   var myModule = angular.module('gsn.core');
 
   var ngModifyElementDirective = function(opt) {
     // Usage: add meta dynamically
-    // 
+    //
     // Creates: 2013-12-12 TomN
     // 2014-06-22 TomN - fix global variable
     var options = angular.copy(opt);
@@ -152,7 +152,7 @@
   });
 
   // Facebook OpenGraph integration
-  //  og:title - The title of your object as it should appear within the graph, e.g., "The Rock". 
+  //  og:title - The title of your object as it should appear within the graph, e.g., "The Rock".
   ngModifyElementDirective({
     name: 'gsnOgTitle',
     selector: 'meta[property="og:title"]',
@@ -181,8 +181,8 @@
   // og:image - An image URL which should represent your object within the graph. The image must be at least 50px by 50px and have a maximum aspect ratio of 3:1.
   ngModifyElementDirective({
     name: 'gsnOgImage',
-    selector: 'meta[property="og:image"]',
-    html: '<meta property="og:image" content="" />',
+    selector: 'meta[id="default-og-image"]',
+    html: '<meta property="og:image" content="" id="default-og-image"/>',
     get: function(e) {
       return e.attr('content');
     },
