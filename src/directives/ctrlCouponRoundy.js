@@ -1,4 +1,4 @@
-﻿(function (angular, undefined) {
+(function (angular, undefined) {
   'use strict';
   var myModule = angular.module('gsn.core');
 
@@ -196,7 +196,7 @@
       $scope.preSelectedCoupons.items = $filter('filter')($filter('filter')($scope.preSelectedCoupons.items, $scope.filterByComplex), isTargetEnable);
       $scope.preSelectedCoupons.items = $filter('orderBy')($filter('filter')($scope.preSelectedCoupons.items, $scope.filterBy), $scope.sortBy);
       $scope.preSelectedCoupons.targeted = $filter('orderBy')($filter('filter')($scope.preSelectedCoupons.targeted, $scope.filterBy), $scope.sortBy);
-      
+
 
       $scope.selectedCoupons.items.length = 0;
 
@@ -363,6 +363,22 @@
     }
 
     function addClippedToList() {
+      var items = [];
+      for (var key in $scope.clippedCoupons) {
+        if (!isNaN(parseInt(key))) {
+          var coupon = $scope.clippedCoupons[key];
+          if (!gsnProfile.isOnList(coupon)) {
+            items.push(coupon);
+          }
+        }
+      }
+
+      if (items.length > 0) {
+        gsnProfile.addItems(items);
+      }
+    }
+
+    function addClippedToListBak() {
       for (var key in $scope.clippedCoupons) {
         if (!isNaN(parseInt(key))) {
           var coupon = $scope.clippedCoupons[key];
