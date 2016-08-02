@@ -120,6 +120,7 @@
                 // since the server does not return a product code, we get it from local coupon index
                 var coupon = gsnStore.getCoupon(item.ItemId, item.ItemTypeId);
                 if (coupon) {
+                  item.LinkedItem = coupon;
                   item.ProductCode = coupon.ProductCode;
                   item.StartDate = coupon.StartDate;
                   item.EndDate = coupon.EndDate;
@@ -150,8 +151,9 @@
                   $scope.manufacturerCoupons.push(item);
                 }
               } else {
-                // determine if circular item is a c oupon
+                // determine if circular item is a coupon
                 var circCoupon = gsnStore.getItem(item.ItemId);
+                item.LinkedItem = circCoupon || {};
                 if (circCoupon) {
                   if (circCoupon.CouponImageUrl) {
                     item.CouponImageUrl = circCoupon.CouponImageUrl;

@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.8.33
+ * version 1.8.34
  * gsncore repository
- * Build date: Wed Jul 27 2016 17:24:11 GMT-0500 (CDT)
+ * Build date: Tue Aug 02 2016 16:43:15 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -2944,18 +2944,18 @@
   function gsnList($rootScope, $http, gsnApi, $q, $sessionStorage) {
 
     var betterStorage = $sessionStorage;
-    
+
     // just a shopping list object
     function myShoppingList(shoppingListId, shoppingList) {
       var returnObj = { ShoppingListId: shoppingListId };
       var $mySavedData = { list: shoppingList, items: {}, hasLoaded: false, countCache: 0, itemIdentity: 1 };
-      
+
       returnObj.getItemKey = function (item) {
         var itemKey = item.ItemTypeId;
         if (item.ItemTypeId == 7 || item.AdCode) {
           itemKey = item.AdCode + gsnApi.isNull(item.BrandName, '') + gsnApi.isNull(item.Description, '');
         }
-        
+
         return itemKey + '_' + item.ItemId;
       };
 
@@ -2963,7 +2963,7 @@
       function processServerItem(serverItem, localItem) {
         if (serverItem) {
           var itemKey = returnObj.getItemKey(localItem);
-          
+
           // set new server item order
           serverItem.Order = localItem.Order;
 
@@ -3003,7 +3003,8 @@
           itemToPost['TotalDownloadsAllowed'] = undefined;
           itemToPost['Varieties'] = undefined;
           itemToPost['PageNumber'] = undefined;
-          itemToPost['rect'] = null;
+          itemToPost['rect'] = undefined;
+          itemToPost['LinkedItem'] = undefined;
 
           $rootScope.$broadcast('gsnevent:shoppinglistitem-updating', returnObj, existingItem, $mySavedData);
 
@@ -3016,7 +3017,7 @@
               if (response.Id) {
                 processServerItem(response, existingItem);
               }
-              
+
               $rootScope.$broadcast('gsnevent:shoppinglist-changed', returnObj);
               saveListToSession();
             }).error(function () {
@@ -3043,7 +3044,7 @@
           // this is to help with getItemKey?
           item.ItemId = ($mySavedData.itemIdentity++);
         }
-        
+
         $mySavedData.countCache = 0;
         var existingItem = $mySavedData.items[returnObj.getItemKey(item)];
 
@@ -3170,7 +3171,7 @@
           itemTypeId = itemId.ItemTypeId;
           itemId = itemId.ItemId;
         }
-        
+
         var myItemKey = returnObj.getItemKey({ ItemId: itemId, ItemTypeId: gsnApi.isNull(itemTypeId, 8), AdCode: adCode, BrandName: brandName, Description: myDescription });
         return $mySavedData.items[myItemKey];
       };
@@ -3201,7 +3202,7 @@
       // get count of items
       returnObj.getCount = function () {
         if ($mySavedData.countCache > 0) return $mySavedData.countCache;
-        
+
         var count = 0;
         var items = $mySavedData.items;
         var isValid = true;
@@ -3215,7 +3216,7 @@
             count += gsnApi.isNaN(parseInt(item.Quantity), 0);
           }
         });
-        
+
         if (!isValid){
           $mySavedData.items = {};
           $mySavedData.hasLoaded = false;
@@ -3243,7 +3244,7 @@
 
       // cause shopping list delete
       returnObj.deleteList = function () {
-        // call DeleteShoppingList          
+        // call DeleteShoppingList
 
         $mySavedData.countCache = 0;
         gsnApi.getAccessToken().then(function () {
@@ -3252,7 +3253,7 @@
           var hPayload = gsnApi.getApiHeaders();
           hPayload.shopping_list_id = returnObj.ShoppingListId;
           $http.post(url, {}, { headers: hPayload }).success(function (response) {
-            // do nothing                      
+            // do nothing
             $rootScope.$broadcast('gsnevent:shoppinglist-deleted', returnObj);
             saveListToSession();
           });
@@ -3385,7 +3386,7 @@
 
         var deferred = $q.defer();
         returnObj.deferred = deferred;
-        
+
         if (returnObj.ShoppingListId > 0) {
           if ($mySavedData.hasLoaded) {
             $rootScope.$broadcast('gsnevent:shoppinglist-loaded', returnObj, $mySavedData.items);
@@ -3395,7 +3396,7 @@
 
             $mySavedData.items = {};
             $mySavedData.countCache = 0;
-            
+
             gsnApi.getAccessToken().then(function () {
               // call GetShoppingList(int shoppinglistid, int profileid)
               var url = gsnApi.getShoppingListApiUrl() + '/ItemsBy/' + returnObj.ShoppingListId + '?nocache=' + (new Date()).getTime();
@@ -3420,13 +3421,14 @@
       };
 
       loadListFromSession();
-      
+
       return returnObj;
     }
 
     return myShoppingList;
   }
 })(angular);
+
 // collection of misc service and factory
 (function (angular, undefined) {
   'use strict';
@@ -8207,6 +8209,7 @@
                 // since the server does not return a product code, we get it from local coupon index
                 var coupon = gsnStore.getCoupon(item.ItemId, item.ItemTypeId);
                 if (coupon) {
+                  item.LinkedItem = coupon;
                   item.ProductCode = coupon.ProductCode;
                   item.StartDate = coupon.StartDate;
                   item.EndDate = coupon.EndDate;
@@ -8237,8 +8240,9 @@
                   $scope.manufacturerCoupons.push(item);
                 }
               } else {
-                // determine if circular item is a c oupon
+                // determine if circular item is a coupon
                 var circCoupon = gsnStore.getItem(item.ItemId);
+                item.LinkedItem = circCoupon || {};
                 if (circCoupon) {
                   if (circCoupon.CouponImageUrl) {
                     item.CouponImageUrl = circCoupon.CouponImageUrl;
