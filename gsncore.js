@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.8.34
+ * version 1.8.35
  * gsncore repository
- * Build date: Tue Aug 02 2016 16:43:15 GMT-0500 (CDT)
+ * Build date: Wed Aug 03 2016 08:51:00 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -14227,6 +14227,31 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
   ngModifyElementDirective({
     name: 'gsnMetaKeywords',
     selector: 'meta[name="keywords"]',
+    get: function(e) {
+      return e.attr('content');
+    },
+    set: function(e, v) {
+      return e.attr('content', v);
+    }
+  });
+
+
+  // keywords
+  ngModifyElementDirective({
+    name: 'gsnMetaImage',
+    selector: 'meta[name="image"]',
+    get: function(e) {
+      return e.attr('content');
+    },
+    set: function(e, v) {
+      return e.attr('content', v);
+    }
+  });
+
+  // keywords
+  ngModifyElementDirective({
+    name: 'gsnMetaName',
+    selector: 'meta[name="name"]',
     get: function(e) {
       return e.attr('content');
     },
