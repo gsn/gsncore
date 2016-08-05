@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.8.36
+ * version 1.8.37
  * gsncore repository
- * Build date: Wed Aug 03 2016 09:29:48 GMT-0500 (CDT)
+ * Build date: Fri Aug 05 2016 11:07:52 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -5971,7 +5971,7 @@
   function myController($scope, $timeout, gsnStore, $rootScope, $location, gsnProfile, gsnApi, $analytics, $filter) {
     $scope.activate = activate;
 
-    $scope.pageId = 99; // it's always all items for desktop     
+    $scope.pageId = 99; // it's always all items for desktop
     $scope.loadAll = $scope.loadAll || false;
     $scope.itemsPerPage = $scope.itemsPerPage || 10;
     $scope.sortBy = $scope.sortBy || 'CategoryName';
@@ -6146,7 +6146,7 @@
       }
     }, 5000);
 
-    //#region Internal Methods   
+    //#region Internal Methods
     function sortMe(a, b) {
       if (a.rect.x <= b.rect.x) return a.rect.y - b.rect.y;
       return a.rect.x - b.rect.x;
@@ -6159,6 +6159,11 @@
 
       $scope.vm.circular = $scope.vm.digitalCirc.Circulars[$scope.vm.circIdx - 1];
       if ($scope.vm.circular) {
+        if ($scope.vm.pageIdx < 1) {
+          $scope.vm.pageIdx = 1;
+          return;
+        }
+
         $scope.vm.pageCount = $scope.vm.circular.Pages.length;
         $scope.vm.page = $scope.vm.circular.Pages[$scope.vm.pageIdx - 1];
         if (!$scope.vm.page.sorted) {
