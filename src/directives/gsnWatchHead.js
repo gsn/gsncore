@@ -138,6 +138,31 @@
     }
   });
 
+
+  // keywords
+  ngModifyElementDirective({
+    name: 'gsnMetaImage',
+    selector: 'meta[name="image"]',
+    get: function(e) {
+      return e.attr('content');
+    },
+    set: function(e, v) {
+      return e.attr('content', v);
+    }
+  });
+
+  // keywords
+  ngModifyElementDirective({
+    name: 'gsnMetaName',
+    selector: 'meta[name="name"]',
+    get: function(e) {
+      return e.attr('content');
+    },
+    set: function(e, v) {
+      return e.attr('content', v);
+    }
+  });
+
   // google site verification
   ngModifyElementDirective({
     name: 'gsnMetaGoogleSiteVerification',

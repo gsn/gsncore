@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.8.33
+ * version 1.8.38
  * gsncore repository
- * Build date: Wed Jul 27 2016 17:24:11 GMT-0500 (CDT)
+ * Build date: Mon Aug 08 2016 16:43:56 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -2944,18 +2944,18 @@
   function gsnList($rootScope, $http, gsnApi, $q, $sessionStorage) {
 
     var betterStorage = $sessionStorage;
-    
+
     // just a shopping list object
     function myShoppingList(shoppingListId, shoppingList) {
       var returnObj = { ShoppingListId: shoppingListId };
       var $mySavedData = { list: shoppingList, items: {}, hasLoaded: false, countCache: 0, itemIdentity: 1 };
-      
+
       returnObj.getItemKey = function (item) {
         var itemKey = item.ItemTypeId;
         if (item.ItemTypeId == 7 || item.AdCode) {
           itemKey = item.AdCode + gsnApi.isNull(item.BrandName, '') + gsnApi.isNull(item.Description, '');
         }
-        
+
         return itemKey + '_' + item.ItemId;
       };
 
@@ -2963,7 +2963,7 @@
       function processServerItem(serverItem, localItem) {
         if (serverItem) {
           var itemKey = returnObj.getItemKey(localItem);
-          
+
           // set new server item order
           serverItem.Order = localItem.Order;
 
@@ -3003,7 +3003,8 @@
           itemToPost['TotalDownloadsAllowed'] = undefined;
           itemToPost['Varieties'] = undefined;
           itemToPost['PageNumber'] = undefined;
-          itemToPost['rect'] = null;
+          itemToPost['rect'] = undefined;
+          itemToPost['LinkedItem'] = undefined;
 
           $rootScope.$broadcast('gsnevent:shoppinglistitem-updating', returnObj, existingItem, $mySavedData);
 
@@ -3016,7 +3017,7 @@
               if (response.Id) {
                 processServerItem(response, existingItem);
               }
-              
+
               $rootScope.$broadcast('gsnevent:shoppinglist-changed', returnObj);
               saveListToSession();
             }).error(function () {
@@ -3043,7 +3044,7 @@
           // this is to help with getItemKey?
           item.ItemId = ($mySavedData.itemIdentity++);
         }
-        
+
         $mySavedData.countCache = 0;
         var existingItem = $mySavedData.items[returnObj.getItemKey(item)];
 
@@ -3170,7 +3171,7 @@
           itemTypeId = itemId.ItemTypeId;
           itemId = itemId.ItemId;
         }
-        
+
         var myItemKey = returnObj.getItemKey({ ItemId: itemId, ItemTypeId: gsnApi.isNull(itemTypeId, 8), AdCode: adCode, BrandName: brandName, Description: myDescription });
         return $mySavedData.items[myItemKey];
       };
@@ -3201,7 +3202,7 @@
       // get count of items
       returnObj.getCount = function () {
         if ($mySavedData.countCache > 0) return $mySavedData.countCache;
-        
+
         var count = 0;
         var items = $mySavedData.items;
         var isValid = true;
@@ -3215,7 +3216,7 @@
             count += gsnApi.isNaN(parseInt(item.Quantity), 0);
           }
         });
-        
+
         if (!isValid){
           $mySavedData.items = {};
           $mySavedData.hasLoaded = false;
@@ -3243,7 +3244,7 @@
 
       // cause shopping list delete
       returnObj.deleteList = function () {
-        // call DeleteShoppingList          
+        // call DeleteShoppingList
 
         $mySavedData.countCache = 0;
         gsnApi.getAccessToken().then(function () {
@@ -3252,7 +3253,7 @@
           var hPayload = gsnApi.getApiHeaders();
           hPayload.shopping_list_id = returnObj.ShoppingListId;
           $http.post(url, {}, { headers: hPayload }).success(function (response) {
-            // do nothing                      
+            // do nothing
             $rootScope.$broadcast('gsnevent:shoppinglist-deleted', returnObj);
             saveListToSession();
           });
@@ -3385,7 +3386,7 @@
 
         var deferred = $q.defer();
         returnObj.deferred = deferred;
-        
+
         if (returnObj.ShoppingListId > 0) {
           if ($mySavedData.hasLoaded) {
             $rootScope.$broadcast('gsnevent:shoppinglist-loaded', returnObj, $mySavedData.items);
@@ -3395,7 +3396,7 @@
 
             $mySavedData.items = {};
             $mySavedData.countCache = 0;
-            
+
             gsnApi.getAccessToken().then(function () {
               // call GetShoppingList(int shoppinglistid, int profileid)
               var url = gsnApi.getShoppingListApiUrl() + '/ItemsBy/' + returnObj.ShoppingListId + '?nocache=' + (new Date()).getTime();
@@ -3420,13 +3421,14 @@
       };
 
       loadListFromSession();
-      
+
       return returnObj;
     }
 
     return myShoppingList;
   }
 })(angular);
+
 // collection of misc service and factory
 (function (angular, undefined) {
   'use strict';
@@ -5969,7 +5971,7 @@
   function myController($scope, $timeout, gsnStore, $rootScope, $location, gsnProfile, gsnApi, $analytics, $filter) {
     $scope.activate = activate;
 
-    $scope.pageId = 99; // it's always all items for desktop     
+    $scope.pageId = 99; // it's always all items for desktop
     $scope.loadAll = $scope.loadAll || false;
     $scope.itemsPerPage = $scope.itemsPerPage || 10;
     $scope.sortBy = $scope.sortBy || 'CategoryName';
@@ -6144,7 +6146,7 @@
       }
     }, 5000);
 
-    //#region Internal Methods   
+    //#region Internal Methods
     function sortMe(a, b) {
       if (a.rect.x <= b.rect.x) return a.rect.y - b.rect.y;
       return a.rect.x - b.rect.x;
@@ -6157,6 +6159,11 @@
 
       $scope.vm.circular = $scope.vm.digitalCirc.Circulars[$scope.vm.circIdx - 1];
       if ($scope.vm.circular) {
+        if ($scope.vm.pageIdx < 1) {
+          $scope.vm.pageIdx = 1;
+          return;
+        }
+
         $scope.vm.pageCount = $scope.vm.circular.Pages.length;
         $scope.vm.page = $scope.vm.circular.Pages[$scope.vm.pageIdx - 1];
         if (!$scope.vm.page.sorted) {
@@ -6751,6 +6758,48 @@
     }
   }]);
 })(angular);
+(function (angular, undefined) {
+  'use strict';
+  var myModule = angular.module('gsn.core');
+
+  myModule.directive('gsnAddHead', ['$window', '$timeout', 'gsnApi', function ($window, $timeout, gsnApi) {
+    // Usage:   Add element to head
+    //
+    // Creates: 2014-01-06
+    //
+    /* <div gsn-add-head="meta" data-attributes="{'content': ''}"></div>
+    */
+    var directive = {
+      link: link,
+      restrict: 'A',
+      scope: true
+    };
+    return directive;
+
+    function link(scope, element, attrs) {
+      var elId = 'dynamic-' + (new Date().getTime());
+      function activate() {
+        var el = angular.element('<' + attrs.ngAddHead + '>');
+        if (options) {
+          var myAttrs = scope.$eval(attrs.attributes);
+          el.id = elId;
+          angular.forEach(myAttrs, function (v, k) {
+            el.attr(k, v);
+          });
+        }
+
+        angular.element('head')[0].appendChild(el[0]);
+
+        scope.$on('$destroy', function () {
+          angular.element('#' + elId).remove();
+        });
+      }
+
+      activate();
+    }
+  }]);
+})(angular);
+
 (function (angular, undefined) {
   'use strict';
   var myModule = angular.module('gsn.core');
@@ -8207,6 +8256,7 @@
                 // since the server does not return a product code, we get it from local coupon index
                 var coupon = gsnStore.getCoupon(item.ItemId, item.ItemTypeId);
                 if (coupon) {
+                  item.LinkedItem = coupon;
                   item.ProductCode = coupon.ProductCode;
                   item.StartDate = coupon.StartDate;
                   item.EndDate = coupon.EndDate;
@@ -8237,8 +8287,9 @@
                   $scope.manufacturerCoupons.push(item);
                 }
               } else {
-                // determine if circular item is a c oupon
+                // determine if circular item is a coupon
                 var circCoupon = gsnStore.getItem(item.ItemId);
+                item.LinkedItem = circCoupon || {};
                 if (circCoupon) {
                   if (circCoupon.CouponImageUrl) {
                     item.CouponImageUrl = circCoupon.CouponImageUrl;
@@ -9205,6 +9256,31 @@
     }
   });
 
+
+  // keywords
+  ngModifyElementDirective({
+    name: 'gsnMetaImage',
+    selector: 'meta[name="image"]',
+    get: function(e) {
+      return e.attr('content');
+    },
+    set: function(e, v) {
+      return e.attr('content', v);
+    }
+  });
+
+  // keywords
+  ngModifyElementDirective({
+    name: 'gsnMetaName',
+    selector: 'meta[name="name"]',
+    get: function(e) {
+      return e.attr('content');
+    },
+    set: function(e, v) {
+      return e.attr('content', v);
+    }
+  });
+
   // google site verification
   ngModifyElementDirective({
     name: 'gsnMetaGoogleSiteVerification',
@@ -9283,44 +9359,6 @@
       return e.attr('content', v);
     }
   });
-})(angular);
-
-(function(angular, undefined) {
-  'use strict';
-  var myModule = angular.module('gsn.core');
-
-  myModule.directive('ngGiveHead', [function() {
-    // Usage: ability to add to head element.  Becareful, since only one element is valid, this should only be use in layout html.
-    //
-    // Creates: 2013-12-12 TomN
-    //
-    var directive = {
-      restrict: 'EA',
-      link: link
-    };
-    return directive;
-
-    function link(scope, element, attrs) {
-      // attempt to add element to head
-      var el = angular.element('<' + attrs.ngGiveHead + '>');
-      if (attrs.attributes) {
-        var myAttrs = scope.$eval(attrs.attributes);
-        angular.forEach(myAttrs, function(v, k) {
-          el.attr(k, v);
-        });
-      }
-
-      var pNode = angular.element('head')[0];
-      pNode.insertBefore(el[0], angular.element('title')[0]);
-
-      // When we go out of scope restore the original value.
-      scope.$on('$destroy', function() {
-        if (attrs.remove) {
-          pnode.removeChild(el[0]);
-        }
-      });
-    }
-  }]);
 })(angular);
 
 (function (angular, undefined) {
