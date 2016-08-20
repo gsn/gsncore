@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.8.38
+ * version 1.8.39
  * gsncore repository
- * Build date: Mon Aug 08 2016 16:43:56 GMT-0500 (CDT)
+ * Build date: Fri Aug 19 2016 22:27:37 GMT-0500 (Central Daylight Time)
  */
 ;(function() {
   'use strict';
@@ -552,10 +552,8 @@
 
     $sceDelegateProvider.resourceUrlWhitelist(gsn.config.SceWhiteList || [
         'self',
-        'http://*.gsn.io/**',
-        'http://*.*.gsn.io/**',
-        'http://*.*.*.gsn.io/**',
         'http://*.gsn2.com/**',
+        'http://*.*.gsn2.com/**',
         'https://*.gsn2.com/**',
         'http://*.gsngrocers.com/**',
         'https://*.gsngrocers.com/**',
@@ -5558,7 +5556,7 @@
 
         circularMaster.items.push(item);
         item.ImageUrl = item.ImageUrl.replace('http://', '//');
-        item.SmallImageUrl = item.ImageUrl.replace('upload.gsngrocers.com/', 'upload.gsngrocers.com/rs/120,fit/');
+        item.SmallImageUrl = item.ImageUrl.replace('upload.gsngrocers.com/', 'cdn2.gsngrocers.com/rs/120,fit/up/');
         item.Quantity = item.Quantity || 1;
         items.push(item);
       });
@@ -6701,6 +6699,48 @@
 
 })(angular);
 
+(function (angular, undefined) {
+  'use strict';
+  var myModule = angular.module('gsn.core');
+
+  myModule.directive('gsnAddHead', ['$window', '$timeout', 'gsnApi', function ($window, $timeout, gsnApi) {
+    // Usage:   Add element to head
+    //
+    // Creates: 2014-01-06
+    //
+    /* <div gsn-add-head="meta" data-attributes="{'content': ''}"></div>
+    */
+    var directive = {
+      link: link,
+      restrict: 'A',
+      scope: true
+    };
+    return directive;
+
+    function link(scope, element, attrs) {
+      var elId = 'dynamic-' + (new Date().getTime());
+      function activate() {
+        var el = angular.element('<' + attrs.ngAddHead + '>');
+        if (options) {
+          var myAttrs = scope.$eval(attrs.attributes);
+          el.id = elId;
+          angular.forEach(myAttrs, function (v, k) {
+            el.attr(k, v);
+          });
+        }
+
+        angular.element('head')[0].appendChild(el[0]);
+
+        scope.$on('$destroy', function () {
+          angular.element('#' + elId).remove();
+        });
+      }
+
+      activate();
+    }
+  }]);
+})(angular);
+
 (function(angular, undefined) {
   'use strict';
   var myModule = angular.module('gsn.core');
@@ -6758,48 +6798,6 @@
     }
   }]);
 })(angular);
-(function (angular, undefined) {
-  'use strict';
-  var myModule = angular.module('gsn.core');
-
-  myModule.directive('gsnAddHead', ['$window', '$timeout', 'gsnApi', function ($window, $timeout, gsnApi) {
-    // Usage:   Add element to head
-    //
-    // Creates: 2014-01-06
-    //
-    /* <div gsn-add-head="meta" data-attributes="{'content': ''}"></div>
-    */
-    var directive = {
-      link: link,
-      restrict: 'A',
-      scope: true
-    };
-    return directive;
-
-    function link(scope, element, attrs) {
-      var elId = 'dynamic-' + (new Date().getTime());
-      function activate() {
-        var el = angular.element('<' + attrs.ngAddHead + '>');
-        if (options) {
-          var myAttrs = scope.$eval(attrs.attributes);
-          el.id = elId;
-          angular.forEach(myAttrs, function (v, k) {
-            el.attr(k, v);
-          });
-        }
-
-        angular.element('head')[0].appendChild(el[0]);
-
-        scope.$on('$destroy', function () {
-          angular.element('#' + elId).remove();
-        });
-      }
-
-      activate();
-    }
-  }]);
-})(angular);
-
 (function (angular, undefined) {
   'use strict';
   var myModule = angular.module('gsn.core');
