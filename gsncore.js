@@ -10115,12 +10115,13 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
 
         // Reload the loyalty card data.
         $scope.loadLoyaltyCardData();
-      };	  
+      };
+	 $scope.loyaltyCard.Member.DateOfBirth = $filter('date')($scope.loyaltyCard.Member.DateOfBirth,"yyyy-MM-dd");
       var household = $scope.loyaltyCard.Household;
-      var address = household.Addresses.Address;
+	  var _address= $scope.primaryLoyaltyAddress;
       household.Addresses = {};
       household.Addresses.Address = [];
-      household.Addresses.Address.push(address);
+      household.Addresses.Address.push(_address);
       household.PromotionVariables.PromotionVariable = [];
       var payload = {
         Household: household,
@@ -10208,11 +10209,15 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     // Get Primary Address
     ////
     function getPrimaryAddress(householdField) {
-
-      if ((gsnApi.isNull(householdField, null) !== null) && (gsnApi.isNull(householdField.Addresses, null) !== null) && (householdField.Addresses.recordCount > 0)) {
-
+      if ((gsnApi.isNull(householdField, null) !== null) && (gsnApi.isNull(householdField.Addresses, null) !== null)) {
         // Assign the primary address
-        $scope.primaryLoyaltyAddress = householdField.Addresses.Address[0];
+		if(householdField.Addresses.Address.length == undefined){
+			$scope.primaryLoyaltyAddress=householdField.Addresses.Address;	
+		}
+		else{
+			$scope.primaryLoyaltyAddress=householdField.Addresses.Address[0];	
+		}
+		
       }
     }
 
