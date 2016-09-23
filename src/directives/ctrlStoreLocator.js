@@ -97,7 +97,7 @@
         window[myCallback] = activate;
 
         // dynamically load google
-        var src = '//maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=geometry';
+        var src = '//maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry';
         var googleMapApiKey = gsnApi.getThemeConfigDescription('google-map-api-key');
         if (googleMapApiKey) {
           src += '&key=' + googleMapApiKey;

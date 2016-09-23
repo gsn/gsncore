@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.8.40
+ * version 1.8.41
  * gsncore repository
- * Build date: Fri Sep 23 2016 09:54:33 GMT-0500 (CDT)
+ * Build date: Fri Sep 23 2016 13:41:44 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -11377,7 +11377,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         window[myCallback] = activate;
 
         // dynamically load google
-        var src = '//maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=geometry';
+        var src = '//maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry';
         var googleMapApiKey = gsnApi.getThemeConfigDescription('google-map-api-key');
         if (googleMapApiKey) {
           src += '&key=' + googleMapApiKey;
@@ -12972,11 +12972,9 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       }, 1500);
     }
 
-     function link(scope, element, attrs) {
+    function link(scope, element, attrs) {
       var text = '',
-          title = attrs.popovertitle || '',
-          price =  attrs.popoverprice || '',
-          pcode=  attrs.popoverproductcode || '';
+          title = attrs.title || '';
 
       // wait until finish interpolation
       $timeout(function () {
@@ -12988,10 +12986,8 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         var myTimeout = undefined;
         var myHidePopup = debounce(hidePopup, 1500);
         element.mousemove(function(e){
-          angular.element('.gsn-popover .gsn-popover-title').html($interpolate('<h4>' + title + '</h4> <div class="SalePrice">'+ (price==''?'':'SALE - $'+price)+ '</div><h5>'+ (pcode==''?'':'UPC - '+pcode)+ '</h5>')(scope).replace('data-ng-src', 'src'));
+          angular.element('.gsn-popover .popover-title').html($interpolate('<div>' + title + '</div>')(scope).replace('data-ng-src', 'src'));
           angular.element('.gsn-popover .popover-content').html($interpolate('<div>' + text + '</div>')(scope).replace('data-ng-src', 'src'));
-
-
 
           // reposition
           var offset = angular.element(this).offset();
