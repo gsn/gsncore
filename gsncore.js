@@ -14356,7 +14356,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
   ngModifyElementDirective({
     name: 'gsnOgImage',
     selector: 'meta[id="default-og-image"]',
-    html: '<meta property="og:image" content="" id="default-og-image"/>',
+    html: '<meta property="og:image:url" content="" id="default-og-image"/>',
     get: function(e) {
       return e.attr('content');
     },
