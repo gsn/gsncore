@@ -10101,6 +10101,13 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
                 $scope.vm.childCategoryById = gsnApi.mapObject(gsnApi.groupBy($scope.vm.childCategories, 'ParentCategoryId'), 'key');
             });
         }
+        
+        $scope.productData = [];
+        $scope.showProductDetails = function(data) {
+
+         $scope.productData =  data;
+            $('#myProductDetailsModal').modal('show');
+        };
 
         $scope.getChildCategories = function(cat) {
             return cat ? $scope.vm.childCategories : [];
