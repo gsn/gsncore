@@ -9982,20 +9982,26 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     ////
     function getPrimaryAddress(householdField) {
       if ((gsnApi.isNull(householdField, null) !== null) && (gsnApi.isNull(householdField.Addresses, null) !== null)) {
-        // Assign the primary address
+         // Assign the primary address
         var _address=null;
-    		if(householdField.Addresses.Address.length == undefined){
-          _address=householdField.Addresses.Address;
-        }
-        else{
-          _address=householdField.Addresses.Address[0]; 
-        }
+        //Initialize the primary address
+        var _primaryaddress={"City":undefined,"CountryCode":undefined,"PostalCode":undefined,"Province":undefined,"StreetAddress":undefined,"StreetAddress2":undefined};
+        //Assign the address in temp value
+        _address= householdField.Addresses.Address.length == undefined ? householdField.Addresses.Address:householdField.Addresses.Address[0];
         if(_address!=null){
-    			$scope.primaryLoyaltyAddress=_address;
-          if(_address.StreetAddress.includes('\n')){
-            $scope.primaryLoyaltyAddress.StreetAddress=_address.StreetAddress.split('\n')[0].trim();
-            $scope.primaryLoyaltyAddress.StreetAddress2=_address.StreetAddress.split('\n')[1].trim();
+          //Bind the value from address to primary address object to retain the streetaddress2 property
+          for (var key in _address) {
+              if(_primaryaddress.hasOwnProperty(key)) {
+                _primaryaddress[key] = _address[key];
+              }
           }
+          //Check and Split the street address and assign to respective property
+          if(_address.StreetAddress!='' && _address.StreetAddress.includes('\n')){
+                _primaryaddress.StreetAddress=_address.StreetAddress.split('\n')[0].trim();
+                _primaryaddress.StreetAddress2=_address.StreetAddress.split('\n')[1].trim();
+          }
+          //Assign the value to scope variable
+          $scope.primaryLoyaltyAddress=_primaryaddress;
         }
       }
     }
