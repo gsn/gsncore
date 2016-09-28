@@ -5,8 +5,13 @@ To install
 npm install
 ```
 
-To run
+If you need gulp
 ```
+npm install -g gulp
+```
+
+To build
+```
+gulp bump
 gulp
-gulp test
 ```
