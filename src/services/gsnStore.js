@@ -1,4 +1,4 @@
-﻿(function(angular, undefined) {
+(function(angular, undefined) {
   'use strict';
   var serviceId = 'gsnStore';
   angular.module('gsn.core').service(serviceId, ['$rootScope', '$http', 'gsnApi', '$q', '$timeout', '$location', gsnStore]);
@@ -681,7 +681,7 @@
 
         circularMaster.items.push(item);
         item.ImageUrl = item.ImageUrl.replace('http://', '//');
-        item.SmallImageUrl = item.ImageUrl.replace('upload.gsngrocers.com/', 'upload.gsngrocers.com/rs/120,fit/');
+        item.SmallImageUrl = item.ImageUrl.replace('upload.gsngrocers.com/', 'cdn2.gsngrocers.com/rs/120,fit/up/');
         item.Quantity = item.Quantity || 1;
         items.push(item);
       });

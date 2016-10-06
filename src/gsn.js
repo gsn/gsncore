@@ -546,10 +546,8 @@
 
     $sceDelegateProvider.resourceUrlWhitelist(gsn.config.SceWhiteList || [
         'self',
-        'http://*.gsn.io/**',
-        'http://*.*.gsn.io/**',
-        'http://*.*.*.gsn.io/**',
         'http://*.gsn2.com/**',
+        'http://*.*.gsn2.com/**',
         'https://*.gsn2.com/**',
         'http://*.gsngrocers.com/**',
         'https://*.gsngrocers.com/**',

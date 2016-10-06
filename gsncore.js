@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.8.38
+ * version 1.8.43
  * gsncore repository
- * Build date: Mon Aug 08 2016 16:43:56 GMT-0500 (CDT)
+ * Build date: Wed Sep 28 2016 20:41:25 GMT+0530 (India Standard Time)
  */
 ;(function() {
   'use strict';
@@ -552,10 +552,8 @@
 
     $sceDelegateProvider.resourceUrlWhitelist(gsn.config.SceWhiteList || [
         'self',
-        'http://*.gsn.io/**',
-        'http://*.*.gsn.io/**',
-        'http://*.*.*.gsn.io/**',
         'http://*.gsn2.com/**',
+        'http://*.*.gsn2.com/**',
         'https://*.gsn2.com/**',
         'http://*.gsngrocers.com/**',
         'https://*.gsngrocers.com/**',
@@ -5588,52 +5586,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
   });
 
 })(angular);
-(function (angular, undefined) {
-  'use strict';
-  var serviceId = 'gsnProLogicRewardCard';
-  angular.module('gsn.core').service(serviceId, ['gsnApi', '$http', '$rootScope', '$timeout', gsnProLogicRewardCard]);
-
-  function gsnProLogicRewardCard(gsnApi, $http, $rootScope, $timeout) {
-
-    var returnObj = {};
-
-    returnObj.rewardCard = null;
-    returnObj.isValid = false;
-
-    returnObj.getLoyaltyCard = function (profile, callback) {
-      if (returnObj.rewardCard !== null) {
-        $timeout(function () { callback(returnObj.rewardCard, returnObj.isValid); }, 500);
-      } else if ((profile.ExternalId || '').length < 2) {
-        callback(null, false);
-      } else {
-        var url = gsnApi.getStoreUrl().replace(/store/gi, 'ProLogic') + '/GetCardMember/' + gsnApi.getChainId() + '/' + profile.ExternalId;
-        $http.get(url).success(function(response) {
-          returnObj.rewardCard = response.Response;
-          if (gsnApi.isNull(returnObj.rewardCard, null) !== null) {
-            var gsnLastName = profile.LastName.toUpperCase().replace(/\s+/gi, '');
-            var proLogicLastName = returnObj.rewardCard.Member.LastName.toUpperCase().replace(/\s+/gi, '');
-
-            // The names can differ, but the names must be in the 
-            if ((gsnLastName == proLogicLastName) || (proLogicLastName.indexOf(gsnLastName) >= 0) || (gsnLastName.indexOf(proLogicLastName) >= 0)) {
-              returnObj.isValid = true;
-            }
-          } else {
-            returnObj.rewardCard = null;
-          }
-          callback(returnObj.rewardCard, returnObj.isValid);
-        });
-      }
-    };
-
-    $rootScope.$on('gsnevent:logout', function () {
-      returnObj.rewardCard = null;
-      returnObj.isValid = false;
-    });
-
-    return returnObj;
-  }
-})(angular);
-
 (function(angular, undefined) {
   'use strict';
   var serviceId = 'gsnProfile';
@@ -6422,6 +6374,52 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       return deferred.promise;
     }
     //#endregion
+
+    return returnObj;
+  }
+})(angular);
+
+(function (angular, undefined) {
+  'use strict';
+  var serviceId = 'gsnProLogicRewardCard';
+  angular.module('gsn.core').service(serviceId, ['gsnApi', '$http', '$rootScope', '$timeout', gsnProLogicRewardCard]);
+
+  function gsnProLogicRewardCard(gsnApi, $http, $rootScope, $timeout) {
+
+    var returnObj = {};
+
+    returnObj.rewardCard = null;
+    returnObj.isValid = false;
+
+    returnObj.getLoyaltyCard = function (profile, callback) {
+      if (returnObj.rewardCard !== null) {
+        $timeout(function () { callback(returnObj.rewardCard, returnObj.isValid); }, 500);
+      } else if ((profile.ExternalId || '').length < 2) {
+        callback(null, false);
+      } else {
+        var url = gsnApi.getStoreUrl().replace(/store/gi, 'ProLogic') + '/GetCardMember/' + gsnApi.getChainId() + '/' + profile.ExternalId;
+        $http.get(url).success(function(response) {
+          returnObj.rewardCard = response.Response;
+          if (gsnApi.isNull(returnObj.rewardCard, null) !== null) {
+            var gsnLastName = profile.LastName.toUpperCase().replace(/\s+/gi, '');
+            var proLogicLastName = returnObj.rewardCard.Member.LastName.toUpperCase().replace(/\s+/gi, '');
+
+            // The names can differ, but the names must be in the 
+            if ((gsnLastName == proLogicLastName) || (proLogicLastName.indexOf(gsnLastName) >= 0) || (gsnLastName.indexOf(proLogicLastName) >= 0)) {
+              returnObj.isValid = true;
+            }
+          } else {
+            returnObj.rewardCard = null;
+          }
+          callback(returnObj.rewardCard, returnObj.isValid);
+        });
+      }
+    };
+
+    $rootScope.$on('gsnevent:logout', function () {
+      returnObj.rewardCard = null;
+      returnObj.isValid = false;
+    });
 
     return returnObj;
   }
@@ -7549,7 +7547,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
 
         circularMaster.items.push(item);
         item.ImageUrl = item.ImageUrl.replace('http://', '//');
-        item.SmallImageUrl = item.ImageUrl.replace('upload.gsngrocers.com/', 'upload.gsngrocers.com/rs/120,fit/');
+        item.SmallImageUrl = item.ImageUrl.replace('upload.gsngrocers.com/', 'cdn2.gsngrocers.com/rs/120,fit/up/');
         item.Quantity = item.Quantity || 1;
         items.push(item);
       });
@@ -9605,6 +9603,240 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
   }
 
 })(angular);
+(function(angular, undefined) {
+    'use strict';
+
+    var myDirectiveName = 'ctrlProductByCategory';
+
+    angular.module('gsn.core')
+        .controller(myDirectiveName, ['$scope', 'gsnApi', 'gsnStore', '$filter', '$timeout', '$q', myController])
+        .directive(myDirectiveName, myDirective);
+
+
+    function myDirective() {
+        var directive = {
+            restrict: 'EA',
+            scope: true,
+            controller: myDirectiveName
+        };
+
+        return directive;
+    }
+
+    function myController($scope, gsnApi, gsnStore, $filter, $timeout, $q) {
+        $scope.activate = activate;
+        $scope.loadMore = loadMore;
+        $scope.categories = [];
+        $scope.vm = {
+            noCircular: false,
+            saleItemOnly: false,
+            parentCategories: [],
+            childCategories: [],
+            levelOneCategory: null,
+            levelTwoCategory: null,
+            levelThreeCategory: null,
+            allProductsByCategory: null,
+            filteredProducts: {},
+            showLoading: false,
+            filterBy: '',
+            sortBy: 'BrandName',
+            childCategoryById: {}
+        };
+        $scope.currentPage = 1;
+        $scope.itemsPerPage = 10;
+        $scope.loadAll = $scope.loadAll || true;
+        $scope.allItems = [];
+
+        function activate() {
+            // activate depend on URL
+            var catDefer = ($scope.vm.saleItemOnly) ? gsnStore.getSaleItemCategories : gsnStore.getInventoryCategories;
+            catDefer().then(function(rsp) {
+                var categories = rsp.response;
+                angular.forEach(categories, function(item) {
+                    if (gsnApi.isNull(item.CategoryId, -1) < 0) return;
+                    if (gsnApi.isNull(item.ParentCategoryId, null) === null) {
+                        $scope.vm.parentCategories.push(item);
+                    } else {
+                        $scope.vm.childCategories.push(item);
+                    }
+                });
+
+                gsnApi.sortOn($scope.vm.parentCategories, 'CategoryName');
+                gsnApi.sortOn($scope.vm.childCategories, 'CategoryName');
+
+                $scope.vm.childCategoryById = gsnApi.mapObject(gsnApi.groupBy($scope.vm.childCategories, 'ParentCategoryId'), 'key');
+            });
+        }
+
+		$scope.productData = [];
+        $scope.showProductDetails = function(data) {
+         $scope.productData =  data;
+            $('#myProductDetailsModal').modal('show');
+        };
+		
+        $scope.getChildCategories = function(cat) {
+            return cat ? $scope.vm.childCategories : [];
+        };
+
+        $scope.$watch('vm.filterBy', function(newValue, oldValue) {
+            if ($scope.vm.showLoading) return;
+            $timeout(doFilterSort, 500);
+        });
+
+        $scope.$watch('vm.sortBy', function(newValue, oldValue) {
+            if ($scope.vm.showLoading) return;
+            $timeout(doFilterSort, 500);
+        });
+
+        $scope.$watch('vm.levelOneCategory', function(newValue, oldValue) {
+            $scope.vm.levelTwoCategory = null;
+            $scope.vm.levelThreeCategory = null;
+        });
+
+        $scope.$watch('vm.levelTwoCategory', function(newValue, oldValue) {
+            $scope.vm.levelThreeCategory = null;
+            if (newValue) {
+                var selectedValue = $scope.vm.childCategoryById[newValue.CategoryId];
+                if (gsnApi.isNull(selectedValue, { items: [] }).items.length == 1) {
+                    $scope.vm.levelThreeCategory = selectedValue.items[0];
+                }
+            }
+        });
+
+        $scope.$watch('vm.levelThreeCategory', function(newValue, oldValue) {
+            if (newValue) {
+                $scope.vm.showLoading = true;
+                $scope.vm.filteredProducts = {};
+                getData($scope.vm.levelOneCategory.CategoryId, newValue.CategoryId).then(doFilterSort);
+            }
+        });
+
+        //#region Internal Methods 
+        function loadMore() {
+            var items = $scope.vm.filteredProducts.fitems || [];
+            if (items.length > 0) {
+                var itemsToLoad = $scope.itemsPerPage;
+                if ($scope.loadAll) {
+                    itemsToLoad = items.length;
+                }
+
+                var last = $scope.allItems.length - 1;
+                for (var i = 1; i <= itemsToLoad; i++) {
+                    var item = items[last + i];
+                    if (item) {
+                        $scope.allItems.push(item);
+                    }
+                }
+            }
+        }
+
+        function doFilterSort(data) {
+            $scope.vm.showLoading = false;
+
+            if (data) {
+                $scope.vm.filteredProducts = data;
+            }
+
+            if ($scope.vm.filteredProducts.items) {
+                var result = $filter('filter')($scope.vm.filteredProducts.items, $scope.vm.filterBy || '');
+                $scope.vm.filteredProducts.fitems = $filter('orderBy')(result, $scope.vm.sortBy || 'BrandName');
+                $scope.allItems = [];
+                loadMore();
+            }
+        }
+
+        function getData(departmentId, categoryId) {
+            var deferred = $q.defer();
+            if ($scope.vm.saleItemOnly) {
+                gsnStore.getSaleItems(departmentId, categoryId).then(function(result) {
+                    if (result.success) {
+                        deferred.resolve({ items: result.response });
+                    }
+                });
+            } else {
+                gsnStore.getInventory(departmentId, categoryId).then(function(result) {
+                    if (result.success) {
+                        deferred.resolve({ items: result.response });
+                    }
+                });
+            }
+
+            return deferred.promise;
+        }
+        //#endregion
+
+        activate();
+    }
+
+})(angular);
+
+(function (angular, undefined) {
+  'use strict';
+
+  var myDirectiveName = 'ctrlProductSearch';
+
+  angular.module('gsn.core')
+    .controller(myDirectiveName, ['$scope', 'gsnApi', 'gsnStore', '$filter', '$timeout', '$q', '$location', myController])
+    .directive(myDirectiveName, myDirective);
+
+  function myDirective() {
+    var directive = {
+      restrict: 'EA',
+      scope: true,
+      controller: myDirectiveName
+    };
+
+    return directive;
+  }
+
+  function myController($scope, gsnApi, gsnStore, $filter, $timeout, $q, $location) {
+    $scope.activate = activate;
+    $scope.categories = [];
+    $scope.vm = {
+      searchResult: {},
+      hasAllItems: true
+    };
+    $scope.totalItems = 10;
+    $scope.currentPage = 1;
+    $scope.itemsPerPage = 10;
+    $scope.isSubmitting = true;
+
+    function activate() {
+      gsnStore.searchProducts($location.search().q).then(function (rst) {
+        $scope.isSubmitting = false;
+        if (rst.success) {
+          $scope.vm.searchResult = rst.response;
+          $scope.vm.searchResult.NonSaleItemResultGrouping = gsnApi.groupBy($scope.vm.searchResult.ProductResult, 'DepartmentName');
+          $scope.vm.searchResult.NonSaleItemResult = { items: $scope.vm.searchResult.ProductResult };
+
+          $scope.totalItems = $scope.vm.searchResult.ProductResult.length;
+        }
+      });
+    }
+
+    $scope.selectFilter = function (filterGroup, filterItem) {
+      angular.forEach(filterGroup, function (item) {
+        if (item != filterItem) {
+          item.selected = false;
+        }
+      });
+
+      if (filterItem.selected) {
+        $scope.vm.searchResult.NonSaleItemResult = filterItem;
+      } else {
+        $scope.vm.searchResult.NonSaleItemResult = { items: $scope.vm.searchResult.ProductResult };
+      }
+
+      $scope.vm.hasAllItems = !filterItem.selected;
+    };
+    $scope.activate();
+
+    //#region Internal Methods
+    //#endregion
+  }
+
+})(angular);
+
 (function (angular, undefined) {
   'use strict';
 
@@ -9890,6 +10122,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         // Reload the loyalty card data.
         $scope.loadLoyaltyCardData();
       };	  
+      $scope.loyaltyCard.Member.DateOfBirth = $filter('date')($scope.loyaltyCard.Member.DateOfBirth,"yyyy-MM-dd");
       var household = $scope.loyaltyCard.Household;
       var address = household.Addresses.Address;
       household.Addresses = {};
@@ -9982,11 +10215,28 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     // Get Primary Address
     ////
     function getPrimaryAddress(householdField) {
-
-      if ((gsnApi.isNull(householdField, null) !== null) && (gsnApi.isNull(householdField.Addresses, null) !== null) && (householdField.Addresses.recordCount > 0)) {
-
-        // Assign the primary address
-        $scope.primaryLoyaltyAddress = householdField.Addresses.Address[0];
+      if ((gsnApi.isNull(householdField, null) !== null) && (gsnApi.isNull(householdField.Addresses, null) !== null)) {
+         // Assign the primary address
+        var _address=null;
+        //Initialize the primary address
+        var _primaryaddress={"City":undefined,"CountryCode":undefined,"PostalCode":undefined,"Province":undefined,"StreetAddress":undefined,"StreetAddress2":undefined};
+        //Assign the address in temp value
+        _address= householdField.Addresses.Address.length == undefined ? householdField.Addresses.Address:householdField.Addresses.Address[0];
+        if(_address!=null){
+          //Bind the value from address to primary address object to retain the streetaddress2 property
+          for (var key in _address) {
+              if(_primaryaddress.hasOwnProperty(key)) {
+                _primaryaddress[key] = _address[key];
+              }
+          }
+          //Check and Split the street address and assign to respective property
+          if(_address.StreetAddress!='' && _address.StreetAddress.includes('\n')){
+                _primaryaddress.StreetAddress=_address.StreetAddress.split('\n')[0].trim();
+                _primaryaddress.StreetAddress2=_address.StreetAddress.split('\n')[1].trim();
+          }
+          //Assign the value to scope variable
+          $scope.primaryLoyaltyAddress=_primaryaddress;
+        }
       }
     }
 
@@ -10026,234 +10276,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     // Call the activate method.
     $scope.activate();
   }
-})(angular);
-
-(function(angular, undefined) {
-    'use strict';
-
-    var myDirectiveName = 'ctrlProductByCategory';
-
-    angular.module('gsn.core')
-        .controller(myDirectiveName, ['$scope', 'gsnApi', 'gsnStore', '$filter', '$timeout', '$q', myController])
-        .directive(myDirectiveName, myDirective);
-
-
-    function myDirective() {
-        var directive = {
-            restrict: 'EA',
-            scope: true,
-            controller: myDirectiveName
-        };
-
-        return directive;
-    }
-
-    function myController($scope, gsnApi, gsnStore, $filter, $timeout, $q) {
-        $scope.activate = activate;
-        $scope.loadMore = loadMore;
-        $scope.categories = [];
-        $scope.vm = {
-            noCircular: false,
-            saleItemOnly: false,
-            parentCategories: [],
-            childCategories: [],
-            levelOneCategory: null,
-            levelTwoCategory: null,
-            levelThreeCategory: null,
-            allProductsByCategory: null,
-            filteredProducts: {},
-            showLoading: false,
-            filterBy: '',
-            sortBy: 'BrandName',
-            childCategoryById: {}
-        };
-        $scope.currentPage = 1;
-        $scope.itemsPerPage = 10;
-        $scope.loadAll = $scope.loadAll || true;
-        $scope.allItems = [];
-
-        function activate() {
-            // activate depend on URL
-            var catDefer = ($scope.vm.saleItemOnly) ? gsnStore.getSaleItemCategories : gsnStore.getInventoryCategories;
-            catDefer().then(function(rsp) {
-                var categories = rsp.response;
-                angular.forEach(categories, function(item) {
-                    if (gsnApi.isNull(item.CategoryId, -1) < 0) return;
-                    if (gsnApi.isNull(item.ParentCategoryId, null) === null) {
-                        $scope.vm.parentCategories.push(item);
-                    } else {
-                        $scope.vm.childCategories.push(item);
-                    }
-                });
-
-                gsnApi.sortOn($scope.vm.parentCategories, 'CategoryName');
-                gsnApi.sortOn($scope.vm.childCategories, 'CategoryName');
-
-                $scope.vm.childCategoryById = gsnApi.mapObject(gsnApi.groupBy($scope.vm.childCategories, 'ParentCategoryId'), 'key');
-            });
-        }
-
-        $scope.getChildCategories = function(cat) {
-            return cat ? $scope.vm.childCategories : [];
-        };
-
-        $scope.$watch('vm.filterBy', function(newValue, oldValue) {
-            if ($scope.vm.showLoading) return;
-            $timeout(doFilterSort, 500);
-        });
-
-        $scope.$watch('vm.sortBy', function(newValue, oldValue) {
-            if ($scope.vm.showLoading) return;
-            $timeout(doFilterSort, 500);
-        });
-
-        $scope.$watch('vm.levelOneCategory', function(newValue, oldValue) {
-            $scope.vm.levelTwoCategory = null;
-            $scope.vm.levelThreeCategory = null;
-        });
-
-        $scope.$watch('vm.levelTwoCategory', function(newValue, oldValue) {
-            $scope.vm.levelThreeCategory = null;
-            if (newValue) {
-                var selectedValue = $scope.vm.childCategoryById[newValue.CategoryId];
-                if (gsnApi.isNull(selectedValue, { items: [] }).items.length == 1) {
-                    $scope.vm.levelThreeCategory = selectedValue.items[0];
-                }
-            }
-        });
-
-        $scope.$watch('vm.levelThreeCategory', function(newValue, oldValue) {
-            if (newValue) {
-                $scope.vm.showLoading = true;
-                $scope.vm.filteredProducts = {};
-                getData($scope.vm.levelOneCategory.CategoryId, newValue.CategoryId).then(doFilterSort);
-            }
-        });
-
-        //#region Internal Methods 
-        function loadMore() {
-            var items = $scope.vm.filteredProducts.fitems || [];
-            if (items.length > 0) {
-                var itemsToLoad = $scope.itemsPerPage;
-                if ($scope.loadAll) {
-                    itemsToLoad = items.length;
-                }
-
-                var last = $scope.allItems.length - 1;
-                for (var i = 1; i <= itemsToLoad; i++) {
-                    var item = items[last + i];
-                    if (item) {
-                        $scope.allItems.push(item);
-                    }
-                }
-            }
-        }
-
-        function doFilterSort(data) {
-            $scope.vm.showLoading = false;
-
-            if (data) {
-                $scope.vm.filteredProducts = data;
-            }
-
-            if ($scope.vm.filteredProducts.items) {
-                var result = $filter('filter')($scope.vm.filteredProducts.items, $scope.vm.filterBy || '');
-                $scope.vm.filteredProducts.fitems = $filter('orderBy')(result, $scope.vm.sortBy || 'BrandName');
-                $scope.allItems = [];
-                loadMore();
-            }
-        }
-
-        function getData(departmentId, categoryId) {
-            var deferred = $q.defer();
-            if ($scope.vm.saleItemOnly) {
-                gsnStore.getSaleItems(departmentId, categoryId).then(function(result) {
-                    if (result.success) {
-                        deferred.resolve({ items: result.response });
-                    }
-                });
-            } else {
-                gsnStore.getInventory(departmentId, categoryId).then(function(result) {
-                    if (result.success) {
-                        deferred.resolve({ items: result.response });
-                    }
-                });
-            }
-
-            return deferred.promise;
-        }
-        //#endregion
-
-        activate();
-    }
-
-})(angular);
-
-(function (angular, undefined) {
-  'use strict';
-
-  var myDirectiveName = 'ctrlProductSearch';
-
-  angular.module('gsn.core')
-    .controller(myDirectiveName, ['$scope', 'gsnApi', 'gsnStore', '$filter', '$timeout', '$q', '$location', myController])
-    .directive(myDirectiveName, myDirective);
-
-  function myDirective() {
-    var directive = {
-      restrict: 'EA',
-      scope: true,
-      controller: myDirectiveName
-    };
-
-    return directive;
-  }
-
-  function myController($scope, gsnApi, gsnStore, $filter, $timeout, $q, $location) {
-    $scope.activate = activate;
-    $scope.categories = [];
-    $scope.vm = {
-      searchResult: {},
-      hasAllItems: true
-    };
-    $scope.totalItems = 10;
-    $scope.currentPage = 1;
-    $scope.itemsPerPage = 10;
-    $scope.isSubmitting = true;
-
-    function activate() {
-      gsnStore.searchProducts($location.search().q).then(function (rst) {
-        $scope.isSubmitting = false;
-        if (rst.success) {
-          $scope.vm.searchResult = rst.response;
-          $scope.vm.searchResult.NonSaleItemResultGrouping = gsnApi.groupBy($scope.vm.searchResult.ProductResult, 'DepartmentName');
-          $scope.vm.searchResult.NonSaleItemResult = { items: $scope.vm.searchResult.ProductResult };
-
-          $scope.totalItems = $scope.vm.searchResult.ProductResult.length;
-        }
-      });
-    }
-
-    $scope.selectFilter = function (filterGroup, filterItem) {
-      angular.forEach(filterGroup, function (item) {
-        if (item != filterItem) {
-          item.selected = false;
-        }
-      });
-
-      if (filterItem.selected) {
-        $scope.vm.searchResult.NonSaleItemResult = filterItem;
-      } else {
-        $scope.vm.searchResult.NonSaleItemResult = { items: $scope.vm.searchResult.ProductResult };
-      }
-
-      $scope.vm.hasAllItems = !filterItem.selected;
-    };
-    $scope.activate();
-
-    //#region Internal Methods
-    //#endregion
-  }
-
 })(angular);
 
 (function (angular, undefined) {
@@ -11379,7 +11401,12 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         window[myCallback] = activate;
 
         // dynamically load google
-        var src = '//maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=geometry&&callback=' + myCallback;
+        var src = '//maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry';
+        var googleMapApiKey = gsnApi.getThemeConfigDescription('google-map-api-key');
+        if (googleMapApiKey) {
+          src += '&key=' + googleMapApiKey;
+        }
+        src += '&callback=' + myCallback;
         gsnApi.loadScripts(src, activate);
         return;
       }
@@ -11727,6 +11754,48 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
 
 })(angular);
 
+(function (angular, undefined) {
+  'use strict';
+  var myModule = angular.module('gsn.core');
+
+  myModule.directive('gsnAddHead', ['$window', '$timeout', 'gsnApi', function ($window, $timeout, gsnApi) {
+    // Usage:   Add element to head
+    //
+    // Creates: 2014-01-06
+    //
+    /* <div gsn-add-head="meta" data-attributes="{'content': ''}"></div>
+    */
+    var directive = {
+      link: link,
+      restrict: 'A',
+      scope: true
+    };
+    return directive;
+
+    function link(scope, element, attrs) {
+      var elId = 'dynamic-' + (new Date().getTime());
+      function activate() {
+        var el = angular.element('<' + attrs.ngAddHead + '>');
+        if (options) {
+          var myAttrs = scope.$eval(attrs.attributes);
+          el.id = elId;
+          angular.forEach(myAttrs, function (v, k) {
+            el.attr(k, v);
+          });
+        }
+
+        angular.element('head')[0].appendChild(el[0]);
+
+        scope.$on('$destroy', function () {
+          angular.element('#' + elId).remove();
+        });
+      }
+
+      activate();
+    }
+  }]);
+})(angular);
+
 (function(angular, undefined) {
   'use strict';
   var myModule = angular.module('gsn.core');
@@ -11784,48 +11853,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     }
   }]);
 })(angular);
-(function (angular, undefined) {
-  'use strict';
-  var myModule = angular.module('gsn.core');
-
-  myModule.directive('gsnAddHead', ['$window', '$timeout', 'gsnApi', function ($window, $timeout, gsnApi) {
-    // Usage:   Add element to head
-    //
-    // Creates: 2014-01-06
-    //
-    /* <div gsn-add-head="meta" data-attributes="{'content': ''}"></div>
-    */
-    var directive = {
-      link: link,
-      restrict: 'A',
-      scope: true
-    };
-    return directive;
-
-    function link(scope, element, attrs) {
-      var elId = 'dynamic-' + (new Date().getTime());
-      function activate() {
-        var el = angular.element('<' + attrs.ngAddHead + '>');
-        if (options) {
-          var myAttrs = scope.$eval(attrs.attributes);
-          el.id = elId;
-          angular.forEach(myAttrs, function (v, k) {
-            el.attr(k, v);
-          });
-        }
-
-        angular.element('head')[0].appendChild(el[0]);
-
-        scope.$on('$destroy', function () {
-          angular.element('#' + elId).remove();
-        });
-      }
-
-      activate();
-    }
-  }]);
-})(angular);
-
 (function (angular, undefined) {
   'use strict';
   var myModule = angular.module('gsn.core');
@@ -12593,9 +12620,11 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         }
       }
 
-      scope.closeModal = function() {
+      scope.closeModal = function(shouldReload) {
 	    if(timeoutOfOpen != null)
-		  $timeout.cancel(timeoutOfOpen);
+		    $timeout.cancel(timeoutOfOpen);
+		if(shouldReload!=undefined && shouldReload)
+	       window.top.location.reload();
         return gmodal.hide();
       };
 
@@ -13032,6 +13061,21 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
   }]);
 })(angular);
 
+(function (angular, undefined) {
+  'use strict';
+  var myModule = angular.module('gsn.core');
+
+ myModule.directive('gsnPopoverDialog', ['gsnApi', '$localStorage', '$compile', function(gsnApi, $localStorage, $compile) {
+  return  {
+    restrict : 'EA',
+    template:'<div id="myProductDetailsModal" class="modal fade" role="dialog"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal">&times;</button><h4 class="modal-title">{{productData.Description}}</h4> </div><div class="modal-body"><div class="row" style="border-top:0;" ><div class="col-md-6"><img ng-show="productData.ImageUrl" data-ng-src="{{productData.ImageUrl}}" alt="[Product Image]" style="max-width: 200px; max-height: 200px;min-width: 200px; min-height: 200px"/></div><div class="col-md-6"><div class="row" style="border-top:0;"><div class="col-md-6 align-left"><label>UPC:</label></div><div class="col-md-6 align-left"><label>{{productData.UPC11}}</label></div></div><div class="row" style="border-top:0;"><div class="col-md-6 align-left"><label>Size:</label></div><div class="col-md-6 align-left"><label>{{productData.ItemExtendedSize}}</label></div></div><div class="row" style="border-top:0;"><div class="col-md-6 align-left"><label>SalePrice:</label></div><div class="col-md-6 align-left"><label ng-show="productData.SalePrice">${{productData.SalePrice.toFixed(2)}}</label></div></div><div class="row" style="border-top:0;"><div class="col-md-6 align-left"><label>Brand:</label></div><div class="col-md-6 align-left"><label>{{productData.BrandName}}</label></div></div></div></div></div><div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">Close</button></div></div></div></div>',
+             
+    link:function(scope,element,attrs) {
+    }
+  }
+  }]);
+
+})(angular);
 (function (angular, undefined) {
   'use strict';
   var myModule = angular.module('gsn.core');

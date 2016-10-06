@@ -63,6 +63,12 @@
             });
         }
 
+		$scope.productData = [];
+        $scope.showProductDetails = function(data) {
+         $scope.productData =  data;
+            $('#myProductDetailsModal').modal('show');
+        };
+		
         $scope.getChildCategories = function(cat) {
             return cat ? $scope.vm.childCategories : [];
         };

@@ -1,4 +1,4 @@
-﻿(function(angular, undefined) {
+(function(angular, undefined) {
   'use strict';
 
   var myDirectiveName = 'ctrlStoreLocator';
@@ -97,7 +97,12 @@
         window[myCallback] = activate;
 
         // dynamically load google
-        var src = '//maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=geometry&&callback=' + myCallback;
+        var src = '//maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry';
+        var googleMapApiKey = gsnApi.getThemeConfigDescription('google-map-api-key');
+        if (googleMapApiKey) {
+          src += '&key=' + googleMapApiKey;
+        }
+        src += '&callback=' + myCallback;
         gsnApi.loadScripts(src, activate);
         return;
       }

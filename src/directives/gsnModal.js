@@ -43,9 +43,11 @@
         }
       }
 
-      scope.closeModal = function() {
+      scope.closeModal = function(shouldReload) {
 	    if(timeoutOfOpen != null)
-		  $timeout.cancel(timeoutOfOpen);
+		    $timeout.cancel(timeoutOfOpen);
+		if(shouldReload!=undefined && shouldReload)
+	       window.top.location.reload();
         return gmodal.hide();
       };
 
