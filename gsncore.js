@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.8.43
+ * version 1.8.45
  * gsncore repository
- * Build date: Tue Oct 18 2016 15:42:15 GMT-0500 (CDT)
+ * Build date: Tue Oct 18 2016 17:29:59 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -11833,10 +11833,11 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     function link(scope, element, attrs) {
       var elId = 'dynamic-' + (new Date().getTime());
       function activate() {
-        var el = angular.element('<' + attrs.ngAddHead + '>');
+        var options = attrs.attributes;
+        var el = angular.element('<' + attrs.gsnAddHead + '>');
         if (options) {
-          var myAttrs = scope.$eval(attrs.attributes);
-          el.id = elId;
+          var myAttrs = scope.$eval(options);
+          el.attr('id', elId);
           angular.forEach(myAttrs, function (v, k) {
             el.attr(k, v);
           });
