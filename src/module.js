@@ -115,6 +115,7 @@
       if (gsn.config.useProxy) {
         url = url.replace('clientapi.gsn2.com/', '/').replace('https://', '').replace('http://', '');
         url = url.replace('clientapix.gsn2.com/', '/').replace('/api/v1', '/proxy');
+        url = url.replace(/clientapi\.\w+\.trybrick\.com/gi, '/');
         return url;
       }
 
