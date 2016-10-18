@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.8.42
+ * version 1.8.43
  * gsncore repository
- * Build date: Tue Oct 18 2016 15:33:15 GMT-0500 (CDT)
+ * Build date: Tue Oct 18 2016 15:42:15 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -849,7 +849,7 @@
       if (gsn.config.useProxy) {
         url = url.replace('clientapi.gsn2.com/', '/').replace('https://', '').replace('http://', '');
         url = url.replace('clientapix.gsn2.com/', '/').replace('/api/v1', '/proxy');
-        url = url.replace(/clientapi\.\w+\.trybrick\.com/gi, '/');
+        url = url.replace(/clientapi\.\w+\.trybrick\.com/gi, '');
         return url;
       }
 
