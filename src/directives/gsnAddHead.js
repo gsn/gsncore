@@ -19,9 +19,10 @@
     function link(scope, element, attrs) {
       var elId = 'dynamic-' + (new Date().getTime());
       function activate() {
-        var el = angular.element('<' + attrs.ngAddHead + '>');
+        var options = attrs.attributes;
+        var el = angular.element('<' + attrs.gsnAddHead + '>');
         if (options) {
-          var myAttrs = scope.$eval(attrs.attributes);
+          var myAttrs = scope.$eval(options);
           el.id = elId;
           angular.forEach(myAttrs, function (v, k) {
             el.attr(k, v);
