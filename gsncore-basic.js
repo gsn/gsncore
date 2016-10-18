@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.8.44
+ * version 1.8.45
  * gsncore repository
- * Build date: Tue Oct 18 2016 17:26:37 GMT-0500 (CDT)
+ * Build date: Tue Oct 18 2016 17:29:59 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -6782,7 +6782,7 @@
         var el = angular.element('<' + attrs.gsnAddHead + '>');
         if (options) {
           var myAttrs = scope.$eval(options);
-          el.id = elId;
+          el.attr('id', elId);
           angular.forEach(myAttrs, function (v, k) {
             el.attr(k, v);
           });

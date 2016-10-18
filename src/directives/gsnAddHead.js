@@ -23,7 +23,7 @@
         var el = angular.element('<' + attrs.gsnAddHead + '>');
         if (options) {
           var myAttrs = scope.$eval(options);
-          el.id = elId;
+          el.attr('id', elId);
           angular.forEach(myAttrs, function (v, k) {
             el.attr(k, v);
           });
