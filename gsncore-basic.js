@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.8.50
+ * version 1.8.51
  * gsncore repository
- * Build date: Wed Oct 19 2016 14:29:37 GMT-0500 (CDT)
+ * Build date: Wed Oct 19 2016 14:32:23 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -6295,7 +6295,7 @@
     $scope.doSubmit = function () {
       var payload = $scope.vm;
       if ($scope.myContactUsForm.$valid) {
-        if (!payload.hasReceiveEmail) {
+        if (!$scope.hasReceiveEmail) {
           gsnApi.del(payload, 'ReceiveEmail');
         }
 

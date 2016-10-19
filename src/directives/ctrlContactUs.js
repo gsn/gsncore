@@ -79,7 +79,7 @@
     $scope.doSubmit = function () {
       var payload = $scope.vm;
       if ($scope.myContactUsForm.$valid) {
-        if (!payload.hasReceiveEmail) {
+        if (!$scope.hasReceiveEmail) {
           gsnApi.del(payload, 'ReceiveEmail');
         }
 
