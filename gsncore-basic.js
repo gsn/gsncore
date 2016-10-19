@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.8.46
+ * version 1.8.47
  * gsncore repository
- * Build date: Wed Oct 19 2016 13:06:52 GMT-0500 (CDT)
+ * Build date: Wed Oct 19 2016 13:13:58 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -4343,6 +4343,7 @@
         UserName: username,
         Password: gsnApi.isNull(profile.Password, ''),
         ReceiveEmail: gsnApi.isNull(profile.ReceiveEmail, false),
+        ReceivePostalmail: gsnApi.isNull(profile.ReceivePostalmail, false),
         ReceiveSms: gsnApi.isNull(profile.ReceiveSms, true),
         Phone: gsnApi.isNull(profile.Phone, '').replace(/[^0-9]+/gi, ''),
         PrimaryStoreId: gsnApi.isNull(profile.PrimaryStoreId, gsnApi.getSelectedStoreId()),
