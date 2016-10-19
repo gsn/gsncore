@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.8.48
+ * version 1.8.50
  * gsncore repository
- * Build date: Wed Oct 19 2016 13:22:13 GMT-0500 (CDT)
+ * Build date: Wed Oct 19 2016 14:29:37 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -6218,7 +6218,7 @@
   'use strict';
 
   var myDirectiveName = 'ctrlContactUs';
-  
+
   angular.module('gsn.core')
     .controller(myDirectiveName, ['$scope', 'gsnProfile', 'gsnApi', '$timeout', 'gsnStore', '$interpolate', '$http', myController])
     .directive(myDirectiveName, myDirective);
@@ -6232,12 +6232,12 @@
 
     return directive;
   }
-  
+
   function myController($scope, gsnProfile, gsnApi, $timeout, gsnStore, $interpolate, $http) {
 
     $scope.activate = activate;
-    $scope.vm = { PrimaryStoreId: gsnApi.getSelectedStoreId(), ReceiveEmail: true };
-    $scope.masterVm = { PrimaryStoreId: gsnApi.getSelectedStoreId(), ReceiveEmail: true };
+    $scope.vm = { PrimaryStoreId: gsnApi.getSelectedStoreId() };
+    $scope.masterVm = { PrimaryStoreId: gsnApi.getSelectedStoreId() };
 
     $scope.hasSubmitted = false;    // true when user has click the submit button
     $scope.isValidSubmit = true;    // true when result of submit is valid
@@ -6295,6 +6295,10 @@
     $scope.doSubmit = function () {
       var payload = $scope.vm;
       if ($scope.myContactUsForm.$valid) {
+        if (!payload.hasReceiveEmail) {
+          gsnApi.del(payload, 'ReceiveEmail');
+        }
+
         payload.CaptchaChallenge = $scope.captcha.challenge;
         payload.CaptchaResponse = $scope.captcha.response;
         payload.Store = $scope.getStoreDisplayName($scope.storesById[payload.PrimaryStoreId]);
@@ -6364,6 +6368,7 @@
     }
   }
 })(angular);
+
 (function (angular, undefined) {
   'use strict';
 
