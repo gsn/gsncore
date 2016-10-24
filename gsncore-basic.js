@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.8.45
+ * version 1.8.51
  * gsncore repository
- * Build date: Tue Oct 18 2016 17:29:59 GMT-0500 (CDT)
+ * Build date: Wed Oct 19 2016 14:32:23 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -4343,6 +4343,7 @@
         UserName: username,
         Password: gsnApi.isNull(profile.Password, ''),
         ReceiveEmail: gsnApi.isNull(profile.ReceiveEmail, false),
+        ReceivePostalMail: gsnApi.isNull(profile.ReceivePostalMail, false),
         ReceiveSms: gsnApi.isNull(profile.ReceiveSms, true),
         Phone: gsnApi.isNull(profile.Phone, '').replace(/[^0-9]+/gi, ''),
         PrimaryStoreId: gsnApi.isNull(profile.PrimaryStoreId, gsnApi.getSelectedStoreId()),
@@ -6217,7 +6218,7 @@
   'use strict';
 
   var myDirectiveName = 'ctrlContactUs';
-  
+
   angular.module('gsn.core')
     .controller(myDirectiveName, ['$scope', 'gsnProfile', 'gsnApi', '$timeout', 'gsnStore', '$interpolate', '$http', myController])
     .directive(myDirectiveName, myDirective);
@@ -6231,12 +6232,12 @@
 
     return directive;
   }
-  
+
   function myController($scope, gsnProfile, gsnApi, $timeout, gsnStore, $interpolate, $http) {
 
     $scope.activate = activate;
-    $scope.vm = { PrimaryStoreId: gsnApi.getSelectedStoreId(), ReceiveEmail: true };
-    $scope.masterVm = { PrimaryStoreId: gsnApi.getSelectedStoreId(), ReceiveEmail: true };
+    $scope.vm = { PrimaryStoreId: gsnApi.getSelectedStoreId() };
+    $scope.masterVm = { PrimaryStoreId: gsnApi.getSelectedStoreId() };
 
     $scope.hasSubmitted = false;    // true when user has click the submit button
     $scope.isValidSubmit = true;    // true when result of submit is valid
@@ -6294,6 +6295,10 @@
     $scope.doSubmit = function () {
       var payload = $scope.vm;
       if ($scope.myContactUsForm.$valid) {
+        if (!$scope.hasReceiveEmail) {
+          gsnApi.del(payload, 'ReceiveEmail');
+        }
+
         payload.CaptchaChallenge = $scope.captcha.challenge;
         payload.CaptchaResponse = $scope.captcha.response;
         payload.Store = $scope.getStoreDisplayName($scope.storesById[payload.PrimaryStoreId]);
@@ -6363,6 +6368,7 @@
     }
   }
 })(angular);
+
 (function (angular, undefined) {
   'use strict';
 
