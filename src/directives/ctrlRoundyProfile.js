@@ -33,6 +33,68 @@
     $scope.$parent.$parent.$parent.goOutPrompt = $scope.goOutPrompt;
     $scope.$parent.$parent.$parent.goOutPromt = $scope.goOutPrompt;
 
+   $scope.addFlyerItems = function(item, itemId) {
+     var shoppinglists = gsnProfile.getShoppingLists();
+      var tempItems = [{
+            "Id": "",
+            "ShoppingListId": shoppinglists[0].ShoppingListId,
+            "ItemId": itemId,
+            "ItemTypeId": "0",
+            "Quantity": 1,
+            "CategoryId": "",
+            "CategoryName": "",
+            "Description": "",
+            "CreateDate ": "",
+            "ModifyDate": "",
+            "Weight": "",
+            "Comment": "",
+            "IsVisible": "",
+            "IsActive": "",
+            "BrandName": "",
+            "AdCode": "",
+            "IsCoupon": "",
+            "ShelfId": "",
+            "Meta": JSON.stringify(item)
+          }] 
+        var shoppingList = gsnList(shoppinglists[0].ShoppingListId, shoppinglists[0].items)
+        //Calling Shopping List Service
+        shoppingList.addItems(tempItems);
+    };
+
+    $scope.removeItemFromFlyer = function(item, itemId) {
+       var shoppinglists = gsnProfile.getShoppingLists();
+       var shoppingList = gsnList(shoppinglists[0].ShoppingListId, shoppinglists[0].items)
+       var tempItem = {
+            "Id": "",
+            "ShoppingListId": shoppinglists[0].ShoppingListId,
+            "ItemId": itemId,
+            "ItemTypeId": "0",
+            "Quantity": 1,
+            "CategoryId": "",
+            "CategoryName": "",
+            "Description": "",
+            "CreateDate ": "",
+            "ModifyDate": "",
+            "Weight": "",
+            "Comment": "",
+            "IsVisible": "",
+            "IsActive": "",
+            "BrandName": "",
+            "AdCode": "",
+            "IsCoupon": "",
+            "ShelfId": "",
+            "Meta": JSON.stringify(item)
+          }
+          shoppinglists[0].removeItem(tempItem);
+    };
+
+    $scope.removeItemFromFlyer = function(item, itemId) {
+      console.log('Delete called')
+      var arr = [] 
+      arr.push(itemId);
+      gsnRoundyProfile.deleteItems(itemId, arr);
+    };
+
     function activate() {
       if (!$scope.isLoggedIn) return;
       $scope.isLoading = true;
@@ -238,6 +300,8 @@
       $scope.cancel = function() {
         $modalInstance.close();
       };
+
+
     }]);
 
   angular.module('gsn.core').controller('ctrlNotificationWithTimeout', ['$scope', '$modalInstance', '$timeout', 'message', 'background',
