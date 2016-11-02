@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.8.41
+ * version 1.8.51
  * gsncore repository
- * Build date: Fri Sep 23 2016 13:41:44 GMT-0500 (CDT)
+ * Build date: Wed Oct 19 2016 14:32:23 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -849,6 +849,7 @@
       if (gsn.config.useProxy) {
         url = url.replace('clientapi.gsn2.com/', '/').replace('https://', '').replace('http://', '');
         url = url.replace('clientapix.gsn2.com/', '/').replace('/api/v1', '/proxy');
+        url = url.replace(/clientapi\.\w+\.trybrick\.com/gi, '');
         return url;
       }
 
@@ -4342,6 +4343,7 @@
         UserName: username,
         Password: gsnApi.isNull(profile.Password, ''),
         ReceiveEmail: gsnApi.isNull(profile.ReceiveEmail, false),
+        ReceivePostalMail: gsnApi.isNull(profile.ReceivePostalMail, false),
         ReceiveSms: gsnApi.isNull(profile.ReceiveSms, true),
         Phone: gsnApi.isNull(profile.Phone, '').replace(/[^0-9]+/gi, ''),
         PrimaryStoreId: gsnApi.isNull(profile.PrimaryStoreId, gsnApi.getSelectedStoreId()),
@@ -6216,7 +6218,7 @@
   'use strict';
 
   var myDirectiveName = 'ctrlContactUs';
-  
+
   angular.module('gsn.core')
     .controller(myDirectiveName, ['$scope', 'gsnProfile', 'gsnApi', '$timeout', 'gsnStore', '$interpolate', '$http', myController])
     .directive(myDirectiveName, myDirective);
@@ -6230,12 +6232,12 @@
 
     return directive;
   }
-  
+
   function myController($scope, gsnProfile, gsnApi, $timeout, gsnStore, $interpolate, $http) {
 
     $scope.activate = activate;
-    $scope.vm = { PrimaryStoreId: gsnApi.getSelectedStoreId(), ReceiveEmail: true };
-    $scope.masterVm = { PrimaryStoreId: gsnApi.getSelectedStoreId(), ReceiveEmail: true };
+    $scope.vm = { PrimaryStoreId: gsnApi.getSelectedStoreId() };
+    $scope.masterVm = { PrimaryStoreId: gsnApi.getSelectedStoreId() };
 
     $scope.hasSubmitted = false;    // true when user has click the submit button
     $scope.isValidSubmit = true;    // true when result of submit is valid
@@ -6293,6 +6295,10 @@
     $scope.doSubmit = function () {
       var payload = $scope.vm;
       if ($scope.myContactUsForm.$valid) {
+        if (!$scope.hasReceiveEmail) {
+          gsnApi.del(payload, 'ReceiveEmail');
+        }
+
         payload.CaptchaChallenge = $scope.captcha.challenge;
         payload.CaptchaResponse = $scope.captcha.response;
         payload.Store = $scope.getStoreDisplayName($scope.storesById[payload.PrimaryStoreId]);
@@ -6362,6 +6368,7 @@
     }
   }
 })(angular);
+
 (function (angular, undefined) {
   'use strict';
 
@@ -6777,10 +6784,11 @@
     function link(scope, element, attrs) {
       var elId = 'dynamic-' + (new Date().getTime());
       function activate() {
-        var el = angular.element('<' + attrs.ngAddHead + '>');
+        var options = attrs.attributes;
+        var el = angular.element('<' + attrs.gsnAddHead + '>');
         if (options) {
-          var myAttrs = scope.$eval(attrs.attributes);
-          el.id = elId;
+          var myAttrs = scope.$eval(options);
+          el.attr('id', elId);
           angular.forEach(myAttrs, function (v, k) {
             el.attr(k, v);
           });
@@ -7565,9 +7573,11 @@
         }
       }
 
-      scope.closeModal = function() {
+      scope.closeModal = function(shouldReload) {
 	    if(timeoutOfOpen != null)
-		  $timeout.cancel(timeoutOfOpen);
+		    $timeout.cancel(timeoutOfOpen);
+		if(shouldReload!=undefined && shouldReload)
+	       window.top.location.reload();
         return gmodal.hide();
       };
 
@@ -8004,6 +8014,21 @@
   }]);
 })(angular);
 
+(function (angular, undefined) {
+  'use strict';
+  var myModule = angular.module('gsn.core');
+
+ myModule.directive('gsnPopoverDialog', ['gsnApi', '$localStorage', '$compile', function(gsnApi, $localStorage, $compile) {
+  return  {
+    restrict : 'EA',
+    template:'<div id="myProductDetailsModal" class="modal fade" role="dialog"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal">&times;</button><h4 class="modal-title">{{productData.Description}}</h4> </div><div class="modal-body"><div class="row" style="border-top:0;" ><div class="col-md-6"><img ng-show="productData.ImageUrl" data-ng-src="{{productData.ImageUrl}}" alt="[Product Image]" style="max-width: 200px; max-height: 200px;min-width: 200px; min-height: 200px"/></div><div class="col-md-6"><div class="row" style="border-top:0;"><div class="col-md-6 align-left"><label>UPC:</label></div><div class="col-md-6 align-left"><label>{{productData.UPC11}}</label></div></div><div class="row" style="border-top:0;"><div class="col-md-6 align-left"><label>Size:</label></div><div class="col-md-6 align-left"><label>{{productData.ItemExtendedSize}}</label></div></div><div class="row" style="border-top:0;"><div class="col-md-6 align-left"><label>SalePrice:</label></div><div class="col-md-6 align-left"><label ng-show="productData.SalePrice">${{productData.SalePrice.toFixed(2)}}</label></div></div><div class="row" style="border-top:0;"><div class="col-md-6 align-left"><label>Brand:</label></div><div class="col-md-6 align-left"><label>{{productData.BrandName}}</label></div></div></div></div></div><div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">Close</button></div></div></div></div>',
+             
+    link:function(scope,element,attrs) {
+    }
+  }
+  }]);
+
+})(angular);
 (function (angular, undefined) {
   'use strict';
   var myModule = angular.module('gsn.core');
