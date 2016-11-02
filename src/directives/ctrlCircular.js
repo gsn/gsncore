@@ -4,7 +4,7 @@
   var myDirectiveName = 'ctrlCircular';
 
   angular.module('gsn.core')
-    .controller(myDirectiveName, ['$scope', '$timeout', 'gsnStore', '$rootScope', '$location', 'gsnProfile', 'gsnApi', '$analytics', '$filter', myController])
+    .controller(myDirectiveName, ['$scope', '$timeout', 'gsnStore', '$rootScope', '$location', 'gsnProfile', 'gsnList' , 'gsnApi', '$analytics', '$filter', myController])
     .directive(myDirectiveName, myDirective);
 
   function myDirective() {
@@ -17,7 +17,7 @@
     return directive;
   }
 
-  function myController($scope, $timeout, gsnStore, $rootScope, $location, gsnProfile, gsnApi, $analytics, $filter) {
+  function myController($scope, $timeout, gsnStore, $rootScope, $location, gsnProfile,gsnList, gsnApi, $analytics, $filter) {
     $scope.activate = activate;
 
     $scope.pageId = 99; // it's always all items for desktop
