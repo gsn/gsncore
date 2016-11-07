@@ -2,7 +2,7 @@
  * gsncore
  * version 1.8.51
  * gsncore repository
- * Build date: Wed Nov 02 2016 23:14:35 GMT+0530 (India Standard Time)
+ * Build date: Tue Nov 08 2016 02:32:00 GMT+0530 (India Standard Time)
  */
 ;(function() {
   'use strict';
@@ -4922,8 +4922,50 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         }
       }
 
-      returnObj.syncItem = function (itemToSync) {
+      
+ returnObj.syncItem = function (itemToSync) {
         var existingItem = returnObj.getItem(itemToSync.ItemId, itemToSync.ItemTypeId) || itemToSync;
+        if(existingItem.ItemTypeId == 0) {
+                  var metaObject = JSON.parse(existingItem.Meta)
+                  var _tempExistingItem = {
+  
+                        "ImageUrl": metaObject.imageUrl,
+                        "Price": metaObject.priceText,
+                        "PriceString": metaObject.priceText,
+                        "ProductDescription": metaObject.description,
+                        "IsConfirmed": true,
+                        "MaxQuantity": null,
+                        "Quantity": 1,
+                        "IsUnLinked": false,
+                        "SmallImageUrl": metaObject.imageUrl,
+                        "GroupCode": null,
+                        "IsActive": true,
+                        "CustomString": null,
+                        "ManufacturerCouponId": null,
+                        "RecipeSearch": null,
+                        "ManufacturerCouponSavingsAmount": null,
+                        "CouponImageUrl": null,
+                        "LinkedItemCount": 0,
+                        "ShelfId": null,
+                        "BrandId": null,
+                        "Savings": null,
+                        "VariableWeight": null,
+                        "ScoreLevel": null,
+                        "Relevance": 0,
+                        "BrandName": "",
+                        "ItemTypeId": 0,
+                        "Description": metaObject.name,
+                        "CategoryName": metaObject.category,
+                        "ItemId": metaObject.itemId,
+                        "ExtName": metaObject.name,
+                        "ShoppingListId": existingItem.ShoppingListId,
+                        "CategoryId" : 10347, //hard coded
+                        "Meta":JSON.stringify(existingItem.Meta)
+                      }
+
+                      existingItem = _tempExistingItem;
+              }
+
         if (existingItem != itemToSync) {
           existingItem.Quantity = itemToSync.Quantity;
         }
@@ -4931,7 +4973,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         if (parseInt(existingItem.Quantity) > 0) {
           // build new item to make sure posting of only required fields
           var itemToPost = angular.copy(existingItem);
-
+          
           itemToPost['BarcodeImageUrl'] = undefined;
           itemToPost['BottomTagLine'] = undefined;
           itemToPost['Description1'] = undefined;
@@ -4949,21 +4991,52 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
           itemToPost['PageNumber'] = undefined;
           itemToPost['rect'] = undefined;
           itemToPost['LinkedItem'] = undefined;
-
+  
           $rootScope.$broadcast('gsnevent:shoppinglistitem-updating', returnObj, existingItem, $mySavedData);
-
+          
           gsnApi.getAccessToken().then(function () {
 
             var url = gsnApi.getShoppingListApiUrl() + '/UpdateItem/' + returnObj.ShoppingListId;
             var hPayload = gsnApi.getApiHeaders();
             hPayload.shopping_list_id = returnObj.ShoppingListId;
             $http.post(url, itemToPost, { headers: hPayload }).success(function (response) {
+              
+              if(response.ItemTypeId == 0) {
+                  var _response = {
+                            "$id": response.$id,
+                            "Id": response.Id,
+                            "ShoppingListId": response.ShoppingListId,
+                            "ItemId": response.ItemId,
+                            "ItemTypeId": 0,
+                            "Quantity": 1,
+                            "CategoryId": 10347,  //hard coded
+                            "CategoryName": response.CategoryName,
+                            "Description": existingItem.ExtName, // set from existingItem
+                            "CreateDate": response.CreateDate,
+                            "ModifyDate": response.ModifyDate,
+                            "Weight": null,
+                            "Comment": null,
+                            "IsVisible": true,
+                            "IsActive": true,
+                            "BrandName": "",
+                            "AdCode": null,
+                            "IsCoupon": false,
+                            "ShelfId": null,
+                            "Meta": existingItem.Meta
+                          }
+                          response = _response;
+
+
+              }
               if (response.Id) {
                 processServerItem(response, existingItem);
-              }
 
+              }
+              
               $rootScope.$broadcast('gsnevent:shoppinglist-changed', returnObj);
               saveListToSession();
+
+              
             }).error(function () {
               // reset to previous quantity on failure
               if (existingItem.OldQuantity) {
@@ -4976,9 +5049,13 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         } else {
           returnObj.removeItem(existingItem);
         }
-
+        //$rootScope.gsnProfile.addItem(itemToSync);
         saveListToSession();
         $rootScope.$broadcast('gsnevent:shoppinglist-changed', returnObj);
+        
+        // refresh the list manually 
+       $rootScope.gsnProfile.refreshShoppingLists(); // commented this out since the issue will solve once the data is fixed
+        
       };
 
       // add item to list
