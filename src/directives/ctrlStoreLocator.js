@@ -346,8 +346,12 @@
       } else if (gsnApi.isNull($location.search().fromUrl, '').length > 0) {
         $location.url($location.search().fromUrl);
       }
+
+      // set the store number (this is not store id)
+        gsnApi.setStoreNumber(marker.location.StoreNumber)
     };
 
+    
     $scope.$on('gsnevent:store-persisted', function(evt, store) {
       if ($scope.gvm.reloadOnStoreSelection) {
         $scope.goUrl($scope.currentPath, '_reload');
