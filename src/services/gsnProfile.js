@@ -26,6 +26,65 @@
 
     returnObj.getProfileId = gsnApi.getProfileId;
 
+    //To Add the item to the shopping list
+    returnObj.addFlippItem = function(item, itemId) {
+        var temp = {
+            "Id": "",
+            "ShoppingListId": shoppinglists[0].ShoppingListId,
+            "ItemId": itemId,
+            "ItemTypeId": "0",
+            "Quantity": 1,
+            "CategoryId": "",
+            "CategoryName": "",
+            "Description": "",
+            "CreateDate ": "",
+            "ModifyDate": "",
+            "Weight": "",
+            "Comment": "",
+            "IsVisible": "",
+            "IsActive": "",
+            "BrandName": "",
+            "AdCode": "",
+            "IsCoupon": "",
+            "ShelfId": "",
+            "Meta": JSON.stringify(item)
+          };
+
+        //Calling Shopping List Service
+        $timeout(function() {
+          returnObj.addItem(temp);
+        }, 50);
+    };
+
+    //To remove the item from the shopping list
+    returnObj.removeFlippItem = function(item, itemId) {
+       var temp = {
+            "Id": "",
+            "ShoppingListId": shoppinglists[0].ShoppingListId,
+            "ItemId": itemId,
+            "ItemTypeId": "0",
+            "Quantity": 1,
+            "CategoryId": "",
+            "CategoryName": "",
+            "Description": "",
+            "CreateDate ": "",
+            "ModifyDate": "",
+            "Weight": "",
+            "Comment": "",
+            "IsVisible": "",
+            "IsActive": "",
+            "BrandName": "",
+            "AdCode": "",
+            "IsCoupon": "",
+            "ShelfId": "",
+            "Meta": JSON.stringify(item)
+          };
+
+        $timeout(function() {
+          returnObj.removeItem(item);
+        }, 50);
+    };
+
     returnObj.createNewShoppingList = function() {
       /// <summary>Create a new shopping list.</summary>
 
@@ -108,7 +167,7 @@
     returnObj.addItem = function(item) {
       var shoppingList = returnObj.getShoppingList();
       if (shoppingList) {
-        if (gsnApi.isNull(item.ItemTypeId, 0) <= 0) {
+        if (gsnApi.isNull(item.ItemTypeId, 0) < 0) {
           item.ItemTypeId = 6; // Misc or Own Item type
         }
 
