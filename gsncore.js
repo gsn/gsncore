@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.8.52
+ * version 1.8.53
  * gsncore repository
- * Build date: Tue Nov 08 2016 11:59:01 GMT-0600 (CST)
+ * Build date: Tue Nov 08 2016 12:05:45 GMT-0600 (CST)
  */
 ;(function() {
   'use strict';
@@ -5753,7 +5753,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     returnObj.addFlippItem = function(item, itemId) {
         var temp = {
             "Id": "",
-            "ShoppingListId": shoppinglists[0].ShoppingListId,
             "ItemId": itemId,
             "ItemTypeId": "0",
             "Quantity": 1,
@@ -5783,7 +5782,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     returnObj.removeFlippItem = function(item, itemId) {
        var temp = {
             "Id": "",
-            "ShoppingListId": shoppinglists[0].ShoppingListId,
             "ItemId": itemId,
             "ItemTypeId": "0",
             "Quantity": 1,
