@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.8.51
+ * version 1.8.56
  * gsncore repository
- * Build date: Wed Nov 02 2016 23:02:56 GMT+0530 (India Standard Time)
+ * Build date: Tue Nov 08 2016 14:55:09 GMT-0600 (CST)
  */
 ;(function() {
   'use strict';
@@ -1027,8 +1027,8 @@
         var shoppingList = $rootScope.gsnProfile.getShoppingList();
         if (shoppingList) {
           var result = shoppingList.getItem(item);
-		  if(result)
-			result.NewQuantity = result.Quantity || 1;
+      if(result)
+      result.NewQuantity = result.Quantity || 1;
           return result || item;
         }
       }
@@ -3752,7 +3752,7 @@
     returnObj.addItem = function(item) {
       var shoppingList = returnObj.getShoppingList();
       if (shoppingList) {
-        if (gsnApi.isNull(item.ItemTypeId, 0) <= 0) {
+        if (gsnApi.isNull(item.ItemTypeId, -1) < 0) {
           item.ItemTypeId = 6; // Misc or Own Item type
         }
 
@@ -6040,92 +6040,7 @@
         $scope.vm.pageIdx = myPageIdx;
       }
     }
-    //To Add the item to the shopping list
-    $scope.addFlyerItems = function(item, itemId) {
-      
-       var shoppinglists = gsnProfile.getShoppingLists();
-       
-     var tempItemObject =  [{
-            "StartDate": null,
-            "EndDate": null,
-            "ItemTypeId": 0,
-            "ItemId": itemId,
-            "RecipeId": null,
-            "FoodId": null,
-            "BrandName": null,
-            "Description": null,
-            "Description1": null,
-            "Description2": null,
-            "Description3": null,
-            "Description4": null,
-            "Comment": null,
-            "ShoppingListItemId": itemId,
-            "CategoryId": null,
-            "Quantity": null,
-            "Order": null,
-            "ImageUrl": null,
-            "TopTagLine": null,
-            "SmallImageUrl": null,
-            "BarcodeImageUrl": null,
-            "ItemRaw": null,
-            "IsCoupon": null,
-            "Meta": ""
-           }]
-      var temp = [{
-            "Id": "",
-            "ShoppingListId": shoppinglists[0].ShoppingListId,
-            "ItemId": itemId,
-            "ItemTypeId": "0",
-            "Quantity": 1,
-            "CategoryId": "",
-            "CategoryName": "",
-            "Description": "",
-            "CreateDate ": "",
-            "ModifyDate": "",
-            "Weight": "",
-            "Comment": "",
-            "IsVisible": "",
-            "IsActive": "",
-            "BrandName": "",
-            "AdCode": "",
-            "IsCoupon": "",
-            "ShelfId": "",
-            "Meta": JSON.stringify(item)
-          }] 
-        //tempItemObject.ShoppingListItemId = shoppinglists[0].ShoppingListId;
-        //Calling Shopping ListTwo Service
-       // gsnRoundyProfile.saveItems(shoppinglists[0].ShoppingListId, tempItemObject);
-        var shoppingList = gsnList(shoppinglists[0].ShoppingListId, shoppinglists[0].items)
-        //Calling Shopping List Service
-        shoppingList.addItems(temp);
-    };
-    //To remove the item from the shopping list
-    $scope.removeItemFromFlyer = function(item, itemId) {
-       var shoppinglists = gsnProfile.getShoppingLists();
-       var shoppingList = gsnList(shoppinglists[0].ShoppingListId, shoppinglists[0].items)
-       var temp = {
-            "Id": "",
-            "ShoppingListId": shoppinglists[0].ShoppingListId,
-            "ItemId": itemId,
-            "ItemTypeId": "0",
-            "Quantity": 1,
-            "CategoryId": "",
-            "CategoryName": "",
-            "Description": "",
-            "CreateDate ": "",
-            "ModifyDate": "",
-            "Weight": "",
-            "Comment": "",
-            "IsVisible": "",
-            "IsActive": "",
-            "BrandName": "",
-            "AdCode": "",
-            "IsCoupon": "",
-            "ShelfId": "",
-            "Meta": JSON.stringify(item)
-          }
-          shoppinglists[0].removeItem(temp);
-    };
+
     $scope.doAddCircularItem = function(evt, tempItem) {
       var item = gsnStore.getItem(tempItem.ItemId);
       if (item) {
@@ -6791,49 +6706,6 @@
 
 })(angular);
 
-(function (angular, undefined) {
-  'use strict';
-  var myModule = angular.module('gsn.core');
-
-  myModule.directive('gsnAddHead', ['$window', '$timeout', 'gsnApi', function ($window, $timeout, gsnApi) {
-    // Usage:   Add element to head
-    //
-    // Creates: 2014-01-06
-    //
-    /* <div gsn-add-head="meta" data-attributes="{'content': ''}"></div>
-    */
-    var directive = {
-      link: link,
-      restrict: 'A',
-      scope: true
-    };
-    return directive;
-
-    function link(scope, element, attrs) {
-      var elId = 'dynamic-' + (new Date().getTime());
-      function activate() {
-        var options = attrs.attributes;
-        var el = angular.element('<' + attrs.gsnAddHead + '>');
-        if (options) {
-          var myAttrs = scope.$eval(options);
-          el.attr('id', elId);
-          angular.forEach(myAttrs, function (v, k) {
-            el.attr(k, v);
-          });
-        }
-
-        angular.element('head')[0].appendChild(el[0]);
-
-        scope.$on('$destroy', function () {
-          angular.element('#' + elId).remove();
-        });
-      }
-
-      activate();
-    }
-  }]);
-})(angular);
-
 (function(angular, undefined) {
   'use strict';
   var myModule = angular.module('gsn.core');
@@ -6891,6 +6763,49 @@
     }
   }]);
 })(angular);
+(function (angular, undefined) {
+  'use strict';
+  var myModule = angular.module('gsn.core');
+
+  myModule.directive('gsnAddHead', ['$window', '$timeout', 'gsnApi', function ($window, $timeout, gsnApi) {
+    // Usage:   Add element to head
+    //
+    // Creates: 2014-01-06
+    //
+    /* <div gsn-add-head="meta" data-attributes="{'content': ''}"></div>
+    */
+    var directive = {
+      link: link,
+      restrict: 'A',
+      scope: true
+    };
+    return directive;
+
+    function link(scope, element, attrs) {
+      var elId = 'dynamic-' + (new Date().getTime());
+      function activate() {
+        var options = attrs.attributes;
+        var el = angular.element('<' + attrs.gsnAddHead + '>');
+        if (options) {
+          var myAttrs = scope.$eval(options);
+          el.attr('id', elId);
+          angular.forEach(myAttrs, function (v, k) {
+            el.attr(k, v);
+          });
+        }
+
+        angular.element('head')[0].appendChild(el[0]);
+
+        scope.$on('$destroy', function () {
+          angular.element('#' + elId).remove();
+        });
+      }
+
+      activate();
+    }
+  }]);
+})(angular);
+
 (function (angular, undefined) {
   'use strict';
   var myModule = angular.module('gsn.core');
@@ -8393,6 +8308,25 @@
                 $scope.coupons.push(item);
                 if (item.ItemTypeId == 2) {
                   $scope.manufacturerCoupons.push(item);
+                }
+              } else if (item.ItemTypeId == 0 && item.Meta) {
+                if (!item.LinkedItem && (item.Meta+ '').indexOf('}') > 0) {
+                  item.LinkedItem = JSON.parse(item.Meta);
+                }
+                if (item.LinkedItem) {
+
+                  var quantity = parseInt(item.LinkedItem.prePriceText);
+                  if (isNaN(quantity)) {
+                    quantity = 1;
+                  }
+                  item.CategoryName = item.LinkedItem.category;
+                  item.Description = item.LinkedItem.name;
+                  item.Description2 = item.LinkedItem.description;
+                  item.PriceString = item.LinkedItem.prePriceText + " " + item.LinkedItem.priceText + " " + item.LinkedItem.postPriceText;
+                  item.ImageUrl = item.LinkedItem.imageUrl;
+                  item.SmallImageUrl = item.LinkedItem.imageUrl;
+                  item.StartDate = item.LinkedItem.validFrom;
+                  item.EndDate = item.LinkedItem.validTo;
                 }
               } else {
                 // determine if circular item is a coupon

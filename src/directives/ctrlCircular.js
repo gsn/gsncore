@@ -4,7 +4,7 @@
   var myDirectiveName = 'ctrlCircular';
 
   angular.module('gsn.core')
-    .controller(myDirectiveName, ['$scope', '$timeout', 'gsnStore', '$rootScope', '$location', 'gsnProfile', 'gsnList' , 'gsnApi', '$analytics', '$filter', myController])
+    .controller(myDirectiveName, ['$scope', '$timeout', 'gsnStore', '$rootScope', '$location', 'gsnProfile', 'gsnApi', '$analytics', '$filter', myController])
     .directive(myDirectiveName, myDirective);
 
   function myDirective() {
@@ -17,7 +17,7 @@
     return directive;
   }
 
-  function myController($scope, $timeout, gsnStore, $rootScope, $location, gsnProfile,gsnList, gsnApi, $analytics, $filter) {
+  function myController($scope, $timeout, gsnStore, $rootScope, $location, gsnProfile, gsnApi, $analytics, $filter) {
     $scope.activate = activate;
 
     $scope.pageId = 99; // it's always all items for desktop
@@ -89,92 +89,7 @@
         $scope.vm.pageIdx = myPageIdx;
       }
     }
-    //To Add the item to the shopping list
-    $scope.addFlyerItems = function(item, itemId) {
-      
-       var shoppinglists = gsnProfile.getShoppingLists();
-       
-     var tempItemObject =  [{
-            "StartDate": null,
-            "EndDate": null,
-            "ItemTypeId": 0,
-            "ItemId": itemId,
-            "RecipeId": null,
-            "FoodId": null,
-            "BrandName": null,
-            "Description": null,
-            "Description1": null,
-            "Description2": null,
-            "Description3": null,
-            "Description4": null,
-            "Comment": null,
-            "ShoppingListItemId": itemId,
-            "CategoryId": null,
-            "Quantity": null,
-            "Order": null,
-            "ImageUrl": null,
-            "TopTagLine": null,
-            "SmallImageUrl": null,
-            "BarcodeImageUrl": null,
-            "ItemRaw": null,
-            "IsCoupon": null,
-            "Meta": ""
-           }]
-      var temp = [{
-            "Id": "",
-            "ShoppingListId": shoppinglists[0].ShoppingListId,
-            "ItemId": itemId,
-            "ItemTypeId": "0",
-            "Quantity": 1,
-            "CategoryId": "",
-            "CategoryName": "",
-            "Description": "",
-            "CreateDate ": "",
-            "ModifyDate": "",
-            "Weight": "",
-            "Comment": "",
-            "IsVisible": "",
-            "IsActive": "",
-            "BrandName": "",
-            "AdCode": "",
-            "IsCoupon": "",
-            "ShelfId": "",
-            "Meta": JSON.stringify(item)
-          }] 
-        //tempItemObject.ShoppingListItemId = shoppinglists[0].ShoppingListId;
-        //Calling Shopping ListTwo Service
-       // gsnRoundyProfile.saveItems(shoppinglists[0].ShoppingListId, tempItemObject);
-        var shoppingList = gsnList(shoppinglists[0].ShoppingListId, shoppinglists[0].items)
-        //Calling Shopping List Service
-        shoppingList.addItems(temp);
-    };
-    //To remove the item from the shopping list
-    $scope.removeItemFromFlyer = function(item, itemId) {
-       var shoppinglists = gsnProfile.getShoppingLists();
-       var shoppingList = gsnList(shoppinglists[0].ShoppingListId, shoppinglists[0].items)
-       var temp = {
-            "Id": "",
-            "ShoppingListId": shoppinglists[0].ShoppingListId,
-            "ItemId": itemId,
-            "ItemTypeId": "0",
-            "Quantity": 1,
-            "CategoryId": "",
-            "CategoryName": "",
-            "Description": "",
-            "CreateDate ": "",
-            "ModifyDate": "",
-            "Weight": "",
-            "Comment": "",
-            "IsVisible": "",
-            "IsActive": "",
-            "BrandName": "",
-            "AdCode": "",
-            "IsCoupon": "",
-            "ShelfId": "",
-            "Meta": JSON.stringify(item)
-          }
-          shoppinglists[0].removeItem(temp);
-    };
+
     $scope.doAddCircularItem = function(evt, tempItem) {
       var item = gsnStore.getItem(tempItem.ItemId);
       if (item) {
