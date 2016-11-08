@@ -2,7 +2,7 @@
  * gsncore
  * version 1.8.51
  * gsncore repository
- * Build date: Tue Nov 08 2016 02:32:00 GMT+0530 (India Standard Time)
+ * Build date: Tue Nov 08 2016 20:31:04 GMT+0530 (India Standard Time)
  */
 ;(function() {
   'use strict';
@@ -1151,6 +1151,17 @@
     returnObj.getSelectedStoreId = function() {
       return profileStorage.storeId || 0;
     };
+
+  // store store number
+    returnObj.setStoreNumber = function(id) {
+       var storeNumberInt = parseInt(id);
+       profileStorage.storeNumber = storeNumberInt;
+    }
+
+    returnObj.getStoreNumber = function() {
+       return profileStorage.storeNumber; 
+    }
+
 
     returnObj.setSelectedStoreId = function(storeId, newUrl, timeout) {
       // make sure we don't set a bad store id
@@ -11819,8 +11830,12 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       } else if (gsnApi.isNull($location.search().fromUrl, '').length > 0) {
         $location.url($location.search().fromUrl);
       }
+
+      // set the store number (this is not store id)
+        gsnApi.setStoreNumber(marker.location.StoreNumber)
     };
 
+    
     $scope.$on('gsnevent:store-persisted', function(evt, store) {
       if ($scope.gvm.reloadOnStoreSelection) {
         $scope.goUrl($scope.currentPath, '_reload');
