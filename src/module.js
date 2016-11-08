@@ -418,6 +418,17 @@
       return profileStorage.storeId || 0;
     };
 
+  // store store number
+    returnObj.setStoreNumber = function(id) {
+       var storeNumberInt = parseInt(id);
+       profileStorage.storeNumber = storeNumberInt;
+    }
+
+    returnObj.getStoreNumber = function() {
+       return profileStorage.storeNumber; 
+    }
+
+
     returnObj.setSelectedStoreId = function(storeId, newUrl, timeout) {
       // make sure we don't set a bad store id
       var storeIdInt = parseInt(storeId);
