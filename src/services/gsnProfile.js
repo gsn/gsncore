@@ -108,7 +108,7 @@
     returnObj.addItem = function(item) {
       var shoppingList = returnObj.getShoppingList();
       if (shoppingList) {
-        if (gsnApi.isNull(item.ItemTypeId, 0) < 0) {
+        if (gsnApi.isNull(item.ItemTypeId, -1) < 0) {
           item.ItemTypeId = 6; // Misc or Own Item type
         }
 

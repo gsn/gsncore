@@ -150,6 +150,23 @@
                 if (item.ItemTypeId == 2) {
                   $scope.manufacturerCoupons.push(item);
                 }
+              } else if (item.ItemTypeId == 0 && item.Meta) {
+                if (!item.LinkedItem && (item.Meta+ '').indexOf('}') > 0) {
+                  item.LinkedItem = JSON.parse(item.Meta);
+                }
+                if (item.LinkedItem) {
+
+                  var quantity = parseInt(item.LinkedItem.prePriceText);
+                  if (isNaN(quantity)) {
+                    quantity = 1;
+                  }
+                  item.CategoryName = item.LinkedItem.category;
+                  item.Description = item.LinkedItem.name;
+                  item.Description2 = item.LinkedItem.description;
+                  item.PriceString = item.LinkedItem.priceText;
+                  item.ImageUrl = item.LinkedItem.imageUrl;
+                  item.SmallImageUrl = item.LinkedItem.imageUrl;
+                }
               } else {
                 // determine if circular item is a coupon
                 var circCoupon = gsnStore.getItem(item.ItemId);
