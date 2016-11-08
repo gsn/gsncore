@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.8.55
+ * version 1.8.56
  * gsncore repository
- * Build date: Tue Nov 08 2016 14:44:22 GMT-0600 (CST)
+ * Build date: Tue Nov 08 2016 14:55:09 GMT-0600 (CST)
  */
 ;(function() {
   'use strict';
@@ -13377,9 +13377,11 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
                   item.CategoryName = item.LinkedItem.category;
                   item.Description = item.LinkedItem.name;
                   item.Description2 = item.LinkedItem.description;
-                  item.PriceString = item.LinkedItem.priceText;
+                  item.PriceString = item.LinkedItem.prePriceText + " " + item.LinkedItem.priceText + " " + item.LinkedItem.postPriceText;
                   item.ImageUrl = item.LinkedItem.imageUrl;
                   item.SmallImageUrl = item.LinkedItem.imageUrl;
+                  item.StartDate = item.LinkedItem.validFrom;
+                  item.EndDate = item.LinkedItem.validTo;
                 }
               } else {
                 // determine if circular item is a coupon
