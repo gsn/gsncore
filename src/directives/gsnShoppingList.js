@@ -163,9 +163,11 @@
                   item.CategoryName = item.LinkedItem.category;
                   item.Description = item.LinkedItem.name;
                   item.Description2 = item.LinkedItem.description;
-                  item.PriceString = item.LinkedItem.priceText;
+                  item.PriceString = item.LinkedItem.prePriceText + " " + item.LinkedItem.priceText + " " + item.LinkedItem.postPriceText;
                   item.ImageUrl = item.LinkedItem.imageUrl;
                   item.SmallImageUrl = item.LinkedItem.imageUrl;
+                  item.StartDate = item.LinkedItem.validFrom;
+                  item.EndDate = item.LinkedItem.validTo;
                 }
               } else {
                 // determine if circular item is a coupon
