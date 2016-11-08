@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.8.45
+ * version 1.8.51
  * gsncore repository
- * Build date: Tue Oct 18 2016 17:29:59 GMT-0500 (CDT)
+ * Build date: Wed Nov 02 2016 23:02:56 GMT+0530 (India Standard Time)
  */
 ;(function() {
   'use strict';
@@ -4343,6 +4343,7 @@
         UserName: username,
         Password: gsnApi.isNull(profile.Password, ''),
         ReceiveEmail: gsnApi.isNull(profile.ReceiveEmail, false),
+        ReceivePostalMail: gsnApi.isNull(profile.ReceivePostalMail, false),
         ReceiveSms: gsnApi.isNull(profile.ReceiveSms, true),
         Phone: gsnApi.isNull(profile.Phone, '').replace(/[^0-9]+/gi, ''),
         PrimaryStoreId: gsnApi.isNull(profile.PrimaryStoreId, gsnApi.getSelectedStoreId()),
@@ -6039,7 +6040,92 @@
         $scope.vm.pageIdx = myPageIdx;
       }
     }
-
+    //To Add the item to the shopping list
+    $scope.addFlyerItems = function(item, itemId) {
+      
+       var shoppinglists = gsnProfile.getShoppingLists();
+       
+     var tempItemObject =  [{
+            "StartDate": null,
+            "EndDate": null,
+            "ItemTypeId": 0,
+            "ItemId": itemId,
+            "RecipeId": null,
+            "FoodId": null,
+            "BrandName": null,
+            "Description": null,
+            "Description1": null,
+            "Description2": null,
+            "Description3": null,
+            "Description4": null,
+            "Comment": null,
+            "ShoppingListItemId": itemId,
+            "CategoryId": null,
+            "Quantity": null,
+            "Order": null,
+            "ImageUrl": null,
+            "TopTagLine": null,
+            "SmallImageUrl": null,
+            "BarcodeImageUrl": null,
+            "ItemRaw": null,
+            "IsCoupon": null,
+            "Meta": ""
+           }]
+      var temp = [{
+            "Id": "",
+            "ShoppingListId": shoppinglists[0].ShoppingListId,
+            "ItemId": itemId,
+            "ItemTypeId": "0",
+            "Quantity": 1,
+            "CategoryId": "",
+            "CategoryName": "",
+            "Description": "",
+            "CreateDate ": "",
+            "ModifyDate": "",
+            "Weight": "",
+            "Comment": "",
+            "IsVisible": "",
+            "IsActive": "",
+            "BrandName": "",
+            "AdCode": "",
+            "IsCoupon": "",
+            "ShelfId": "",
+            "Meta": JSON.stringify(item)
+          }] 
+        //tempItemObject.ShoppingListItemId = shoppinglists[0].ShoppingListId;
+        //Calling Shopping ListTwo Service
+       // gsnRoundyProfile.saveItems(shoppinglists[0].ShoppingListId, tempItemObject);
+        var shoppingList = gsnList(shoppinglists[0].ShoppingListId, shoppinglists[0].items)
+        //Calling Shopping List Service
+        shoppingList.addItems(temp);
+    };
+    //To remove the item from the shopping list
+    $scope.removeItemFromFlyer = function(item, itemId) {
+       var shoppinglists = gsnProfile.getShoppingLists();
+       var shoppingList = gsnList(shoppinglists[0].ShoppingListId, shoppinglists[0].items)
+       var temp = {
+            "Id": "",
+            "ShoppingListId": shoppinglists[0].ShoppingListId,
+            "ItemId": itemId,
+            "ItemTypeId": "0",
+            "Quantity": 1,
+            "CategoryId": "",
+            "CategoryName": "",
+            "Description": "",
+            "CreateDate ": "",
+            "ModifyDate": "",
+            "Weight": "",
+            "Comment": "",
+            "IsVisible": "",
+            "IsActive": "",
+            "BrandName": "",
+            "AdCode": "",
+            "IsCoupon": "",
+            "ShelfId": "",
+            "Meta": JSON.stringify(item)
+          }
+          shoppinglists[0].removeItem(temp);
+    };
     $scope.doAddCircularItem = function(evt, tempItem) {
       var item = gsnStore.getItem(tempItem.ItemId);
       if (item) {
@@ -6217,7 +6303,7 @@
   'use strict';
 
   var myDirectiveName = 'ctrlContactUs';
-  
+
   angular.module('gsn.core')
     .controller(myDirectiveName, ['$scope', 'gsnProfile', 'gsnApi', '$timeout', 'gsnStore', '$interpolate', '$http', myController])
     .directive(myDirectiveName, myDirective);
@@ -6231,12 +6317,12 @@
 
     return directive;
   }
-  
+
   function myController($scope, gsnProfile, gsnApi, $timeout, gsnStore, $interpolate, $http) {
 
     $scope.activate = activate;
-    $scope.vm = { PrimaryStoreId: gsnApi.getSelectedStoreId(), ReceiveEmail: true };
-    $scope.masterVm = { PrimaryStoreId: gsnApi.getSelectedStoreId(), ReceiveEmail: true };
+    $scope.vm = { PrimaryStoreId: gsnApi.getSelectedStoreId() };
+    $scope.masterVm = { PrimaryStoreId: gsnApi.getSelectedStoreId() };
 
     $scope.hasSubmitted = false;    // true when user has click the submit button
     $scope.isValidSubmit = true;    // true when result of submit is valid
@@ -6294,6 +6380,10 @@
     $scope.doSubmit = function () {
       var payload = $scope.vm;
       if ($scope.myContactUsForm.$valid) {
+        if (!$scope.hasReceiveEmail) {
+          gsnApi.del(payload, 'ReceiveEmail');
+        }
+
         payload.CaptchaChallenge = $scope.captcha.challenge;
         payload.CaptchaResponse = $scope.captcha.response;
         payload.Store = $scope.getStoreDisplayName($scope.storesById[payload.PrimaryStoreId]);
@@ -6363,6 +6453,7 @@
     }
   }
 })(angular);
+
 (function (angular, undefined) {
   'use strict';
 
@@ -6700,6 +6791,49 @@
 
 })(angular);
 
+(function (angular, undefined) {
+  'use strict';
+  var myModule = angular.module('gsn.core');
+
+  myModule.directive('gsnAddHead', ['$window', '$timeout', 'gsnApi', function ($window, $timeout, gsnApi) {
+    // Usage:   Add element to head
+    //
+    // Creates: 2014-01-06
+    //
+    /* <div gsn-add-head="meta" data-attributes="{'content': ''}"></div>
+    */
+    var directive = {
+      link: link,
+      restrict: 'A',
+      scope: true
+    };
+    return directive;
+
+    function link(scope, element, attrs) {
+      var elId = 'dynamic-' + (new Date().getTime());
+      function activate() {
+        var options = attrs.attributes;
+        var el = angular.element('<' + attrs.gsnAddHead + '>');
+        if (options) {
+          var myAttrs = scope.$eval(options);
+          el.attr('id', elId);
+          angular.forEach(myAttrs, function (v, k) {
+            el.attr(k, v);
+          });
+        }
+
+        angular.element('head')[0].appendChild(el[0]);
+
+        scope.$on('$destroy', function () {
+          angular.element('#' + elId).remove();
+        });
+      }
+
+      activate();
+    }
+  }]);
+})(angular);
+
 (function(angular, undefined) {
   'use strict';
   var myModule = angular.module('gsn.core');
@@ -6757,49 +6891,6 @@
     }
   }]);
 })(angular);
-(function (angular, undefined) {
-  'use strict';
-  var myModule = angular.module('gsn.core');
-
-  myModule.directive('gsnAddHead', ['$window', '$timeout', 'gsnApi', function ($window, $timeout, gsnApi) {
-    // Usage:   Add element to head
-    //
-    // Creates: 2014-01-06
-    //
-    /* <div gsn-add-head="meta" data-attributes="{'content': ''}"></div>
-    */
-    var directive = {
-      link: link,
-      restrict: 'A',
-      scope: true
-    };
-    return directive;
-
-    function link(scope, element, attrs) {
-      var elId = 'dynamic-' + (new Date().getTime());
-      function activate() {
-        var options = attrs.attributes;
-        var el = angular.element('<' + attrs.gsnAddHead + '>');
-        if (options) {
-          var myAttrs = scope.$eval(options);
-          el.attr('id', elId);
-          angular.forEach(myAttrs, function (v, k) {
-            el.attr(k, v);
-          });
-        }
-
-        angular.element('head')[0].appendChild(el[0]);
-
-        scope.$on('$destroy', function () {
-          angular.element('#' + elId).remove();
-        });
-      }
-
-      activate();
-    }
-  }]);
-})(angular);
-
 (function (angular, undefined) {
   'use strict';
   var myModule = angular.module('gsn.core');

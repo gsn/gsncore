@@ -4,7 +4,7 @@
   var myDirectiveName = 'ctrlRoundyProfile';
 
   angular.module('gsn.core')
-    .controller(myDirectiveName, ['$scope', 'gsnStore', 'gsnRoundyProfile', 'gsnProfile', '$modal', '$location', '$rootScope', '$window', '$timeout', 'gsnApi', '$analytics', myController])
+    .controller(myDirectiveName, ['$scope', 'gsnStore', 'gsnRoundyProfile', 'gsnProfile','gsnList' , '$modal', '$location', '$rootScope', '$window', '$timeout', 'gsnApi', '$analytics', myController])
     .directive(myDirectiveName, myDirective);
 
   function myDirective() {
@@ -17,7 +17,7 @@
     return directive;
   }
 
-  function myController($scope, gsnStore, gsnRoundyProfile, gsnProfile, $modal, $location, $rootScope, $window, $timeout, gsnApi, $analytics) {
+  function myController($scope, gsnStore, gsnRoundyProfile, gsnProfile,gsnList, $modal, $location, $rootScope, $window, $timeout, gsnApi, $analytics) {
     $scope.isLoading = false;
     $scope.activate = activate;
     $scope.updateProfile = updateProfile;
@@ -32,6 +32,66 @@
     $scope.goOutPromt = goOutPrompt;
     $scope.$parent.$parent.$parent.goOutPrompt = $scope.goOutPrompt;
     $scope.$parent.$parent.$parent.goOutPromt = $scope.goOutPrompt;
+
+   //To Add the item to the shopping list
+    $scope.addFlyerItems = function(item, itemId) {
+      
+      var shoppinglists = gsnProfile.getShoppingLists();
+
+      var temp = {
+            "Id": "",
+            "ShoppingListId": shoppinglists[0].ShoppingListId,
+            "ItemId": itemId,
+            "ItemTypeId": "0",
+            "Quantity": 1,
+            "CategoryId": "",
+            "CategoryName": "",
+            "Description": "",
+            "CreateDate ": "",
+            "ModifyDate": "",
+            "Weight": "",
+            "Comment": "",
+            "IsVisible": "",
+            "IsActive": "",
+            "BrandName": "",
+            "AdCode": "",
+            "IsCoupon": "",
+            "ShelfId": "",
+            "Meta": JSON.stringify(item)
+          }
+        var shoppingList = gsnList(shoppinglists[0].ShoppingListId, shoppinglists[0].items)
+        //Calling Shopping List Service
+        shoppingList.syncItem(temp);
+
+    };
+    //To remove the item from the shopping list
+    $scope.removeItemFromFlyer = function(item, itemId) {
+     
+       var shoppinglists = gsnProfile.getShoppingLists();
+       var shoppingList = gsnList(shoppinglists[0].ShoppingListId, shoppinglists[0].items)
+       var temp = {
+            "Id": "",
+            "ShoppingListId": shoppinglists[0].ShoppingListId,
+            "ItemId": itemId,
+            "ItemTypeId": "0",
+            "Quantity": 1,
+            "CategoryId": "",
+            "CategoryName": "",
+            "Description": "",
+            "CreateDate ": "",
+            "ModifyDate": "",
+            "Weight": "",
+            "Comment": "",
+            "IsVisible": "",
+            "IsActive": "",
+            "BrandName": "",
+            "AdCode": "",
+            "IsCoupon": "",
+            "ShelfId": "",
+            "Meta": JSON.stringify(item)
+          }
+          shoppinglists[0].removeItem(temp);
+    };
 
     function activate() {
       if (!$scope.isLoggedIn) return;
@@ -238,6 +298,8 @@
       $scope.cancel = function() {
         $modalInstance.close();
       };
+
+
     }]);
 
   angular.module('gsn.core').controller('ctrlNotificationWithTimeout', ['$scope', '$modalInstance', '$timeout', 'message', 'background',
