@@ -30,7 +30,6 @@
     returnObj.addFlippItem = function(item, itemId) {
         var temp = {
             "Id": "",
-            "ShoppingListId": shoppinglists[0].ShoppingListId,
             "ItemId": itemId,
             "ItemTypeId": "0",
             "Quantity": 1,
@@ -60,7 +59,6 @@
     returnObj.removeFlippItem = function(item, itemId) {
        var temp = {
             "Id": "",
-            "ShoppingListId": shoppinglists[0].ShoppingListId,
             "ItemId": itemId,
             "ItemTypeId": "0",
             "Quantity": 1,
