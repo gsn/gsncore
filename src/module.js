@@ -293,8 +293,8 @@
         var shoppingList = $rootScope.gsnProfile.getShoppingList();
         if (shoppingList) {
           var result = shoppingList.getItem(item);
-		  if(result)
-			result.NewQuantity = result.Quantity || 1;
+      if(result)
+      result.NewQuantity = result.Quantity || 1;
           return result || item;
         }
       }

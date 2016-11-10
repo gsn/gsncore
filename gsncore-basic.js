@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.8.51
+ * version 1.8.56
  * gsncore repository
- * Build date: Wed Oct 19 2016 14:32:23 GMT-0500 (CDT)
+ * Build date: Tue Nov 08 2016 14:55:09 GMT-0600 (CST)
  */
 ;(function() {
   'use strict';
@@ -1027,8 +1027,8 @@
         var shoppingList = $rootScope.gsnProfile.getShoppingList();
         if (shoppingList) {
           var result = shoppingList.getItem(item);
-		  if(result)
-			result.NewQuantity = result.Quantity || 1;
+      if(result)
+      result.NewQuantity = result.Quantity || 1;
           return result || item;
         }
       }
@@ -3752,7 +3752,7 @@
     returnObj.addItem = function(item) {
       var shoppingList = returnObj.getShoppingList();
       if (shoppingList) {
-        if (gsnApi.isNull(item.ItemTypeId, 0) <= 0) {
+        if (gsnApi.isNull(item.ItemTypeId, -1) < 0) {
           item.ItemTypeId = 6; // Misc or Own Item type
         }
 
@@ -8308,6 +8308,25 @@
                 $scope.coupons.push(item);
                 if (item.ItemTypeId == 2) {
                   $scope.manufacturerCoupons.push(item);
+                }
+              } else if (item.ItemTypeId == 0 && item.Meta) {
+                if (!item.LinkedItem && (item.Meta+ '').indexOf('}') > 0) {
+                  item.LinkedItem = JSON.parse(item.Meta);
+                }
+                if (item.LinkedItem) {
+
+                  var quantity = parseInt(item.LinkedItem.prePriceText);
+                  if (isNaN(quantity)) {
+                    quantity = 1;
+                  }
+                  item.CategoryName = item.LinkedItem.category;
+                  item.Description = item.LinkedItem.name;
+                  item.Description2 = item.LinkedItem.description;
+                  item.PriceString = item.LinkedItem.prePriceText + " " + item.LinkedItem.priceText + " " + item.LinkedItem.postPriceText;
+                  item.ImageUrl = item.LinkedItem.imageUrl;
+                  item.SmallImageUrl = item.LinkedItem.imageUrl;
+                  item.StartDate = item.LinkedItem.validFrom;
+                  item.EndDate = item.LinkedItem.validTo;
                 }
               } else {
                 // determine if circular item is a coupon

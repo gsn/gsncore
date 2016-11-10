@@ -1,4 +1,4 @@
-﻿(function(angular, undefined) {
+(function(angular, undefined) {
   'use strict';
 
   var myDirectiveName = 'ctrlRoundyProfile';
@@ -77,7 +77,7 @@
 
     $scope.activate();
 
-    //#region Internal Methods  
+    //#region Internal Methods
 
     function goOutPrompt(event, next, callBack, forceAction) {
       if ($scope.MyForm.$dirty) {
@@ -314,7 +314,7 @@
                 break;
               case "ExactMatch":
                 gsnRoundyProfile.associateLoyaltyCardToProfile($scope.foundProfile.FreshPerksCard).then(function(rslt) {
-                  //TODO: check errors 
+                  //TODO: check errors
                   gsnRoundyProfile.profile.FreshPerksCard = $scope.foundProfile.FreshPerksCard;
                   gsnRoundyProfile.profile.ExternalId = $scope.foundProfile.FreshPerksCard;
                   gsnRoundyProfile.profile.IsECard = false;
@@ -409,7 +409,7 @@
 
       $scope.activate();
 
-      //#region Internal Methods  
+      //#region Internal Methods
 
 
       function goAddCardScreen() {
