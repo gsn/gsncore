@@ -121,13 +121,17 @@
         $http.post(url, {}, {
           headers: gsnApi.getApiHeaders()
         }).success(function(response) {
-          $saveData.takenCouponById[couponId] = true;
-          $saveData.availableCouponById[couponId] = null;
-          deferred.resolve({
-            success: true,
-            response: response
-          });
-          $rootScope.$broadcast('gsnevent:youtech-cardcoupon-added', couponId);
+          if (response.Success) {
+              $saveData.takenCouponById[couponId] = true;
+              $saveData.availableCouponById[couponId] = null;
+              deferred.resolve({
+                success: response.Success,
+                response: response
+              });
+              $rootScope.$broadcast('gsnevent:youtech-cardcoupon-added', couponId);
+          }else {
+             handleFailureEvent('gsnevent:youtech-cardcoupon-addedfail', deferred, couponId, response.Message);
+          }
         }).error(function(response) {
           handleFailureEvent('gsnevent:youtech-cardcoupon-addfail', deferred, couponId, response);
         });

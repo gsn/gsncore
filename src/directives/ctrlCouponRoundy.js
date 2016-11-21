@@ -5,7 +5,7 @@
   var myDirectiveName = 'ctrlCouponRoundy';
 
   angular.module('gsn.core')
-    .controller(myDirectiveName,  ['$scope', 'gsnStore', 'gsnApi', '$timeout', '$analytics', '$filter',  'gsnYoutech', 'gsnProfile', '$location', 'gsnCouponPrinter', 'gsnRoundyProfile', myController])
+    .controller(myDirectiveName,  ['$scope', 'gsnStore', 'gsnApi', '$timeout', '$analytics', '$filter',  'gsnYoutech', 'gsnProfile', '$location', 'gsnCouponPrinter', 'gsnRoundyProfile', '$notification', myController])
     .directive(myDirectiveName, myDirective);
 
   function myDirective() {
@@ -18,7 +18,7 @@
     return directive;
   }
 
-  function myController($scope, gsnStore, gsnApi, $timeout, $analytics, $filter, gsnYoutech, gsnProfile, $location, gsnCouponPrinter, gsnRoundyProfile) {
+  function myController($scope, gsnStore, gsnApi, $timeout, $analytics, $filter, gsnYoutech, gsnProfile, $location, gsnCouponPrinter, gsnRoundyProfile, $notification) {
     $scope.activate = activate;
     $scope.addCouponToCard = addCouponToCard;
     $scope.printManufacturerCoupon = printManufacturerCoupon;
@@ -306,6 +306,9 @@
             $timeout(function () {
               item.AddCount++;
             }, 50);
+          }else {
+             // else show failed reason to user in modal
+            $notification.alert('Error applying coupon: ' + rst.response);
           }
         });
 
