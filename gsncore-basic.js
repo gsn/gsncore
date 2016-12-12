@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.8.57
+ * version 1.8.58
  * gsncore repository
- * Build date: Wed Nov 23 2016 14:21:53 GMT-0600 (CST)
+ * Build date: Mon Dec 12 2016 11:17:39 GMT-0600 (CST)
  */
 ;(function() {
   'use strict';
@@ -5684,13 +5684,17 @@
                 $http.post(url, {}, {
                     headers: gsnApi.getApiHeaders()
                 }).success(function (response) {
-                    $saveData.takenCouponById[couponId] = true;
-                    $saveData.availableCouponById[couponId] = null;
-                    deferred.resolve({
-                        success: true,
-                        response: response
-                    });
-                    $rootScope.$broadcast('gsnevent:youtech-cardcoupon-added', couponId);
+                    if (response.Success) {
+                        $saveData.takenCouponById[couponId] = true;
+                        $saveData.availableCouponById[couponId] = null;
+                        deferred.resolve({
+                            success: response.Success,
+                            response: response
+                        });
+                        $rootScope.$broadcast('gsnevent:youtech-cardcoupon-added', couponId);
+                    } else {
+                        handleFailureEvent('gsnevent:youtech-cardcoupon-addedfail', deferred, couponId, response.Message);
+                    }
                 }).error(function (response) {
                     handleFailureEvent('gsnevent:youtech-cardcoupon-addfail', deferred, couponId, response);
                 });
