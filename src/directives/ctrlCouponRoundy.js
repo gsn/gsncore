@@ -293,8 +293,13 @@
                             item.AddCount++;
                         }, 50);
                     } else {
+                        $analytics.eventTrack(gsnApi.getProfileId(), {
+                            category: 'ErrorCouponYouTech',
+                            label: rst.response + '',
+                            item: rst
+                        });
                         // else show failed reason to user in modal
-                        $notification.alert('Error applying coupon: ' + rst.response);
+                        $notification.alert('Error applying coupon: Please try clipping your coupon again');
                     }
                 });
                 // if coupon has SubCategory, add to the Roundy's card
