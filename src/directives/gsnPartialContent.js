@@ -55,9 +55,6 @@
                         processData(rst.response);
                     }
                 });
-                if ($location.hash()) {
-                    $timeout($anchorScroll, 100);
-                }
             }
             scope.getContentList = function() {
                 var result = [];
@@ -97,6 +94,11 @@
                 partialData = gsnApi.parsePartialContentData(data);
                 scope.partialContents = scope.getContentList();
                 scope.pcvm.layout = scope.getConfig('layout').Description || 'default';
+                if ($location.hash()) {
+                    $timeout(function() {
+                        $anchorScroll();
+                    }, 1000);
+                }
             }
             //#endregion
         }

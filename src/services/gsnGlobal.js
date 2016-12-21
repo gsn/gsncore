@@ -180,7 +180,9 @@
                     }, 50);
                 }
                 if ($location.hash()) {
-                    $timeout($anchorScroll, 100);
+                    $timeout(function() {
+                        $anchorScroll();
+                    }, 1000);
                 }
             });
             // events handling

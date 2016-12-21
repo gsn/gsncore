@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.8.64
+ * version 1.8.65
  * gsncore repository
- * Build date: Tue Dec 20 2016 20:06:02 GMT-0600 (Central Standard Time)
+ * Build date: Tue Dec 20 2016 20:13:03 GMT-0600 (Central Standard Time)
  */
 ;(function() {
   'use strict';
@@ -4555,7 +4555,9 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
                     }, 50);
                 }
                 if ($location.hash()) {
-                    $timeout($anchorScroll, 100);
+                    $timeout(function() {
+                        $anchorScroll();
+                    }, 1000);
                 }
             });
             // events handling
@@ -12785,9 +12787,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
                         processData(rst.response);
                     }
                 });
-                if ($location.hash()) {
-                    $timeout($anchorScroll, 100);
-                }
             }
             scope.getContentList = function() {
                 var result = [];
@@ -12827,6 +12826,11 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
                 partialData = gsnApi.parsePartialContentData(data);
                 scope.partialContents = scope.getContentList();
                 scope.pcvm.layout = scope.getConfig('layout').Description || 'default';
+                if ($location.hash()) {
+                    $timeout(function() {
+                        $anchorScroll();
+                    }, 1000);
+                }
             }
             //#endregion
         }
