@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.8.65
+ * version 1.8.66
  * gsncore repository
- * Build date: Tue Dec 20 2016 20:13:03 GMT-0600 (Central Standard Time)
+ * Build date: Tue Dec 20 2016 20:27:59 GMT-0600 (Central Standard Time)
  */
 ;(function() {
   'use strict';
@@ -12829,6 +12829,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
                 if ($location.hash()) {
                     $timeout(function() {
                         $anchorScroll();
+                        angular.element('#' + $location.hash()).click();
                     }, 1000);
                 }
             }

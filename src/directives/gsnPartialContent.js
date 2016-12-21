@@ -97,6 +97,7 @@
                 if ($location.hash()) {
                     $timeout(function() {
                         $anchorScroll();
+                        angular.element('#' + $location.hash()).click();
                     }, 1000);
                 }
             }
