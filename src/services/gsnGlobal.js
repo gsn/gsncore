@@ -1,10 +1,10 @@
 // for handling everything globally
-(function (angular, undefined) {
+(function(angular, undefined) {
     'use strict';
     var serviceId = 'gsnGlobal';
-    angular.module('gsn.core').service(serviceId, ['$window', '$location', '$timeout', '$route', 'gsnApi', 'gsnProfile', 'gsnStore', '$rootScope', 'Facebook', '$analytics', 'gsnYoutech', 'gsnDfp', 'gsnAdvertising', gsnGlobal]);
+    angular.module('gsn.core').service(serviceId, ['$window', '$location', '$timeout', '$route', 'gsnApi', 'gsnProfile', 'gsnStore', '$rootScope', 'Facebook', '$analytics', 'gsnYoutech', 'gsnDfp', 'gsnAdvertising', '$anchorScroll', gsnGlobal]);
 
-    function gsnGlobal($window, $location, $timeout, $route, gsnApi, gsnProfile, gsnStore, $rootScope, Facebook, $analytics, gsnYoutech, gsnDfp, gsnAdvertising) {
+    function gsnGlobal($window, $location, $timeout, $route, gsnApi, gsnProfile, gsnStore, $rootScope, Facebook, $analytics, gsnYoutech, gsnDfp, gsnAdvertising, $anchorScroll) {
         var returnObj = {
             init: init,
             hasInit: false
@@ -56,12 +56,12 @@
             $scope.$win = $window;
             $scope.seo = {};
             $scope._tk = $window._tk;
-            $scope.validateRegistration = function (rsp) {
+            $scope.validateRegistration = function(rsp) {
                 // attempt to authenticate user with facebook
                 // get token
                 $scope.facebookData.accessToken = rsp.authResponse.accessToken;
                 // get email
-                Facebook.api('/me?fields=id,name,email', function (response) {
+                Facebook.api('/me?fields=id,name,email', function(response) {
                     $scope.facebookData.user = response;
                     if (response.email) {
                         // if user is already logged in, don't do it again
@@ -71,12 +71,12 @@
                     }
                 });
             };
-            $scope.doFacebookLogin = function () {
-                Facebook.getLoginStatus(function (response) {
+            $scope.doFacebookLogin = function() {
+                Facebook.getLoginStatus(function(response) {
                     if (response.status == 'connected' && response.authResponse.accessToken) {
                         $scope.validateRegistration(response);
                     } else {
-                        Facebook.login(function (rsp) {
+                        Facebook.login(function(rsp) {
                             if (rsp.authResponse) {
                                 $scope.validateRegistration(rsp);
                             }
@@ -86,7 +86,7 @@
                     }
                 });
             };
-            $scope.doIfLoggedIn = function (callbackFunc) {
+            $scope.doIfLoggedIn = function(callbackFunc) {
                 if ($scope.isLoggedIn) {
                     callbackFunc();
                 } else {
@@ -96,22 +96,22 @@
             $scope.clearSelection = gsnApi.clearSelection;
             $scope.getBindableItem = gsnApi.getBindableItem;
             $scope.updateBindableItem = gsnApi.getBindableItem;
-            $scope.doSiteSearch = function () {
+            $scope.doSiteSearch = function() {
                 $scope.goUrl('/search?q=' + encodeURIComponent($scope.search.site));
             };
-            $scope.doItemSearch = function () {
+            $scope.doItemSearch = function() {
                 $scope.goUrl('/product/search?q=' + encodeURIComponent($scope.search.item));
             };
             $scope.getPageCount = gsnApi.getPageCount;
             $scope.getFullPath = gsnApi.getFullPath;
             $scope.decodeServerUrl = gsnApi.decodeServerUrl;
-            $scope.goBack = function () {
+            $scope.goBack = function() {
                 /// <summary>Cause browser to go back.</summary>
                 if ($scope.currentPath != '/') {
                     gsnApi.goBack();
                 }
             };
-            $scope.logout = function () {
+            $scope.logout = function() {
                 gsnProfile.logOut();
                 $scope.isLoggedIn = gsnApi.isLoggedIn();
                 if ($scope.loggedInWithFacebook) {
@@ -119,7 +119,7 @@
                     Facebook.logout();
                 }
                 // allow time to logout
-                $timeout(function () {
+                $timeout(function() {
                     // reload the page to refresh page status on logout
                     if ($scope.currentPath == '/') {
                         gsnApi.reload();
@@ -128,7 +128,7 @@
                     }
                 }, 500);
             };
-            $scope.logoutWithPrompt = function () {
+            $scope.logoutWithPrompt = function() {
                 try {
                     $scope.goOutPrompt(null, '/', $scope.logout, true);
                 } catch (e) {
@@ -137,19 +137,19 @@
             };
             $scope.logoutWithPromt = $scope.logoutWithPrompt;
             $scope.goOutPromt = $scope.goOutPrompt;
-            $scope.print = function (timeout) {
+            $scope.print = function(timeout) {
                 setTimeout($window.print, timeout || 5000);
             }
-            $scope.getTitle = function () {
+            $scope.getTitle = function() {
                 return angular.element('title').text();
             }
-            $scope.getSharePath = function (params) {
+            $scope.getSharePath = function(params) {
                 var query = $location.search();
                 params = params || {};
                 angular.copy(query, params);
                 return gsnApi.getFullPath($scope.currentPath + '?' + gsnApi.params(params));
             }
-            $scope.doToggleCartItem = function (evt, item, linkedItem) {
+            $scope.doToggleCartItem = function(evt, item, linkedItem) {
                 /// <summary>Toggle the shoping list item checked state</summary>
                 /// <param name="evt" type="Object">for passing in angular $event</param>
                 /// <param name="item" type="Object">shopping list item</param>
@@ -173,9 +173,9 @@
                 }
                 $rootScope.$broadcast('gsnevent:shoppinglist-toggle-item', item);
             };
-            $scope.$on('$routeChangeSuccess', function (evt, next, current) {
+            $scope.$on('$routeChangeSuccess', function(evt, next, current) {
                 if (typeof gmodal !== 'undefined') {
-                    $timeout(function () {
+                    $timeout(function() {
                         gmodal.hide();
                     }, 50);
                 }
@@ -184,7 +184,7 @@
                 }
             });
             // events handling
-            $scope.$on('$locationChangeStart', function (evt, nxt, current) {
+            $scope.$on('$locationChangeStart', function(evt, nxt, current) {
                 /// <summary>Listen to location change</summary>
                 /// <param name="evt" type="Object">Event object</param>
                 /// <param name="nxt" type="String">next location</param>
@@ -216,17 +216,17 @@
                 }
                 $scope.gvm.selectedItem = null;
             });
-            $scope.$on('gsnevent:profile-load-success', function (event, result) {
+            $scope.$on('gsnevent:profile-load-success', function(event, result) {
                 if (result.success) {
                     $scope.hasJustLoggedIn = false;
-                    gsnProfile.getProfile().then(function (rst) {
+                    gsnProfile.getProfile().then(function(rst) {
                         if (rst.success) {
                             $scope.gvm.profile = rst.response;
                         }
                     });
                 }
             });
-            $scope.$on('gsnevent:login-success', function (event, result) {
+            $scope.$on('gsnevent:login-success', function(event, result) {
                 $scope.isLoggedIn = gsnApi.isLoggedIn();
                 $analytics.eventTrack('SigninSuccess', {
                     category: result.payload.grant_type,
@@ -235,7 +235,7 @@
                 $scope.hasJustLoggedIn = true;
                 $scope.loggedInWithFacebook = (result.payload.grant_type == 'facebook');
             });
-            $scope.$on('gsnevent:login-failed', function (event, result) {
+            $scope.$on('gsnevent:login-failed', function(event, result) {
                 if (result.payload.grant_type == 'facebook') {
                     if (gsnApi.isLoggedIn()) return;
                     $scope.goUrl('/registration/facebook');
@@ -245,18 +245,18 @@
                     });
                 }
             });
-            $scope.$on('gsnevent:store-setid', function (event, result) {
-                gsnStore.getStore().then(function (store) {
+            $scope.$on('gsnevent:store-setid', function(event, result) {
+                gsnStore.getStore().then(function(store) {
                     $analytics.eventTrack('StoreSelected', {
                         category: store.StoreName,
                         label: store.StoreNumber + ''
                     });
                     $scope.gvm.currentStore = store;
-                    gsnProfile.getProfile().then(function (rst) {
+                    gsnProfile.getProfile().then(function(rst) {
                         if (rst.success) {
                             if (rst.response.PrimaryStoreId != store.StoreId) {
                                 // save selected store
-                                gsnProfile.selectStore(store.StoreId).then(function () {
+                                gsnProfile.selectStore(store.StoreId).then(function() {
                                     // broadcast persisted on server response
                                     $rootScope.$broadcast('gsnevent:store-persisted', store);
                                 });
@@ -265,21 +265,21 @@
                     });
                 });
             });
-            $scope.$on('gsnevent:circular-loading', function (event, data) {
+            $scope.$on('gsnevent:circular-loading', function(event, data) {
                 $scope.gvm.noCircular = true;
             });
-            $scope.$on('gsnevent:circular-loaded', function (event, data) {
+            $scope.$on('gsnevent:circular-loaded', function(event, data) {
                 $scope.gvm.noCircular = !data.success;
             });
             // trigger facebook init if there is appId
-            if (typeof (Facebook.isReady) !== 'undefined' && gsnApi.getConfig().FacebookAppId) {
-                $scope.$watch(function () {
+            if (typeof(Facebook.isReady) !== 'undefined' && gsnApi.getConfig().FacebookAppId) {
+                $scope.$watch(function() {
                     return Facebook.isReady(); // This is for convenience, to notify if Facebook is loaded and ready to go.
-                }, function (newVal) {
+                }, function(newVal) {
                     $scope.facebookReady = true; // You might want to use this to disable/show/hide buttons and else
                     if (gsnApi.isLoggedIn()) return;
                     // attempt to auto login facebook user
-                    Facebook.getLoginStatus(function (response) {
+                    Facebook.getLoginStatus(function(response) {
                         // only auto login for connected status
                         if (response.status == 'connected') {
                             $scope.validateRegistration(response);
@@ -287,13 +287,13 @@
                     });
                 });
             }
-            $scope.$on('gsnevent:closemodal', function () {
+            $scope.$on('gsnevent:closemodal', function() {
                 if (typeof gmodal !== 'undefined') {
                     gmodal.hide();
                 }
             });
             //#region analytics
-            $scope.$on('gsnevent:shoppinglistitem-updating', function (event, shoppingList, item) {
+            $scope.$on('gsnevent:shoppinglistitem-updating', function(event, shoppingList, item) {
                 var currentListId = gsnApi.getShoppingListId();
                 if (shoppingList.ShoppingListId == currentListId) {
                     try {
@@ -322,7 +322,7 @@
                     } catch (e) {}
                 }
             });
-            $scope.$on('gsnevent:shoppinglistitem-removing', function (event, shoppingList, item) {
+            $scope.$on('gsnevent:shoppinglistitem-removing', function(event, shoppingList, item) {
                 var currentListId = gsnApi.getShoppingListId();
                 if (shoppingList.ShoppingListId == currentListId) {
                     try {
@@ -407,7 +407,7 @@
                     $analytics.eventTrack(gsnApi.isNull(track.action, '') + actionName, track);
                     if (track.timedload) {
                         // trigger load ads event
-                        $timeout(function () {
+                        $timeout(function() {
                             $rootScope.$broadcast('gsnevent:loadads');
                         }, parseInt(track.timedload));
                     }
@@ -422,7 +422,7 @@
                     return;
                 }
                 for (var k in $window._tk.trackers) {
-                    $window._tk.trackers[k].on('track', function (item) {
+                    $window._tk.trackers[k].on('track', function(item) {
                         // populate with page url, storeid, consumerid, is anonymous
                         if (!item.dt) {
                             item.dt = $scope.currentPath;
