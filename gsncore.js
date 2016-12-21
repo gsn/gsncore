@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.8.59
+ * version 1.8.68
  * gsncore repository
- * Build date: Mon Dec 12 2016 11:24:39 GMT-0600 (CST)
+ * Build date: Tue Dec 20 2016 21:07:09 GMT-0600 (Central Standard Time)
  */
 ;(function() {
   'use strict';
@@ -4375,511 +4375,447 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
 
 // for handling everything globally
 (function(angular, undefined) {
-  'use strict';
-  var serviceId = 'gsnGlobal';
-  angular.module('gsn.core').service(serviceId, ['$window', '$location', '$timeout', '$route', 'gsnApi', 'gsnProfile', 'gsnStore', '$rootScope', 'Facebook', '$analytics', 'gsnYoutech', 'gsnDfp', 'gsnAdvertising', gsnGlobal]);
+    'use strict';
+    var serviceId = 'gsnGlobal';
+    angular.module('gsn.core').service(serviceId, ['$window', '$location', '$timeout', '$route', 'gsnApi', 'gsnProfile', 'gsnStore', '$rootScope', 'Facebook', '$analytics', 'gsnYoutech', 'gsnDfp', 'gsnAdvertising', '$anchorScroll', gsnGlobal]);
 
-  function gsnGlobal($window, $location, $timeout, $route, gsnApi, gsnProfile, gsnStore, $rootScope, Facebook, $analytics, gsnYoutech, gsnDfp, gsnAdvertising) {
-    var returnObj = {
-      init: init,
-      hasInit: false
-    };
-
-    return returnObj;
-
-    function init(initProfile, $scope) {
-      // prevent mulitple init
-      if (returnObj.hasInit) {
+    function gsnGlobal($window, $location, $timeout, $route, gsnApi, gsnProfile, gsnStore, $rootScope, Facebook, $analytics, gsnYoutech, gsnDfp, gsnAdvertising, $anchorScroll) {
+        var returnObj = {
+            init: init,
+            hasInit: false
+        };
         return returnObj;
-      }
-      returnObj.hasInit = true;
 
-
-      if (initProfile) {
-        gsnProfile.initialize();
-      }
-
-      gsnApi.gsn.$rootScope = $rootScope
-      $scope = $scope || $rootScope;
-      $scope.defaultLayout = gsnApi.getDefaultLayout(gsnApi.getThemeUrl('/views/layout.html'));
-      $scope.currentLayout = $scope.defaultLayout;
-      $scope.currentPath = '/';
-      $scope.gvm = {
-        loginCounter: 0,
-        menuInactive: false,
-        shoppingListActive: false,
-        profile: {},
-        noCircular: true,
-        reloadOnStoreSelection: false,
-        currentStore: {},
-        adsCollapsed: false
-      };
-      $scope.youtech = gsnYoutech;
-      $scope.search = {
-        site: '',
-        item: ''
-      };
-      $scope.facebookReady = false;
-      $scope.currentYear = new Date().getFullYear();
-      $scope.facebookData = {};
-      $scope.hasJustLoggedIn = false;
-      $scope.loggedInWithFacebook = false;
-      $scope.ChainName = gsnApi.getChainName();
-      $scope.isLoggedIn = gsnApi.isLoggedIn();
-      $scope.reload = gsnApi.reload;
-      $scope.broadcastEvent = $rootScope.$broadcast;
-      $scope.goUrl = gsnApi.goUrl;
-      $scope.encodeURIComponent = encodeURIComponent;
-      $scope.isOnList = gsnProfile.isOnList;
-      $scope.getShoppingListCount = gsnProfile.getShoppingListCount;
-      $scope.$win = $window;
-      $scope.seo = {};
-      $scope._tk = $window._tk;
-
-      $scope.validateRegistration = function(rsp) {
-        // attempt to authenticate user with facebook
-        // get token
-        $scope.facebookData.accessToken = rsp.authResponse.accessToken;
-
-        // get email
-        Facebook.api('/me?fields=id,name,email', function(response) {
-          $scope.facebookData.user = response;
-
-          if (response.email) {
-            // if user is already logged in, don't do it again
-            if (gsnApi.isLoggedIn()) return;
-
-            // attempt to authenticate
-            gsnProfile.loginFacebook(response.email, $scope.facebookData.accessToken);
-          }
-        });
-      };
-
-      $scope.doFacebookLogin = function() {
-        Facebook.getLoginStatus(function(response) {
-          if (response.status == 'connected' && response.authResponse.accessToken) {
-            $scope.validateRegistration(response);
-          } else {
-            Facebook.login(function(rsp) {
-              if (rsp.authResponse) {
-                $scope.validateRegistration(rsp);
-              }
-            }, {
-              scope: gsnApi.getFacebookPermission()
-            });
-          }
-        });
-      };
-
-      $scope.doIfLoggedIn = function(callbackFunc) {
-        if ($scope.isLoggedIn) {
-          callbackFunc();
-        } else {
-          $scope.gvm.loginCounter++;
-        }
-      };
-
-      $scope.clearSelection = gsnApi.clearSelection;
-      $scope.getBindableItem = gsnApi.getBindableItem;
-      $scope.updateBindableItem = gsnApi.getBindableItem;
-
-      $scope.doSiteSearch = function() {
-        $scope.goUrl('/search?q=' + encodeURIComponent($scope.search.site));
-      };
-
-      $scope.doItemSearch = function() {
-        $scope.goUrl('/product/search?q=' + encodeURIComponent($scope.search.item));
-      };
-
-      $scope.getPageCount = gsnApi.getPageCount;
-      $scope.getFullPath = gsnApi.getFullPath;
-      $scope.decodeServerUrl = gsnApi.decodeServerUrl;
-
-      $scope.goBack = function() {
-        /// <summary>Cause browser to go back.</summary>
-
-        if ($scope.currentPath != '/') {
-          gsnApi.goBack();
-        }
-      };
-
-      $scope.logout = function() {
-        gsnProfile.logOut();
-        $scope.isLoggedIn = gsnApi.isLoggedIn();
-
-        if ($scope.loggedInWithFacebook) {
-          $scope.loggedInWithFacebook = false;
-          Facebook.logout();
-        }
-
-        // allow time to logout
-        $timeout(function() {
-          // reload the page to refresh page status on logout
-          if ($scope.currentPath == '/') {
-            gsnApi.reload();
-          } else {
-            $scope.goUrl('/');
-          }
-        }, 500);
-      };
-
-      $scope.logoutWithPrompt = function() {
-        try {
-          $scope.goOutPrompt(null, '/', $scope.logout, true);
-        } catch (e) {
-          $scope.logout();
-        }
-
-      };
-
-      $scope.logoutWithPromt = $scope.logoutWithPrompt;
-      $scope.goOutPromt = $scope.goOutPrompt;
-      $scope.print = function(timeout) {
-        setTimeout($window.print, timeout || 5000);
-      }
-
-      $scope.getTitle = function() {
-        return angular.element('title').text();
-      }
-
-      $scope.getSharePath = function(params) {
-        var query = $location.search();
-        params = params || {};
-        angular.copy(query, params);
-
-        return gsnApi.getFullPath($scope.currentPath + '?' + gsnApi.params(params));
-      }
-
-      $scope.doToggleCartItem = function(evt, item, linkedItem) {
-        /// <summary>Toggle the shoping list item checked state</summary>
-        /// <param name="evt" type="Object">for passing in angular $event</param>
-        /// <param name="item" type="Object">shopping list item</param>
-
-        if (item.ItemTypeId == 3) {
-          item.Quantity = gsnApi.isNaN(parseInt(item.SalePriceMultiple || item.PriceMultiple || 1), 1);
-        }
-
-        if (gsnProfile.isOnList(item)) {
-          gsnProfile.removeItem(item);
-        } else {
-
-          if (linkedItem) {
-            item.OldQuantity = item.Quantity;
-            item.Quantity = linkedItem.NewQuantity;
-          }
-
-          gsnProfile.addItem(item);
-
-          if (item.ItemTypeId == 8) {
-
-            if (gsnApi.isNull(item.Varieties, null) === null) {
-              item.Varieties = [];
+        function init(initProfile, $scope) {
+            // prevent mulitple init
+            if (returnObj.hasInit) {
+                return returnObj;
             }
-
-            $scope.gvm.selectedItem = item;
-          }
-        }
-
-        $rootScope.$broadcast('gsnevent:shoppinglist-toggle-item', item);
-      };
-
-      $scope.$on('$routeChangeSuccess', function(evt, next, current) {
-        if (typeof gmodal !== 'undefined') {
-          $timeout(function() {
-            gmodal.hide();
-          }, 50);
-        }
-      });
-      // events handling
-
-      $scope.$on('$locationChangeStart', function(evt, nxt, current) {
-        /// <summary>Listen to location change</summary>
-        /// <param name="evt" type="Object">Event object</param>
-        /// <param name="nxt" type="String">next location</param>
-        /// <param name="current" type="String">current location</param>
-
-        var next = $route.routes[$location.path()];
-        if (!next)
-          next = {};
-
-        // store the new route location
-        $scope.seo = next.seo || {};
-        $scope.currentPath = angular.lowercase(gsnApi.isNull($location.path(), ''));
-        $scope.friendlyPath = $scope.currentPath.replace('/', '').replace(/\/+/gi, '-');
-        $scope.gvm.search = $location.search();
-        $scope.gvm.menuInactive = false;
-        $scope.gvm.shoppingListActive = false;
-        if (next.requireLogin && !$scope.isLoggedIn) {
-          evt.preventDefault();
-          $scope.goUrl('/signin?fromUrl=' + encodeURIComponent($location.url()));
-          return;
-        }
-
-        // handle storeRequired attribute
-        if (next.storeRequired) {
-          if (gsnApi.isNull(gsnApi.getSelectedStoreId(), 0) <= 0) {
-            $scope.goUrl('/storelocator?fromUrl=' + encodeURIComponent($location.url()));
-            return;
-          }
-        }
-
-        $scope.currentLayout = $scope.defaultLayout;
-        if (gsnApi.isNull(next.layout, '').length > 0) {
-          $scope.currentLayout = next.layout;
-        }
-
-        $scope.gvm.selectedItem = null;
-      });
-
-      $scope.$on('gsnevent:profile-load-success', function(event, result) {
-        if (result.success) {
-          $scope.hasJustLoggedIn = false;
-
-          gsnProfile.getProfile().then(function(rst) {
-            if (rst.success) {
-              $scope.gvm.profile = rst.response;
+            returnObj.hasInit = true;
+            if (initProfile) {
+                gsnProfile.initialize();
             }
-          });
-        }
-      });
-
-      $scope.$on('gsnevent:login-success', function(event, result) {
-        $scope.isLoggedIn = gsnApi.isLoggedIn();
-        $analytics.eventTrack('SigninSuccess', {
-          category: result.payload.grant_type,
-          label: result.response.user_id
-        });
-        $scope.hasJustLoggedIn = true;
-        $scope.loggedInWithFacebook = (result.payload.grant_type == 'facebook');
-      });
-
-      $scope.$on('gsnevent:login-failed', function(event, result) {
-        if (result.payload.grant_type == 'facebook') {
-          if (gsnApi.isLoggedIn()) return;
-
-          $scope.goUrl('/registration/facebook');
-
-          $analytics.eventTrack('SigninFailed', {
-            category: result.payload.grant_type,
-            label: gsnApi.getProfileId()
-          });
-        }
-      });
-
-      $scope.$on('gsnevent:store-setid', function(event, result) {
-        gsnStore.getStore().then(function(store) {
-          $analytics.eventTrack('StoreSelected', {
-            category: store.StoreName,
-            label: store.StoreNumber + ''
-          });
-          $scope.gvm.currentStore = store;
-
-          gsnProfile.getProfile().then(function(rst) {
-            if (rst.success) {
-              if (rst.response.PrimaryStoreId != store.StoreId) {
-                // save selected store
-                gsnProfile.selectStore(store.StoreId).then(function() {
-                  // broadcast persisted on server response
-                  $rootScope.$broadcast('gsnevent:store-persisted', store);
+            gsnApi.gsn.$rootScope = $rootScope
+            $scope = $scope || $rootScope;
+            $scope.defaultLayout = gsnApi.getDefaultLayout(gsnApi.getThemeUrl('/views/layout.html'));
+            $scope.currentLayout = $scope.defaultLayout;
+            $scope.currentPath = '/';
+            $scope.gvm = {
+                loginCounter: 0,
+                menuInactive: false,
+                shoppingListActive: false,
+                profile: {},
+                noCircular: true,
+                reloadOnStoreSelection: false,
+                currentStore: {},
+                adsCollapsed: false
+            };
+            $scope.youtech = gsnYoutech;
+            $scope.search = {
+                site: '',
+                item: ''
+            };
+            $scope.facebookReady = false;
+            $scope.currentYear = new Date().getFullYear();
+            $scope.facebookData = {};
+            $scope.hasJustLoggedIn = false;
+            $scope.loggedInWithFacebook = false;
+            $scope.ChainName = gsnApi.getChainName();
+            $scope.isLoggedIn = gsnApi.isLoggedIn();
+            $scope.reload = gsnApi.reload;
+            $scope.broadcastEvent = $rootScope.$broadcast;
+            $scope.goUrl = gsnApi.goUrl;
+            $scope.encodeURIComponent = encodeURIComponent;
+            $scope.isOnList = gsnProfile.isOnList;
+            $scope.getShoppingListCount = gsnProfile.getShoppingListCount;
+            $scope.$win = $window;
+            $scope.seo = {};
+            $scope._tk = $window._tk;
+            $scope.validateRegistration = function(rsp) {
+                // attempt to authenticate user with facebook
+                // get token
+                $scope.facebookData.accessToken = rsp.authResponse.accessToken;
+                // get email
+                Facebook.api('/me?fields=id,name,email', function(response) {
+                    $scope.facebookData.user = response;
+                    if (response.email) {
+                        // if user is already logged in, don't do it again
+                        if (gsnApi.isLoggedIn()) return;
+                        // attempt to authenticate
+                        gsnProfile.loginFacebook(response.email, $scope.facebookData.accessToken);
+                    }
                 });
-              }
+            };
+            $scope.doFacebookLogin = function() {
+                Facebook.getLoginStatus(function(response) {
+                    if (response.status == 'connected' && response.authResponse.accessToken) {
+                        $scope.validateRegistration(response);
+                    } else {
+                        Facebook.login(function(rsp) {
+                            if (rsp.authResponse) {
+                                $scope.validateRegistration(rsp);
+                            }
+                        }, {
+                            scope: gsnApi.getFacebookPermission()
+                        });
+                    }
+                });
+            };
+            $scope.doIfLoggedIn = function(callbackFunc) {
+                if ($scope.isLoggedIn) {
+                    callbackFunc();
+                } else {
+                    $scope.gvm.loginCounter++;
+                }
+            };
+            $scope.clearSelection = gsnApi.clearSelection;
+            $scope.getBindableItem = gsnApi.getBindableItem;
+            $scope.updateBindableItem = gsnApi.getBindableItem;
+            $scope.doSiteSearch = function() {
+                $scope.goUrl('/search?q=' + encodeURIComponent($scope.search.site));
+            };
+            $scope.doItemSearch = function() {
+                $scope.goUrl('/product/search?q=' + encodeURIComponent($scope.search.item));
+            };
+            $scope.getPageCount = gsnApi.getPageCount;
+            $scope.getFullPath = gsnApi.getFullPath;
+            $scope.decodeServerUrl = gsnApi.decodeServerUrl;
+            $scope.goBack = function() {
+                /// <summary>Cause browser to go back.</summary>
+                if ($scope.currentPath != '/') {
+                    gsnApi.goBack();
+                }
+            };
+            $scope.logout = function() {
+                gsnProfile.logOut();
+                $scope.isLoggedIn = gsnApi.isLoggedIn();
+                if ($scope.loggedInWithFacebook) {
+                    $scope.loggedInWithFacebook = false;
+                    Facebook.logout();
+                }
+                // allow time to logout
+                $timeout(function() {
+                    // reload the page to refresh page status on logout
+                    if ($scope.currentPath == '/') {
+                        gsnApi.reload();
+                    } else {
+                        $scope.goUrl('/');
+                    }
+                }, 500);
+            };
+            $scope.logoutWithPrompt = function() {
+                try {
+                    $scope.goOutPrompt(null, '/', $scope.logout, true);
+                } catch (e) {
+                    $scope.logout();
+                }
+            };
+            $scope.logoutWithPromt = $scope.logoutWithPrompt;
+            $scope.goOutPromt = $scope.goOutPrompt;
+            $scope.print = function(timeout) {
+                setTimeout($window.print, timeout || 5000);
             }
-          });
-        });
-      });
-
-      $scope.$on('gsnevent:circular-loading', function(event, data) {
-        $scope.gvm.noCircular = true;
-      });
-
-      $scope.$on('gsnevent:circular-loaded', function(event, data) {
-        $scope.gvm.noCircular = !data.success;
-      });
-
-      // trigger facebook init if there is appId
-      if (typeof (Facebook.isReady) !== 'undefined' && gsnApi.getConfig().FacebookAppId) {
-        $scope.$watch(function() {
-          return Facebook.isReady(); // This is for convenience, to notify if Facebook is loaded and ready to go.
-        }, function(newVal) {
-          $scope.facebookReady = true; // You might want to use this to disable/show/hide buttons and else
-
-          if (gsnApi.isLoggedIn()) return;
-
-          // attempt to auto login facebook user
-          Facebook.getLoginStatus(function(response) {
-            // only auto login for connected status
-            if (response.status == 'connected') {
-              $scope.validateRegistration(response);
+            $scope.getTitle = function() {
+                return angular.element('title').text();
             }
-          });
-        });
-      }
-
-      $scope.$on('gsnevent:closemodal', function() {
-        if (typeof gmodal !== 'undefined') {
-          gmodal.hide();
-        }
-      });
-
-      //#region analytics
-      $scope.$on('gsnevent:shoppinglistitem-updating', function(event, shoppingList, item) {
-        var currentListId = gsnApi.getShoppingListId();
-        if (shoppingList.ShoppingListId == currentListId) {
-
-          try {
-            var cat = gsnStore.getCategories()[item.CategoryId];
-            var evt = 'MiscItemAddUpdate';
-            if (item.ItemTypeId == 8) {
-              evt = 'CircularItemAddUpdate';
-            } else if (item.ItemTypeId == 2) {
-              evt = 'ManufacturerCouponAddUpdate';
-            } else if (item.ItemTypeId == 3) {
-              evt = 'ProductAddUpdate';
-            } else if (item.ItemTypeId == 5) {
-              evt = 'RecipeIngredientAddUpdate';
-            } else if (item.ItemTypeId == 6) {
-              evt = 'OwnItemAddUpdate';
-            } else if (item.ItemTypeId == 10) {
-              evt = 'StoreCouponAddUpdate';
-            } else if (item.ItemTypeId == 13) {
-              evt = 'YoutechCouponAddUpdate';
+            $scope.getSharePath = function(params) {
+                var query = $location.search();
+                params = params || {};
+                angular.copy(query, params);
+                return gsnApi.getFullPath($scope.currentPath + '?' + gsnApi.params(params));
             }
-
-            $analytics.eventTrack(evt, {
-              category: (item.ItemTypeId == 13) ? item.ExtCategory : cat.CategoryName,
-              label: item.Description,
-              item: item
+            $scope.doToggleCartItem = function(evt, item, linkedItem) {
+                /// <summary>Toggle the shoping list item checked state</summary>
+                /// <param name="evt" type="Object">for passing in angular $event</param>
+                /// <param name="item" type="Object">shopping list item</param>
+                if (item.ItemTypeId == 3) {
+                    item.Quantity = gsnApi.isNaN(parseInt(item.SalePriceMultiple || item.PriceMultiple || 1), 1);
+                }
+                if (gsnProfile.isOnList(item)) {
+                    gsnProfile.removeItem(item);
+                } else {
+                    if (linkedItem) {
+                        item.OldQuantity = item.Quantity;
+                        item.Quantity = linkedItem.NewQuantity;
+                    }
+                    gsnProfile.addItem(item);
+                    if (item.ItemTypeId == 8) {
+                        if (gsnApi.isNull(item.Varieties, null) === null) {
+                            item.Varieties = [];
+                        }
+                        $scope.gvm.selectedItem = item;
+                    }
+                }
+                $rootScope.$broadcast('gsnevent:shoppinglist-toggle-item', item);
+            };
+            $scope.$on('$routeChangeSuccess', function(evt, next, current) {
+                if (typeof gmodal !== 'undefined') {
+                    $timeout(function() {
+                        gmodal.hide();
+                    }, 50);
+                }
+                if ($location.hash()) {
+                    $timeout(function() {
+                        $anchorScroll();
+                    }, 1000);
+                }
             });
-          } catch (e) {}
-        }
-      });
-
-      $scope.$on('gsnevent:shoppinglistitem-removing', function(event, shoppingList, item) {
-        var currentListId = gsnApi.getShoppingListId();
-        if (shoppingList.ShoppingListId == currentListId) {
-          try {
-            var cat = gsnStore.getCategories()[item.CategoryId],
-              coupon = null,
-              itemId = item.ItemId;
-
-            if (item.ItemTypeId == 8) {
-              $analytics.eventTrack('CircularItemRemove', {
-                category: cat.CategoryName,
-                label: item.Description,
-                item: item
-              });
-            } else if (item.ItemTypeId == 2) {
-              coupon = gsnStore.getCoupon(item.ItemId, 2);
-              if (coupon) {
-                item = coupon;
-                if (gsnApi.isNull(item.ProductCode, '').length > 0) {
-                  itemId = item.ProductCode;
+            // events handling
+            $scope.$on('$locationChangeStart', function(evt, nxt, current) {
+                /// <summary>Listen to location change</summary>
+                /// <param name="evt" type="Object">Event object</param>
+                /// <param name="nxt" type="String">next location</param>
+                /// <param name="current" type="String">current location</param>
+                var next = $route.routes[$location.path()];
+                if (!next) next = {};
+                // store the new route location
+                $scope.seo = next.seo || {};
+                $scope.currentPath = angular.lowercase(gsnApi.isNull($location.path(), ''));
+                $scope.friendlyPath = $scope.currentPath.replace('/', '').replace(/\/+/gi, '-');
+                $scope.gvm.search = $location.search();
+                $scope.gvm.menuInactive = false;
+                $scope.gvm.shoppingListActive = false;
+                if (next.requireLogin && !$scope.isLoggedIn) {
+                    evt.preventDefault();
+                    $scope.goUrl('/signin?fromUrl=' + encodeURIComponent($location.url()));
+                    return;
                 }
-              }
-              $analytics.eventTrack('ManufacturerCouponRemove', {
-                category: cat.CategoryName,
-                label: item.Description,
-                item: item
-              });
-            } else if (item.ItemTypeId == 3) {
-              $analytics.eventTrack('ProductRemove', {
-                category: cat.CategoryName,
-                label: item.Description,
-                item: item
-              });
-            } else if (item.ItemTypeId == 5) {
-              $analytics.eventTrack('RecipeIngredientRemove', {
-                category: cat.CategoryName,
-                label: item.Description,
-                item: item
-              });
-            } else if (item.ItemTypeId == 6) {
-              $analytics.eventTrack('OwnItemRemove', {
-                label: item.Description
-              });
-            } else if (item.ItemTypeId == 10) {
-              coupon = gsnStore.getCoupon(item.ItemId, 10);
-              if (coupon) {
-                item = coupon;
-                if (gsnApi.isNull(item.ProductCode, '').length > 0) {
-                  itemId = item.ProductCode;
+                // handle storeRequired attribute
+                if (next.storeRequired) {
+                    if (gsnApi.isNull(gsnApi.getSelectedStoreId(), 0) <= 0) {
+                        $scope.goUrl('/storelocator?fromUrl=' + encodeURIComponent($location.url()));
+                        return;
+                    }
                 }
-              }
-              $analytics.eventTrack('StoreCouponRemove', {
-                category: cat.CategoryName,
-                label: item.Description,
-                item: item
-              });
-            } else if (item.ItemTypeId == 13) {
-              coupon = gsnStore.getCoupon(item.ItemId, 13);
-              if (coupon) {
-                item = coupon;
-                if (gsnApi.isNull(item.ProductCode, '').length > 0) {
-                  itemId = item.ProductCode;
+                $scope.currentLayout = $scope.defaultLayout;
+                if (gsnApi.isNull(next.layout, '').length > 0) {
+                    $scope.currentLayout = next.layout;
                 }
-              }
-              $analytics.eventTrack('YoutechCouponRemove', {
-                category: item.ExtCategory,
-                label: item.Description,
-                item: item
-              });
-            } else {
-              $analytics.eventTrack('MiscItemRemove', {
-                category: cat.CategoryName,
-                label: item.Description,
-                item: item
-              });
+                $scope.gvm.selectedItem = null;
+            });
+            $scope.$on('gsnevent:profile-load-success', function(event, result) {
+                if (result.success) {
+                    $scope.hasJustLoggedIn = false;
+                    gsnProfile.getProfile().then(function(rst) {
+                        if (rst.success) {
+                            $scope.gvm.profile = rst.response;
+                        }
+                    });
+                }
+            });
+            $scope.$on('gsnevent:login-success', function(event, result) {
+                $scope.isLoggedIn = gsnApi.isLoggedIn();
+                $analytics.eventTrack('SigninSuccess', {
+                    category: result.payload.grant_type,
+                    label: result.response.user_id
+                });
+                $scope.hasJustLoggedIn = true;
+                $scope.loggedInWithFacebook = (result.payload.grant_type == 'facebook');
+            });
+            $scope.$on('gsnevent:login-failed', function(event, result) {
+                if (result.payload.grant_type == 'facebook') {
+                    if (gsnApi.isLoggedIn()) return;
+                    $scope.goUrl('/registration/facebook');
+                    $analytics.eventTrack('SigninFailed', {
+                        category: result.payload.grant_type,
+                        label: gsnApi.getProfileId()
+                    });
+                }
+            });
+            $scope.$on('gsnevent:store-setid', function(event, result) {
+                gsnStore.getStore().then(function(store) {
+                    $analytics.eventTrack('StoreSelected', {
+                        category: store.StoreName,
+                        label: store.StoreNumber + ''
+                    });
+                    $scope.gvm.currentStore = store;
+                    gsnProfile.getProfile().then(function(rst) {
+                        if (rst.success) {
+                            if (rst.response.PrimaryStoreId != store.StoreId) {
+                                // save selected store
+                                gsnProfile.selectStore(store.StoreId).then(function() {
+                                    // broadcast persisted on server response
+                                    $rootScope.$broadcast('gsnevent:store-persisted', store);
+                                });
+                            }
+                        }
+                    });
+                });
+            });
+            $scope.$on('gsnevent:circular-loading', function(event, data) {
+                $scope.gvm.noCircular = true;
+            });
+            $scope.$on('gsnevent:circular-loaded', function(event, data) {
+                $scope.gvm.noCircular = !data.success;
+            });
+            // trigger facebook init if there is appId
+            if (typeof(Facebook.isReady) !== 'undefined' && gsnApi.getConfig().FacebookAppId) {
+                $scope.$watch(function() {
+                    return Facebook.isReady(); // This is for convenience, to notify if Facebook is loaded and ready to go.
+                }, function(newVal) {
+                    $scope.facebookReady = true; // You might want to use this to disable/show/hide buttons and else
+                    if (gsnApi.isLoggedIn()) return;
+                    // attempt to auto login facebook user
+                    Facebook.getLoginStatus(function(response) {
+                        // only auto login for connected status
+                        if (response.status == 'connected') {
+                            $scope.validateRegistration(response);
+                        }
+                    });
+                });
             }
-          } catch (e) {}
-        }
-      });
+            $scope.$on('gsnevent:closemodal', function() {
+                if (typeof gmodal !== 'undefined') {
+                    gmodal.hide();
+                }
+            });
+            //#region analytics
+            $scope.$on('gsnevent:shoppinglistitem-updating', function(event, shoppingList, item) {
+                var currentListId = gsnApi.getShoppingListId();
+                if (shoppingList.ShoppingListId == currentListId) {
+                    try {
+                        var cat = gsnStore.getCategories()[item.CategoryId];
+                        var evt = 'MiscItemAddUpdate';
+                        if (item.ItemTypeId == 8) {
+                            evt = 'CircularItemAddUpdate';
+                        } else if (item.ItemTypeId == 2) {
+                            evt = 'ManufacturerCouponAddUpdate';
+                        } else if (item.ItemTypeId == 3) {
+                            evt = 'ProductAddUpdate';
+                        } else if (item.ItemTypeId == 5) {
+                            evt = 'RecipeIngredientAddUpdate';
+                        } else if (item.ItemTypeId == 6) {
+                            evt = 'OwnItemAddUpdate';
+                        } else if (item.ItemTypeId == 10) {
+                            evt = 'StoreCouponAddUpdate';
+                        } else if (item.ItemTypeId == 13) {
+                            evt = 'YoutechCouponAddUpdate';
+                        }
+                        $analytics.eventTrack(evt, {
+                            category: (item.ItemTypeId == 13) ? item.ExtCategory : cat.CategoryName,
+                            label: item.Description,
+                            item: item
+                        });
+                    } catch (e) {}
+                }
+            });
+            $scope.$on('gsnevent:shoppinglistitem-removing', function(event, shoppingList, item) {
+                var currentListId = gsnApi.getShoppingListId();
+                if (shoppingList.ShoppingListId == currentListId) {
+                    try {
+                        var cat = gsnStore.getCategories()[item.CategoryId],
+                            coupon = null,
+                            itemId = item.ItemId;
+                        if (item.ItemTypeId == 8) {
+                            $analytics.eventTrack('CircularItemRemove', {
+                                category: cat.CategoryName,
+                                label: item.Description,
+                                item: item
+                            });
+                        } else if (item.ItemTypeId == 2) {
+                            coupon = gsnStore.getCoupon(item.ItemId, 2);
+                            if (coupon) {
+                                item = coupon;
+                                if (gsnApi.isNull(item.ProductCode, '').length > 0) {
+                                    itemId = item.ProductCode;
+                                }
+                            }
+                            $analytics.eventTrack('ManufacturerCouponRemove', {
+                                category: cat.CategoryName,
+                                label: item.Description,
+                                item: item
+                            });
+                        } else if (item.ItemTypeId == 3) {
+                            $analytics.eventTrack('ProductRemove', {
+                                category: cat.CategoryName,
+                                label: item.Description,
+                                item: item
+                            });
+                        } else if (item.ItemTypeId == 5) {
+                            $analytics.eventTrack('RecipeIngredientRemove', {
+                                category: cat.CategoryName,
+                                label: item.Description,
+                                item: item
+                            });
+                        } else if (item.ItemTypeId == 6) {
+                            $analytics.eventTrack('OwnItemRemove', {
+                                label: item.Description
+                            });
+                        } else if (item.ItemTypeId == 10) {
+                            coupon = gsnStore.getCoupon(item.ItemId, 10);
+                            if (coupon) {
+                                item = coupon;
+                                if (gsnApi.isNull(item.ProductCode, '').length > 0) {
+                                    itemId = item.ProductCode;
+                                }
+                            }
+                            $analytics.eventTrack('StoreCouponRemove', {
+                                category: cat.CategoryName,
+                                label: item.Description,
+                                item: item
+                            });
+                        } else if (item.ItemTypeId == 13) {
+                            coupon = gsnStore.getCoupon(item.ItemId, 13);
+                            if (coupon) {
+                                item = coupon;
+                                if (gsnApi.isNull(item.ProductCode, '').length > 0) {
+                                    itemId = item.ProductCode;
+                                }
+                            }
+                            $analytics.eventTrack('YoutechCouponRemove', {
+                                category: item.ExtCategory,
+                                label: item.Description,
+                                item: item
+                            });
+                        } else {
+                            $analytics.eventTrack('MiscItemRemove', {
+                                category: cat.CategoryName,
+                                label: item.Description,
+                                item: item
+                            });
+                        }
+                    } catch (e) {}
+                }
+            });
 
-      function gsnModalTracking(evt, el, track) {
-        var actionName = evt.name.replace("gsnevent:", "-")
-        if (track) {
-          $analytics.eventTrack(gsnApi.isNull(track.action, '') + actionName, track);
-
-          if (track.timedload) {
-            // trigger load ads event
-            $timeout(function() {
-              $rootScope.$broadcast('gsnevent:loadads');
-            }, parseInt(track.timedload));
-          }
-        }
-      }
-
-      $scope.$on('gsnevent:gsnmodal-hide', gsnModalTracking);
-      $scope.$on('gsnevent:gsnmodal-show', gsnModalTracking);
-
-      function doTrakless() {
-        if (gsnApi.isNull($window._tk, null) === null) {
-          $timeout(doTrakless, 50);
-          return;
-        }
-        for (var k in $window._tk.trackers) {
-          $window._tk.trackers[k].on('track', function(item) {
-            // populate with page url, storeid, consumerid, is anonymous
-            if (!item.dt) {
-              item.dt = $scope.currentPath;
+            function gsnModalTracking(evt, el, track) {
+                var actionName = evt.name.replace("gsnevent:", "-")
+                if (track) {
+                    $analytics.eventTrack(gsnApi.isNull(track.action, '') + actionName, track);
+                    if (track.timedload) {
+                        // trigger load ads event
+                        $timeout(function() {
+                            $rootScope.$broadcast('gsnevent:loadads');
+                        }, parseInt(track.timedload));
+                    }
+                }
             }
+            $scope.$on('gsnevent:gsnmodal-hide', gsnModalTracking);
+            $scope.$on('gsnevent:gsnmodal-show', gsnModalTracking);
 
-            item.stid = gsnApi.getSelectedStoreId();
-            item.anon = gsnApi.isLoggedIn();
-
-            var profile = $scope.gvm.profile || {};
-            if (profile.Id)
-              item.uid = profile.Id;
-            if (profile.ExternalId)
-              item.loyid = profile.ExternalId;
-          });
-        }
-      }
-
-    //#endregion
-    } // init
-  }
+            function doTrakless() {
+                if (gsnApi.isNull($window._tk, null) === null) {
+                    $timeout(doTrakless, 50);
+                    return;
+                }
+                for (var k in $window._tk.trackers) {
+                    $window._tk.trackers[k].on('track', function(item) {
+                        // populate with page url, storeid, consumerid, is anonymous
+                        if (!item.dt) {
+                            item.dt = $scope.currentPath;
+                        }
+                        item.stid = gsnApi.getSelectedStoreId();
+                        item.anon = gsnApi.isLoggedIn();
+                        var profile = $scope.gvm.profile || {};
+                        if (profile.Id) item.uid = profile.Id;
+                        if (profile.ExternalId) item.loyid = profile.ExternalId;
+                    });
+                }
+            }
+            //#endregion
+        } // init
+    }
 })(angular);
-
 (function (angular, undefined) {
   'use strict';
   var serviceId = 'gsnList';
@@ -5375,264 +5311,196 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
 
 // collection of misc service and factory
 (function (angular, undefined) {
-  'use strict';
-  var myModule = angular.module('gsn.core');
-
-  /**
-   * allow for cross platform notification
-   */
-  myModule.service('$notification', ['$rootScope', '$window', function ($rootScope, $window) {
-    var service = {
-      alert: function (message) {
-        if (!$window.isPhoneGap) {
-          gmodal.show({content: '<div class="myModalForm" style="display: block"><div class="modal-dialog"><div class="modal-content"><div class="modal-body">' + message + '<br /><br/><button class="btn btn-default gmodal-close pull-right" style="width: 80px" data-ng-click="closeModal()">OK</button><br /></div></div></div></div>', hideOn: "click,esc,tap"})
-          return;
-        }
-
-        navigator.notification.alert(message, null, '', 'OK');
-      },
-      confirm: function (message, callbackFn, title, buttonLabels) {
-        if (gsn.isNull(buttonLabels, null) === null) {
-          buttonLabels = 'OK,Cancel';
-        }
-
-        if (!$window.isPhoneGap) {
-          callbackFn($window.confirm(message) ? 1 : 2);
-          return;
-        }
-
-        navigator.notification.confirm(
-                message,       // message
-                callbackFn,    // callback to invoke with index of button pressed
-                title,         // title
-                buttonLabels.split(',')   // buttonLabels
-            );
-      },
-      prompt: function (message, callbackFn, title, defaultText, buttonLabels) {
-        if (gsn.isNull(buttonLabels, null) === null) {
-          buttonLabels = 'OK,Cancel';
-        }
-        if (gsn.isNull(defaultText, null) === null) {
-          defaultText = '';
-        }
-
-        if (!$window.isPhoneGap) {
-          var answer = $window.prompt(message, defaultText);
-          callbackFn({
-            buttonIndex: (answer ? 1 : 2),
-            input1: answer
-          });
-          return;
-        }
-
-        navigator.notification.prompt(
-           message,        // message
-           callbackFn,     // callback to invoke
-           title,          // title
-           buttonLabels.split(','),
-           defaultText
-       );
-      }
-    };
-
-    return service;
-  }]);
-
-  // debounce: for performance
-  myModule.factory('debounce', ['$timeout', function($timeout) {
-    // The service is actually this function, which we call with the func
-    // that should be debounced and how long to wait in between calls
-    return function debounce(func, wait, immediate) {
-      var timeout;
-      return function() {
-        var context = this, args = arguments;
-        var later = function() {
-          timeout = null;
-          if (!immediate) func.apply(context, args);
+    'use strict';
+    var myModule = angular.module('gsn.core');
+    /**
+     * allow for cross platform notification
+     */
+    myModule.service('$notification', ['$rootScope', '$window', function ($rootScope, $window) {
+        var service = {
+            alert: function (message) {
+                if (!$window.isPhoneGap) {
+                    gmodal.show({
+                        content: '<div class="myModalForm" style="display: block"><div class="modal-dialog"><div class="modal-content"><div class="modal-body">' + message + '<br /><br/><button class="btn btn-default gmodal-close pull-right" style="width: 80px" data-ng-click="closeModal()">OK</button><br /></div></div></div></div>',
+                        hideOn: "click,esc,tap"
+                    })
+                    return;
+                }
+                navigator.notification.alert(message, null, '', 'OK');
+            },
+            confirm: function (message, callbackFn, title, buttonLabels) {
+                if (gsn.isNull(buttonLabels, null) === null) {
+                    buttonLabels = 'OK,Cancel';
+                }
+                if (!$window.isPhoneGap) {
+                    callbackFn($window.confirm(message) ? 1 : 2);
+                    return;
+                }
+                navigator.notification.confirm(message, // message
+                    callbackFn, // callback to invoke with index of button pressed
+                    title, // title
+                    buttonLabels.split(',') // buttonLabels
+                );
+            },
+            prompt: function (message, callbackFn, title, defaultText, buttonLabels) {
+                if (gsn.isNull(buttonLabels, null) === null) {
+                    buttonLabels = 'OK,Cancel';
+                }
+                if (gsn.isNull(defaultText, null) === null) {
+                    defaultText = '';
+                }
+                if (!$window.isPhoneGap) {
+                    var answer = $window.prompt(message, defaultText);
+                    callbackFn({
+                        buttonIndex: (answer ? 1 : 2),
+                        input1: answer
+                    });
+                    return;
+                }
+                navigator.notification.prompt(message, // message
+                    callbackFn, // callback to invoke
+                    title, // title
+                    buttonLabels.split(','), defaultText);
+            }
         };
-        var callNow = immediate && !timeout;
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-        if (callNow) func.apply(context, args);
-      };
-    };
-  }]);
-
-  // FeedService: google feed
-  myModule.factory('FeedService', ['$http', 'gsnApi', function ($http, gsnApi) {
-    return {
-      parseFeed: function (url, maxResult) {
-        return $http.jsonp('//ajax.googleapis.com/ajax/services/feed/load?v=1.0&num=' + gsnApi.isNull(maxResult, 50) + '&callback=JSON_CALLBACK&q=' + encodeURIComponent(url));
-      }
-    };
-  }]);
-
-  // gsnAuthenticationHandler to handle expired refresh token
-  myModule.factory('gsnAuthenticationHandler', ['$rootScope', '$q', function ($rootScope, $q) {
-    var service = {
-      responseError: function (response, code) {
-        // intercept 401
-        if (response.status == 401) {
-          $rootScope.$broadcast('gsnevent:auth-expired', arguments);
-        } else if (response.status == 400) {
-          if (response.data && typeof response.data == 'string') {
-            if ((response.data.indexOf('refresh_token is invalid or has expired') > -1) || (response.data.indexOf('Illegal attempt to refresh an anonymous token for user that is no longer anonymous.') > -1)) {
-              $rootScope.$broadcast('gsnevent:auth-invalidrefresh', arguments);
+        return service;
+    }]);
+    // debounce: for performance
+    myModule.factory('debounce', ['$timeout', function ($timeout) {
+        // The service is actually this function, which we call with the func
+        // that should be debounced and how long to wait in between calls
+        return function debounce(func, wait, immediate) {
+            var timeout;
+            return function () {
+                var context = this,
+                    args = arguments;
+                var later = function () {
+                    timeout = null;
+                    if (!immediate) func.apply(context, args);
+                };
+                var callNow = immediate && !timeout;
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+                if (callNow) func.apply(context, args);
+            };
+        };
+    }]);
+    // FeedService: google feed
+    myModule.factory('FeedService', ['$http', 'gsnApi', function ($http, gsnApi) {
+        return {
+            parseFeed: function (url, maxResult) {
+                return $http.jsonp('//ajax.googleapis.com/ajax/services/feed/load?v=1.0&num=' + gsnApi.isNull(maxResult, 50) + '&callback=JSON_CALLBACK&q=' + encodeURIComponent(url));
             }
-          }
-        }
-
-        // do something on error
-        return $q.reject(response);
-      }
-    };
-
-    return service;
-    //#region Internal Methods        
-
-    //#endregion
-  }]);
-
-  /**
-   * Detect display mode
-   */
-  myModule.directive('bsDisplayMode', ['$window', '$timeout', function ($window, $timeout) {
-    return {
-      template: '<div class="visible-xs"></div><div class="visible-sm"></div><div class="visible-md"></div><div class="visible-lg"></div>',
-      restrict: 'EA',
-      replace: false,
-      link: function (scope, elem, attrs) {
-        var markers = elem.find('div');
-
-        function update() {
-          angular.forEach(markers, function (element) {
-            if (angular.element(element).is(":visible")) {
-              scope[attrs.bsDisplayMode] = element.className;
+        };
+    }]);
+    // gsnAuthenticationHandler to handle expired refresh token
+    myModule.factory('gsnAuthenticationHandler', ['$rootScope', '$q', function ($rootScope, $q) {
+        var service = {
+            responseError: function (response, code) {
+                // intercept 401
+                if (response.status == 401) {
+                    $rootScope.$broadcast('gsnevent:auth-expired', arguments);
+                } else if (response.status == 400) {
+                    if (response.data && typeof response.data == 'string') {
+                        if ((response.data.indexOf('refresh_token is invalid or has expired') > -1) || (response.data.indexOf('Illegal attempt to refresh an anonymous token for user that is no longer anonymous.') > -1)) {
+                            $rootScope.$broadcast('gsnevent:auth-invalidrefresh', arguments);
+                        }
+                    }
+                }
+                // do something on error
+                return $q.reject(response);
             }
-          });
-        }
+        };
+        return service;
+        //#region Internal Methods
+        //#endregion
+    }]);
+    /**
+     * Detect display mode
+     */
+    myModule.directive('bsDisplayMode', ['$window', '$timeout', function ($window, $timeout) {
+        return {
+            template: '<div class="visible-xs"></div><div class="visible-sm"></div><div class="visible-md"></div><div class="visible-lg"></div>',
+            restrict: 'EA',
+            replace: false,
+            link: function (scope, elem, attrs) {
+                var markers = elem.find('div');
 
-        angular.element($window).bind('resize', function () {
-          // use timeout to overcome scope apply
-          $timeout(update, 300);
-        });
+                function update() {
+                    angular.forEach(markers, function (element) {
+                        if (angular.element(element).is(":visible")) {
+                            scope[attrs.bsDisplayMode] = element.className;
+                        }
+                    });
+                }
+                angular.element($window).bind('resize', function () {
+                    // use timeout to overcome scope apply
+                    $timeout(update, 300);
+                });
+                update();
+            }
+        };
+    }]);
+    /**
+     * bind scrollTo event on click
+     */
+    myModule.directive('scrollTo', ['$location', '$anchorScroll', function ($location, $anchorScroll) {
+        return function (scope, element, attrs) {
+            element.bind('click', function (event) {
+                event.stopPropagation();
+                var off = scope.$on('$locationChangeStart', function (ev) {
+                    off();
+                    ev.preventDefault();
+                });
+                var location = attrs.scrollTo;
+                $location.hash(location);
+                $anchorScroll();
+            });
+        };
+    }]);
+    /**
+     * create scrollTop marker
+     */
+    myModule.directive('ngScrollTop', ['$window', '$timeout', 'debounce', function ($window, $timeout, debounce) {
+        var directive = {
+            link: link,
+            restrict: 'A',
+        };
+        // if more than 1 scrollTop on page - disable show/hide of element
+        var countScrollTop = 0;
+        return directive;
 
-        update();
-      }
-    };
-  }]);
-
-  /**
-   * bind scrollTo event on click
-   */
-  myModule.directive('scrollTo', ['$location', function ($location) {
-    return function(scope, element, attrs) {
-
-      element.bind('click', function(event) {
-          event.stopPropagation();
-          var off = scope.$on('$locationChangeStart', function(ev) {
-              off();
-              ev.preventDefault();
-          });
-          var location = attrs.scrollTo;
-          $location.hash(location);
-      });
-    };
-  }]);
-
-  /**
-   * create scrollTop marker
-   */
-  myModule.directive('ngScrollTop', ['$window', '$timeout', 'debounce', function ($window, $timeout, debounce) {
-    var directive = {
-      link: link,
-      restrict: 'A',
-    };
-
-    // if more than 1 scrollTop on page - disable show/hide of element
-    var countScrollTop = 0;
-    
-    return directive;
-    
-    function link(scope, element, attrs) {
-      countScrollTop++;
-      var myScrollTop = debounce(function () {
-        scope.scrollTop = angular.element($window).scrollTop();
-        element.css({ 'display': ((scope.scrollTop > parseInt(attrs.offset)) && countScrollTop == 1) ? 'block' : '' });
-      }, 300);
-      
-      angular.element($window).on('scroll', myScrollTop);
-      element.on('click', function () {
-        angular.element($window).scrollTop(0);
-      });
-      
-      scope.$on('$destroy', function() {
-         countScrollTop--;
-      });
-    }
-  }]);
-
-  /**
-   * stop event probagation
-   */
-  myModule.directive('stopEvent', function () {
-    return {
-        restrict: 'A',
-        link: function (scope, element, attr) {
-            element.bind(attr.stopEvent, function (e) {
-                e.stopPropagation();
+        function link(scope, element, attrs) {
+            countScrollTop++;
+            var myScrollTop = debounce(function () {
+                scope.scrollTop = angular.element($window).scrollTop();
+                element.css({
+                    'display': ((scope.scrollTop > parseInt(attrs.offset)) && countScrollTop == 1) ? 'block' : ''
+                });
+            }, 300);
+            angular.element($window).on('scroll', myScrollTop);
+            element.on('click', function () {
+                angular.element($window).scrollTop(0);
+            });
+            scope.$on('$destroy', function () {
+                countScrollTop--;
             });
         }
-    };
-  });
-
-})(angular);
-(function (angular, undefined) {
-  'use strict';
-  var serviceId = 'gsnProLogicRewardCard';
-  angular.module('gsn.core').service(serviceId, ['gsnApi', '$http', '$rootScope', '$timeout', gsnProLogicRewardCard]);
-
-  function gsnProLogicRewardCard(gsnApi, $http, $rootScope, $timeout) {
-
-    var returnObj = {};
-
-    returnObj.rewardCard = null;
-    returnObj.isValid = false;
-
-    returnObj.getLoyaltyCard = function (profile, callback) {
-      if (returnObj.rewardCard !== null) {
-        $timeout(function () { callback(returnObj.rewardCard, returnObj.isValid); }, 500);
-      } else if ((profile.ExternalId || '').length < 2) {
-        callback(null, false);
-      } else {
-        var url = gsnApi.getStoreUrl().replace(/store/gi, 'ProLogic') + '/GetCardMember/' + gsnApi.getChainId() + '/' + profile.ExternalId;
-        $http.get(url).success(function(response) {
-          returnObj.rewardCard = response.Response;
-          if (gsnApi.isNull(returnObj.rewardCard, null) !== null) {
-            var gsnLastName = profile.LastName.toUpperCase().replace(/\s+/gi, '');
-            var proLogicLastName = returnObj.rewardCard.Member.LastName.toUpperCase().replace(/\s+/gi, '');
-
-            // The names can differ, but the names must be in the 
-            if ((gsnLastName == proLogicLastName) || (proLogicLastName.indexOf(gsnLastName) >= 0) || (gsnLastName.indexOf(proLogicLastName) >= 0)) {
-              returnObj.isValid = true;
+    }]);
+    /**
+     * stop event probagation
+     */
+    myModule.directive('stopEvent', function () {
+        return {
+            restrict: 'A',
+            link: function (scope, element, attr) {
+                element.bind(attr.stopEvent, function (e) {
+                    e.stopPropagation();
+                });
             }
-          } else {
-            returnObj.rewardCard = null;
-          }
-          callback(returnObj.rewardCard, returnObj.isValid);
-        });
-      }
-    };
-
-    $rootScope.$on('gsnevent:logout', function () {
-      returnObj.rewardCard = null;
-      returnObj.isValid = false;
+        };
     });
-
-    return returnObj;
-  }
 })(angular);
-
 (function(angular, undefined) {
   'use strict';
   var serviceId = 'gsnProfile';
@@ -6422,6 +6290,52 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       return deferred.promise;
     }
     //#endregion
+
+    return returnObj;
+  }
+})(angular);
+
+(function (angular, undefined) {
+  'use strict';
+  var serviceId = 'gsnProLogicRewardCard';
+  angular.module('gsn.core').service(serviceId, ['gsnApi', '$http', '$rootScope', '$timeout', gsnProLogicRewardCard]);
+
+  function gsnProLogicRewardCard(gsnApi, $http, $rootScope, $timeout) {
+
+    var returnObj = {};
+
+    returnObj.rewardCard = null;
+    returnObj.isValid = false;
+
+    returnObj.getLoyaltyCard = function (profile, callback) {
+      if (returnObj.rewardCard !== null) {
+        $timeout(function () { callback(returnObj.rewardCard, returnObj.isValid); }, 500);
+      } else if ((profile.ExternalId || '').length < 2) {
+        callback(null, false);
+      } else {
+        var url = gsnApi.getStoreUrl().replace(/store/gi, 'ProLogic') + '/GetCardMember/' + gsnApi.getChainId() + '/' + profile.ExternalId;
+        $http.get(url).success(function(response) {
+          returnObj.rewardCard = response.Response;
+          if (gsnApi.isNull(returnObj.rewardCard, null) !== null) {
+            var gsnLastName = profile.LastName.toUpperCase().replace(/\s+/gi, '');
+            var proLogicLastName = returnObj.rewardCard.Member.LastName.toUpperCase().replace(/\s+/gi, '');
+
+            // The names can differ, but the names must be in the 
+            if ((gsnLastName == proLogicLastName) || (proLogicLastName.indexOf(gsnLastName) >= 0) || (gsnLastName.indexOf(proLogicLastName) >= 0)) {
+              returnObj.isValid = true;
+            }
+          } else {
+            returnObj.rewardCard = null;
+          }
+          callback(returnObj.rewardCard, returnObj.isValid);
+        });
+      }
+    };
+
+    $rootScope.$on('gsnevent:logout', function () {
+      returnObj.rewardCard = null;
+      returnObj.isValid = false;
+    });
 
     return returnObj;
   }
@@ -9600,6 +9514,240 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
   }
 
 })(angular);
+(function(angular, undefined) {
+    'use strict';
+
+    var myDirectiveName = 'ctrlProductByCategory';
+
+    angular.module('gsn.core')
+        .controller(myDirectiveName, ['$scope', 'gsnApi', 'gsnStore', '$filter', '$timeout', '$q', myController])
+        .directive(myDirectiveName, myDirective);
+
+
+    function myDirective() {
+        var directive = {
+            restrict: 'EA',
+            scope: true,
+            controller: myDirectiveName
+        };
+
+        return directive;
+    }
+
+    function myController($scope, gsnApi, gsnStore, $filter, $timeout, $q) {
+        $scope.activate = activate;
+        $scope.loadMore = loadMore;
+        $scope.categories = [];
+        $scope.vm = {
+            noCircular: false,
+            saleItemOnly: false,
+            parentCategories: [],
+            childCategories: [],
+            levelOneCategory: null,
+            levelTwoCategory: null,
+            levelThreeCategory: null,
+            allProductsByCategory: null,
+            filteredProducts: {},
+            showLoading: false,
+            filterBy: '',
+            sortBy: 'BrandName',
+            childCategoryById: {}
+        };
+        $scope.currentPage = 1;
+        $scope.itemsPerPage = 10;
+        $scope.loadAll = $scope.loadAll || true;
+        $scope.allItems = [];
+
+        function activate() {
+            // activate depend on URL
+            var catDefer = ($scope.vm.saleItemOnly) ? gsnStore.getSaleItemCategories : gsnStore.getInventoryCategories;
+            catDefer().then(function(rsp) {
+                var categories = rsp.response;
+                angular.forEach(categories, function(item) {
+                    if (gsnApi.isNull(item.CategoryId, -1) < 0) return;
+                    if (gsnApi.isNull(item.ParentCategoryId, null) === null) {
+                        $scope.vm.parentCategories.push(item);
+                    } else {
+                        $scope.vm.childCategories.push(item);
+                    }
+                });
+
+                gsnApi.sortOn($scope.vm.parentCategories, 'CategoryName');
+                gsnApi.sortOn($scope.vm.childCategories, 'CategoryName');
+
+                $scope.vm.childCategoryById = gsnApi.mapObject(gsnApi.groupBy($scope.vm.childCategories, 'ParentCategoryId'), 'key');
+            });
+        }
+
+		$scope.productData = [];
+        $scope.showProductDetails = function(data) {
+         $scope.productData =  data;
+            $('#myProductDetailsModal').modal('show');
+        };
+		
+        $scope.getChildCategories = function(cat) {
+            return cat ? $scope.vm.childCategories : [];
+        };
+
+        $scope.$watch('vm.filterBy', function(newValue, oldValue) {
+            if ($scope.vm.showLoading) return;
+            $timeout(doFilterSort, 500);
+        });
+
+        $scope.$watch('vm.sortBy', function(newValue, oldValue) {
+            if ($scope.vm.showLoading) return;
+            $timeout(doFilterSort, 500);
+        });
+
+        $scope.$watch('vm.levelOneCategory', function(newValue, oldValue) {
+            $scope.vm.levelTwoCategory = null;
+            $scope.vm.levelThreeCategory = null;
+        });
+
+        $scope.$watch('vm.levelTwoCategory', function(newValue, oldValue) {
+            $scope.vm.levelThreeCategory = null;
+            if (newValue) {
+                var selectedValue = $scope.vm.childCategoryById[newValue.CategoryId];
+                if (gsnApi.isNull(selectedValue, { items: [] }).items.length == 1) {
+                    $scope.vm.levelThreeCategory = selectedValue.items[0];
+                }
+            }
+        });
+
+        $scope.$watch('vm.levelThreeCategory', function(newValue, oldValue) {
+            if (newValue) {
+                $scope.vm.showLoading = true;
+                $scope.vm.filteredProducts = {};
+                getData($scope.vm.levelOneCategory.CategoryId, newValue.CategoryId).then(doFilterSort);
+            }
+        });
+
+        //#region Internal Methods 
+        function loadMore() {
+            var items = $scope.vm.filteredProducts.fitems || [];
+            if (items.length > 0) {
+                var itemsToLoad = $scope.itemsPerPage;
+                if ($scope.loadAll) {
+                    itemsToLoad = items.length;
+                }
+
+                var last = $scope.allItems.length - 1;
+                for (var i = 1; i <= itemsToLoad; i++) {
+                    var item = items[last + i];
+                    if (item) {
+                        $scope.allItems.push(item);
+                    }
+                }
+            }
+        }
+
+        function doFilterSort(data) {
+            $scope.vm.showLoading = false;
+
+            if (data) {
+                $scope.vm.filteredProducts = data;
+            }
+
+            if ($scope.vm.filteredProducts.items) {
+                var result = $filter('filter')($scope.vm.filteredProducts.items, $scope.vm.filterBy || '');
+                $scope.vm.filteredProducts.fitems = $filter('orderBy')(result, $scope.vm.sortBy || 'BrandName');
+                $scope.allItems = [];
+                loadMore();
+            }
+        }
+
+        function getData(departmentId, categoryId) {
+            var deferred = $q.defer();
+            if ($scope.vm.saleItemOnly) {
+                gsnStore.getSaleItems(departmentId, categoryId).then(function(result) {
+                    if (result.success) {
+                        deferred.resolve({ items: result.response });
+                    }
+                });
+            } else {
+                gsnStore.getInventory(departmentId, categoryId).then(function(result) {
+                    if (result.success) {
+                        deferred.resolve({ items: result.response });
+                    }
+                });
+            }
+
+            return deferred.promise;
+        }
+        //#endregion
+
+        activate();
+    }
+
+})(angular);
+
+(function (angular, undefined) {
+  'use strict';
+
+  var myDirectiveName = 'ctrlProductSearch';
+
+  angular.module('gsn.core')
+    .controller(myDirectiveName, ['$scope', 'gsnApi', 'gsnStore', '$filter', '$timeout', '$q', '$location', myController])
+    .directive(myDirectiveName, myDirective);
+
+  function myDirective() {
+    var directive = {
+      restrict: 'EA',
+      scope: true,
+      controller: myDirectiveName
+    };
+
+    return directive;
+  }
+
+  function myController($scope, gsnApi, gsnStore, $filter, $timeout, $q, $location) {
+    $scope.activate = activate;
+    $scope.categories = [];
+    $scope.vm = {
+      searchResult: {},
+      hasAllItems: true
+    };
+    $scope.totalItems = 10;
+    $scope.currentPage = 1;
+    $scope.itemsPerPage = 10;
+    $scope.isSubmitting = true;
+
+    function activate() {
+      gsnStore.searchProducts($location.search().q).then(function (rst) {
+        $scope.isSubmitting = false;
+        if (rst.success) {
+          $scope.vm.searchResult = rst.response;
+          $scope.vm.searchResult.NonSaleItemResultGrouping = gsnApi.groupBy($scope.vm.searchResult.ProductResult, 'DepartmentName');
+          $scope.vm.searchResult.NonSaleItemResult = { items: $scope.vm.searchResult.ProductResult };
+
+          $scope.totalItems = $scope.vm.searchResult.ProductResult.length;
+        }
+      });
+    }
+
+    $scope.selectFilter = function (filterGroup, filterItem) {
+      angular.forEach(filterGroup, function (item) {
+        if (item != filterItem) {
+          item.selected = false;
+        }
+      });
+
+      if (filterItem.selected) {
+        $scope.vm.searchResult.NonSaleItemResult = filterItem;
+      } else {
+        $scope.vm.searchResult.NonSaleItemResult = { items: $scope.vm.searchResult.ProductResult };
+      }
+
+      $scope.vm.hasAllItems = !filterItem.selected;
+    };
+    $scope.activate();
+
+    //#region Internal Methods
+    //#endregion
+  }
+
+})(angular);
+
 (function (angular, undefined) {
   'use strict';
 
@@ -10039,240 +10187,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     // Call the activate method.
     $scope.activate();
   }
-})(angular);
-
-(function(angular, undefined) {
-    'use strict';
-
-    var myDirectiveName = 'ctrlProductByCategory';
-
-    angular.module('gsn.core')
-        .controller(myDirectiveName, ['$scope', 'gsnApi', 'gsnStore', '$filter', '$timeout', '$q', myController])
-        .directive(myDirectiveName, myDirective);
-
-
-    function myDirective() {
-        var directive = {
-            restrict: 'EA',
-            scope: true,
-            controller: myDirectiveName
-        };
-
-        return directive;
-    }
-
-    function myController($scope, gsnApi, gsnStore, $filter, $timeout, $q) {
-        $scope.activate = activate;
-        $scope.loadMore = loadMore;
-        $scope.categories = [];
-        $scope.vm = {
-            noCircular: false,
-            saleItemOnly: false,
-            parentCategories: [],
-            childCategories: [],
-            levelOneCategory: null,
-            levelTwoCategory: null,
-            levelThreeCategory: null,
-            allProductsByCategory: null,
-            filteredProducts: {},
-            showLoading: false,
-            filterBy: '',
-            sortBy: 'BrandName',
-            childCategoryById: {}
-        };
-        $scope.currentPage = 1;
-        $scope.itemsPerPage = 10;
-        $scope.loadAll = $scope.loadAll || true;
-        $scope.allItems = [];
-
-        function activate() {
-            // activate depend on URL
-            var catDefer = ($scope.vm.saleItemOnly) ? gsnStore.getSaleItemCategories : gsnStore.getInventoryCategories;
-            catDefer().then(function(rsp) {
-                var categories = rsp.response;
-                angular.forEach(categories, function(item) {
-                    if (gsnApi.isNull(item.CategoryId, -1) < 0) return;
-                    if (gsnApi.isNull(item.ParentCategoryId, null) === null) {
-                        $scope.vm.parentCategories.push(item);
-                    } else {
-                        $scope.vm.childCategories.push(item);
-                    }
-                });
-
-                gsnApi.sortOn($scope.vm.parentCategories, 'CategoryName');
-                gsnApi.sortOn($scope.vm.childCategories, 'CategoryName');
-
-                $scope.vm.childCategoryById = gsnApi.mapObject(gsnApi.groupBy($scope.vm.childCategories, 'ParentCategoryId'), 'key');
-            });
-        }
-
-		$scope.productData = [];
-        $scope.showProductDetails = function(data) {
-         $scope.productData =  data;
-            $('#myProductDetailsModal').modal('show');
-        };
-		
-        $scope.getChildCategories = function(cat) {
-            return cat ? $scope.vm.childCategories : [];
-        };
-
-        $scope.$watch('vm.filterBy', function(newValue, oldValue) {
-            if ($scope.vm.showLoading) return;
-            $timeout(doFilterSort, 500);
-        });
-
-        $scope.$watch('vm.sortBy', function(newValue, oldValue) {
-            if ($scope.vm.showLoading) return;
-            $timeout(doFilterSort, 500);
-        });
-
-        $scope.$watch('vm.levelOneCategory', function(newValue, oldValue) {
-            $scope.vm.levelTwoCategory = null;
-            $scope.vm.levelThreeCategory = null;
-        });
-
-        $scope.$watch('vm.levelTwoCategory', function(newValue, oldValue) {
-            $scope.vm.levelThreeCategory = null;
-            if (newValue) {
-                var selectedValue = $scope.vm.childCategoryById[newValue.CategoryId];
-                if (gsnApi.isNull(selectedValue, { items: [] }).items.length == 1) {
-                    $scope.vm.levelThreeCategory = selectedValue.items[0];
-                }
-            }
-        });
-
-        $scope.$watch('vm.levelThreeCategory', function(newValue, oldValue) {
-            if (newValue) {
-                $scope.vm.showLoading = true;
-                $scope.vm.filteredProducts = {};
-                getData($scope.vm.levelOneCategory.CategoryId, newValue.CategoryId).then(doFilterSort);
-            }
-        });
-
-        //#region Internal Methods 
-        function loadMore() {
-            var items = $scope.vm.filteredProducts.fitems || [];
-            if (items.length > 0) {
-                var itemsToLoad = $scope.itemsPerPage;
-                if ($scope.loadAll) {
-                    itemsToLoad = items.length;
-                }
-
-                var last = $scope.allItems.length - 1;
-                for (var i = 1; i <= itemsToLoad; i++) {
-                    var item = items[last + i];
-                    if (item) {
-                        $scope.allItems.push(item);
-                    }
-                }
-            }
-        }
-
-        function doFilterSort(data) {
-            $scope.vm.showLoading = false;
-
-            if (data) {
-                $scope.vm.filteredProducts = data;
-            }
-
-            if ($scope.vm.filteredProducts.items) {
-                var result = $filter('filter')($scope.vm.filteredProducts.items, $scope.vm.filterBy || '');
-                $scope.vm.filteredProducts.fitems = $filter('orderBy')(result, $scope.vm.sortBy || 'BrandName');
-                $scope.allItems = [];
-                loadMore();
-            }
-        }
-
-        function getData(departmentId, categoryId) {
-            var deferred = $q.defer();
-            if ($scope.vm.saleItemOnly) {
-                gsnStore.getSaleItems(departmentId, categoryId).then(function(result) {
-                    if (result.success) {
-                        deferred.resolve({ items: result.response });
-                    }
-                });
-            } else {
-                gsnStore.getInventory(departmentId, categoryId).then(function(result) {
-                    if (result.success) {
-                        deferred.resolve({ items: result.response });
-                    }
-                });
-            }
-
-            return deferred.promise;
-        }
-        //#endregion
-
-        activate();
-    }
-
-})(angular);
-
-(function (angular, undefined) {
-  'use strict';
-
-  var myDirectiveName = 'ctrlProductSearch';
-
-  angular.module('gsn.core')
-    .controller(myDirectiveName, ['$scope', 'gsnApi', 'gsnStore', '$filter', '$timeout', '$q', '$location', myController])
-    .directive(myDirectiveName, myDirective);
-
-  function myDirective() {
-    var directive = {
-      restrict: 'EA',
-      scope: true,
-      controller: myDirectiveName
-    };
-
-    return directive;
-  }
-
-  function myController($scope, gsnApi, gsnStore, $filter, $timeout, $q, $location) {
-    $scope.activate = activate;
-    $scope.categories = [];
-    $scope.vm = {
-      searchResult: {},
-      hasAllItems: true
-    };
-    $scope.totalItems = 10;
-    $scope.currentPage = 1;
-    $scope.itemsPerPage = 10;
-    $scope.isSubmitting = true;
-
-    function activate() {
-      gsnStore.searchProducts($location.search().q).then(function (rst) {
-        $scope.isSubmitting = false;
-        if (rst.success) {
-          $scope.vm.searchResult = rst.response;
-          $scope.vm.searchResult.NonSaleItemResultGrouping = gsnApi.groupBy($scope.vm.searchResult.ProductResult, 'DepartmentName');
-          $scope.vm.searchResult.NonSaleItemResult = { items: $scope.vm.searchResult.ProductResult };
-
-          $scope.totalItems = $scope.vm.searchResult.ProductResult.length;
-        }
-      });
-    }
-
-    $scope.selectFilter = function (filterGroup, filterItem) {
-      angular.forEach(filterGroup, function (item) {
-        if (item != filterItem) {
-          item.selected = false;
-        }
-      });
-
-      if (filterItem.selected) {
-        $scope.vm.searchResult.NonSaleItemResult = filterItem;
-      } else {
-        $scope.vm.searchResult.NonSaleItemResult = { items: $scope.vm.searchResult.ProductResult };
-      }
-
-      $scope.vm.hasAllItems = !filterItem.selected;
-    };
-    $scope.activate();
-
-    //#region Internal Methods
-    //#endregion
-  }
-
 })(angular);
 
 (function (angular, undefined) {
@@ -11751,6 +11665,49 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
 
 })(angular);
 
+(function (angular, undefined) {
+  'use strict';
+  var myModule = angular.module('gsn.core');
+
+  myModule.directive('gsnAddHead', ['$window', '$timeout', 'gsnApi', function ($window, $timeout, gsnApi) {
+    // Usage:   Add element to head
+    //
+    // Creates: 2014-01-06
+    //
+    /* <div gsn-add-head="meta" data-attributes="{'content': ''}"></div>
+    */
+    var directive = {
+      link: link,
+      restrict: 'A',
+      scope: true
+    };
+    return directive;
+
+    function link(scope, element, attrs) {
+      var elId = 'dynamic-' + (new Date().getTime());
+      function activate() {
+        var options = attrs.attributes;
+        var el = angular.element('<' + attrs.gsnAddHead + '>');
+        if (options) {
+          var myAttrs = scope.$eval(options);
+          el.attr('id', elId);
+          angular.forEach(myAttrs, function (v, k) {
+            el.attr(k, v);
+          });
+        }
+
+        angular.element('head')[0].appendChild(el[0]);
+
+        scope.$on('$destroy', function () {
+          angular.element('#' + elId).remove();
+        });
+      }
+
+      activate();
+    }
+  }]);
+})(angular);
+
 (function(angular, undefined) {
   'use strict';
   var myModule = angular.module('gsn.core');
@@ -11808,49 +11765,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     }
   }]);
 })(angular);
-(function (angular, undefined) {
-  'use strict';
-  var myModule = angular.module('gsn.core');
-
-  myModule.directive('gsnAddHead', ['$window', '$timeout', 'gsnApi', function ($window, $timeout, gsnApi) {
-    // Usage:   Add element to head
-    //
-    // Creates: 2014-01-06
-    //
-    /* <div gsn-add-head="meta" data-attributes="{'content': ''}"></div>
-    */
-    var directive = {
-      link: link,
-      restrict: 'A',
-      scope: true
-    };
-    return directive;
-
-    function link(scope, element, attrs) {
-      var elId = 'dynamic-' + (new Date().getTime());
-      function activate() {
-        var options = attrs.attributes;
-        var el = angular.element('<' + attrs.gsnAddHead + '>');
-        if (options) {
-          var myAttrs = scope.$eval(options);
-          el.attr('id', elId);
-          angular.forEach(myAttrs, function (v, k) {
-            el.attr(k, v);
-          });
-        }
-
-        angular.element('head')[0].appendChild(el[0]);
-
-        scope.$on('$destroy', function () {
-          angular.element('#' + elId).remove();
-        });
-      }
-
-      activate();
-    }
-  }]);
-})(angular);
-
 (function (angular, undefined) {
   'use strict';
   var myModule = angular.module('gsn.core');
@@ -12816,115 +12730,112 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     }
   }]);
 })(angular);
-(function (angular, undefined) {
-  'use strict';
-  var myModule = angular.module('gsn.core');
-  
-  myModule.directive('gsnPartialContent', ['$timeout', 'gsnStore', 'gsnApi', '$location', function ($timeout, gsnStore, gsnApi, $location) {
-    // Usage:   allow for store specific partial content
-    // 
-    // Creates: 2015-02-26
-    // 
-    var directive = {
-      link: link,
-      restrict: 'EA',
-      scope: true,
-    };
-    return directive;
+(function(angular, undefined) {
+    'use strict';
+    var myModule = angular.module('gsn.core');
+    myModule.directive('gsnPartialContent', ['$timeout', 'gsnStore', 'gsnApi', '$location', '$anchorScroll', function($timeout, gsnStore, gsnApi, $location, $anchorScroll) {
+        // Usage:   allow for store specific partial content
+        //
+        // Creates: 2015-02-26
+        //
+        var directive = {
+            link: link,
+            restrict: 'EA',
+            scope: true,
+        };
+        return directive;
 
-    function link(scope, element, attrs) {
-      var currentPath = angular.lowercase(gsnApi.isNull($location.path().replace(/^\/+/gi, ''), '').replace(/[\-]/gi, ' '));
-      attrs.gsnPartialContent = attrs.gsnPartialContent || currentPath;
-      scope.activate = activate;
-      scope.pcvm = {
-        hasScript: false,
-        notFound: false,
-        isLoading: true,
-        layout: 'default',
-        tab: $location.search().tab || 0
-      }
-      scope.partialContents = [];
-      scope.contentDetail = {
-        url: gsnApi.isNull(attrs.gsnPartialContent.replace(/^\/+/gi, ''), '').replace(/[\-]/gi, ' '),
-        name: '',
-        subName: ''
-      };
-      var partialData = { ContentData: {}, ConfigData: {}, ContentList: [] };
-
-      function activate() {
-        // parse contentName by forward slash
-        var contentNames = scope.contentDetail.url.split('/');
-        if (contentNames.length > 1) {
-          scope.contentDetail.subName = contentNames[1];
-        }
-        scope.contentDetail.name = contentNames[0];
-
-        if (scope.contentDetail.url.indexOf('.aspx') > 0) {
-          return;
-        }
-
-        // attempt to retrieve static content remotely
-        gsnStore.getPartial(scope.contentDetail.name).then(function (rst) {
-          scope.pcvm.hasScript = false
-          scope.pcvm.isLoading = false
-          if (rst.success) {
-            scope.pcvm.notFound = rst.response == "null";
-            processData(rst.response);
-          }
-        });
-      }
-
-      scope.getContentList = function() {
-        var result = [];
-        if (partialData.ContentList) {
-          for (var i = 0; i < partialData.ContentList.length; i++) {
-            var data = gsnApi.parseStoreSpecificContent(partialData.ContentList[i]);
-            
-            if (data.Headline || data.SortBy) {
-              // match any script with src
-              if (/<script.+src=/gi.test(data.Description || '')) {
-                scope.pcvm.hasScript = true
-              }
-
-              if (gsnApi.isNull(scope.contentDetail.subName, 0).length <= 0) {
-                result.push(data);
-                continue;
-              }
-
-              if (angular.lowercase(data.Headline || '') == scope.contentDetail.subName || data.SortBy == scope.contentDetail.subName) {
-                result.push(data);
-              }
+        function link(scope, element, attrs) {
+            var currentPath = angular.lowercase(gsnApi.isNull($location.path().replace(/^\/+/gi, ''), '').replace(/[\-]/gi, ' '));
+            attrs.gsnPartialContent = attrs.gsnPartialContent || currentPath;
+            scope.activate = activate;
+            scope.pcvm = {
+                hasScript: false,
+                notFound: false,
+                isLoading: true,
+                layout: 'default',
+                tab: $location.search().tab || 0
             }
-          }
+            scope.partialContents = [];
+            scope.contentDetail = {
+                url: gsnApi.isNull(attrs.gsnPartialContent.replace(/^\/+/gi, ''), '').replace(/[\-]/gi, ' '),
+                name: '',
+                subName: ''
+            };
+            var partialData = {
+                ContentData: {},
+                ConfigData: {},
+                ContentList: []
+            };
+
+            function activate() {
+                // parse contentName by forward slash
+                var contentNames = scope.contentDetail.url.split('/');
+                if (contentNames.length > 1) {
+                    scope.contentDetail.subName = contentNames[1];
+                }
+                scope.contentDetail.name = contentNames[0];
+                if (scope.contentDetail.url.indexOf('.aspx') > 0) {
+                    return;
+                }
+                // attempt to retrieve static content remotely
+                gsnStore.getPartial(scope.contentDetail.name).then(function(rst) {
+                    scope.pcvm.hasScript = false
+                    scope.pcvm.isLoading = false
+                    if (rst.success) {
+                        scope.pcvm.notFound = rst.response == "null";
+                        processData(rst.response);
+                    }
+                });
+            }
+            scope.getContentList = function() {
+                var result = [];
+                if (partialData.ContentList) {
+                    for (var i = 0; i < partialData.ContentList.length; i++) {
+                        var data = gsnApi.parseStoreSpecificContent(partialData.ContentList[i]);
+                        if (data.Headline || data.SortBy) {
+                            // match any script with src
+                            if (/<script.+src=/gi.test(data.Description || '')) {
+                                scope.pcvm.hasScript = true
+                            }
+                            if (gsnApi.isNull(scope.contentDetail.subName, 0).length <= 0) {
+                                result.push(data);
+                                continue;
+                            }
+                            if (angular.lowercase(data.Headline || '') == scope.contentDetail.subName || data.SortBy == scope.contentDetail.subName) {
+                                result.push(data);
+                            }
+                        }
+                    }
+                }
+                return result;
+            };
+            scope.getContent = function(index) {
+                return gsnApi.parseStoreSpecificContent(partialData.ContentData[index]);
+            };
+            scope.getConfig = function(name) {
+                return gsnApi.parseStoreSpecificContent(partialData.ConfigData[name]) || {};
+            };
+            scope.getConfigDescription = function(name, defaultValue) {
+                var resultObj = scope.getConfig(name).Description;
+                return gsnApi.isNull(resultObj, defaultValue);
+            };
+            scope.activate();
+            //#region Internal Methods
+            function processData(data) {
+                partialData = gsnApi.parsePartialContentData(data);
+                scope.partialContents = scope.getContentList();
+                scope.pcvm.layout = scope.getConfig('layout').Description || 'default';
+                if ($location.hash()) {
+                    $timeout(function() {
+                        $anchorScroll();
+                        angular.element('a[href="#' + $location.hash() + '"]').click();
+                    }, 1000);
+                }
+            }
+            //#endregion
         }
-
-        return result;
-      };
-
-      scope.getContent = function (index) {
-        return gsnApi.parseStoreSpecificContent(partialData.ContentData[index]);
-      };
-
-      scope.getConfig = function (name) {
-        return gsnApi.parseStoreSpecificContent(partialData.ConfigData[name]) || {};
-      };
-
-      scope.getConfigDescription = function (name, defaultValue) {
-        var resultObj = scope.getConfig(name).Description;
-        return gsnApi.isNull(resultObj, defaultValue);
-      };
-
-      scope.activate();
-
-      //#region Internal Methods        
-      function processData(data) {
-        partialData = gsnApi.parsePartialContentData(data);
-        scope.partialContents = scope.getContentList();
-        scope.pcvm.layout = scope.getConfig('layout').Description || 'default';
-      }
-      //#endregion
-    }
-  }]);
+    }]);
 })(angular);
 (function (angular, undefined) {
   'use strict';

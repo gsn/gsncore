@@ -1,4 +1,4 @@
-(function (angular, undefined) {
+(function(angular, undefined) {
     'use strict';
     var myModule = angular.module('gsn.core');
     var myDirectiveName = 'ctrlCouponRoundy';
@@ -101,7 +101,7 @@
             if ($scope.couponType == 'digital') {
                 var totalSavings = 0.0;
                 if (!$scope.selectedCoupons.clippedCouponOnly) {
-                    angular.forEach(youtechCouponsOriginal.items, function (item) {
+                    angular.forEach(youtechCouponsOriginal.items, function(item) {
                         if (!$scope.selectedCoupons.cardCouponOnly || !gsnYoutech.isAvailable(item.ProductCode)) {
                             if (gsnYoutech.isValidCoupon(item.ProductCode)) {
                                 item.AddCount = 1;
@@ -115,7 +115,7 @@
                     });
                     $scope.selectedCoupons.totalSavings = totalSavings.toFixed(2);
                 } else {
-                    angular.forEach(youtechCouponsOriginal.items, function (item) {
+                    angular.forEach(youtechCouponsOriginal.items, function(item) {
                         if ((!$scope.selectedCoupons.cardCouponOnly || !gsnYoutech.isAvailable(item.ProductCode)) && isOnClippedList(item)) {
                             if (gsnYoutech.isValidCoupon(item.ProductCode)) {
                                 item.AddCount = 1;
@@ -126,16 +126,16 @@
                     });
                 }
             } else if ($scope.couponType == 'printable') {
-                gsnStore.getManufacturerCouponTotalSavings().then(function (rst) {
+                gsnStore.getManufacturerCouponTotalSavings().then(function(rst) {
                     $scope.selectedCoupons.totalSavings = parseFloat(rst.response).toFixed(2);
                 });
                 var printed = gsnProfile.getPrintedCoupons();
                 if ($scope.selectedCoupons.printedCouponOnly) {
-                    angular.forEach(manuCoupons.items, function (item) {
+                    angular.forEach(manuCoupons.items, function(item) {
                         if (printed && printed.indexOf(item.ProductCode) >= 0) list.items.push(item);
                     });
                 } else {
-                    angular.forEach(manuCoupons.items, function (item) {
+                    angular.forEach(manuCoupons.items, function(item) {
                         if ($scope.couponsPrinted.indexOf(item.ProductCode) >= 0) item.isPrint = true;
                     });
                     if (manuCoupons.items) list.items = manuCoupons.items;
@@ -157,13 +157,13 @@
             //Departments for digital coupons
             $scope.extDepartments = [];
             var grouppedByExtCategory = gsnApi.groupBy($scope.preSelectedCoupons.items, 'ExtCategory');
-            angular.forEach(grouppedByExtCategory, function (item) {
+            angular.forEach(grouppedByExtCategory, function(item) {
                 $scope.extDepartments.push(item.key);
             });
             //brands
             $scope.brands = [];
             var grouppedByBrands = gsnApi.groupBy($scope.preSelectedCoupons.items, 'BrandName');
-            angular.forEach(grouppedByBrands, function (item) {
+            angular.forEach(grouppedByBrands, function(item) {
                 $scope.brands.push({
                     key: item.key.replace(/'/g, "&#39;"),
                     value: decodeURI(item.key)
@@ -193,9 +193,9 @@
             loadClippedCoupons();
             synchWirhErrors();
         }
-        $scope.$on('gsnevent:circular-loaded', function (event, data) {
+        $scope.$on('gsnevent:circular-loaded', function(event, data) {
             if (data.success) {
-                $timeout(function () {
+                $timeout(function() {
                     activate();
                 }, 500);
                 $scope.selectedCoupons.noCircular = false;
@@ -204,7 +204,7 @@
             }
         });
         $scope.$on('gsnevent:youtech-cardcoupon-loaded', activate);
-        $scope.$on('gsnevent:youtech-cardcoupon-loadfail', function () {
+        $scope.$on('gsnevent:youtech-cardcoupon-loadfail', function() {
             $scope.selectedCoupons.isFailedLoading = true;
         });
         $scope.$watch('sortBy', activate);
@@ -221,7 +221,7 @@
 
         function synchWirhErrors() {
             if ($scope.printer.errors) {
-                angular.forEach($scope.preSelectedCoupons.items, function (coupon) {
+                angular.forEach($scope.preSelectedCoupons.items, function(coupon) {
                     var found = $filter('filter')($scope.printer.errors, {
                         CouponId: coupon.ProductCode
                     });
@@ -233,20 +233,20 @@
             }
         }
         // trigger modal
-        $scope.$on('gsnevent:gcprinter-not-supported', function () {
+        $scope.$on('gsnevent:gcprinter-not-supported', function() {
             $scope.printer.notsupported++;
         });
-        $scope.$on('gsnevent:gcprinter-blocked', function () {
+        $scope.$on('gsnevent:gcprinter-blocked', function() {
             $scope.printer.blocked++;
         });
-        $scope.$on('gsnevent:gcprinter-not-found', function () {
+        $scope.$on('gsnevent:gcprinter-not-found', function() {
             $scope.printer.notinstalled++;
         });
-        $scope.$on('gsnevent:gcprinter-initcomplete', function () {
+        $scope.$on('gsnevent:gcprinter-initcomplete', function() {
             $scope.gcprinter = gcprinter;
             $scope.printer.gcprinter = gcprinter;
         });
-        $scope.$on('gsnevent:gcprinter-printed', function (evt, e, rsp) {
+        $scope.$on('gsnevent:gcprinter-printed', function(evt, e, rsp) {
             $scope.printer.printed = e;
             if (rsp) {
                 $scope.printer.errors = gsnApi.isNull(rsp.ErrorCoupons, []);
@@ -278,7 +278,7 @@
 
         function addCouponToCard(evt, item) {
             if ($scope.youtech.isAvailable(item.ProductCode)) {
-                $scope.youtech.addCouponTocard(item.ProductCode).then(function (rst) {
+                $scope.youtech.addCouponTocard(item.ProductCode).then(function(rst) {
                     if (rst.success) {
                         // log coupon add to card
                         //var cat = gsnStore.getCategories()[item.CategoryId];
@@ -289,11 +289,17 @@
                         });
                         $scope.clippedCoupons[item.ProductCode] = item;
                         // apply
-                        $timeout(function () {
+                        $timeout(function() {
                             item.AddCount++;
                         }, 50);
                     } else {
+                        $analytics.eventTrack(gsnApi.getProfileId(), {
+                            category: 'ErrorCouponYouTech',
+                            label: rst.response + '',
+                            item: rst
+                        });
                         // else show failed reason to user in modal
+                        // $notification.alert('Error applying coupon: Please try clipping your coupon again');
                         $notification.alert('Error applying coupon: ' + rst.response);
                     }
                 });
@@ -310,7 +316,7 @@
                     item: item
                 });
                 // apply
-                $timeout(function () {
+                $timeout(function() {
                     item.AddCount--;
                 }, 50);
             }
@@ -402,12 +408,12 @@
 
         function loadClippedCoupons() {
             if ($scope.couponType == 'digital') {
-                angular.forEach($scope.preSelectedCoupons.items, function (coupon) {
+                angular.forEach($scope.preSelectedCoupons.items, function(coupon) {
                     if (!isOnClippedList(coupon) && gsnYoutech.isOnCard(coupon.ProductCode)) {
                         $scope.clippedCoupons[coupon.ProductCode] = coupon;
                     }
                 });
-                angular.forEach($scope.preSelectedCoupons.targeted, function (coupon) {
+                angular.forEach($scope.preSelectedCoupons.targeted, function(coupon) {
                     if (!isOnClippedList(coupon) && gsnYoutech.isOnCard(coupon.ProductCode)) {
                         $scope.clippedCoupons[coupon.ProductCode] = coupon;
                     }
@@ -417,8 +423,8 @@
                     if (!isOnClippedList(preclipped) && gsnYoutech.hasValidCard()) addCouponToCard(null, preclipped);
             } else {
                 var clippedIds = gsnProfile.getClippedCoupons();
-                angular.forEach($scope.preSelectedCoupons.items, function (coupon) {
-                    angular.forEach(clippedIds, function (id) {
+                angular.forEach($scope.preSelectedCoupons.items, function(coupon) {
+                    angular.forEach(clippedIds, function(id) {
                         if (id == coupon.ProductCode && !isOnClippedList(coupon)) {
                             $scope.clippedCoupons[coupon.ProductCode] = coupon;
                         }
