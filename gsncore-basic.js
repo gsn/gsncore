@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.8.66
+ * version 1.8.67
  * gsncore repository
- * Build date: Tue Dec 20 2016 20:27:59 GMT-0600 (Central Standard Time)
+ * Build date: Tue Dec 20 2016 20:34:28 GMT-0600 (Central Standard Time)
  */
 ;(function() {
   'use strict';
@@ -7774,7 +7774,7 @@
                 if ($location.hash()) {
                     $timeout(function() {
                         $anchorScroll();
-                        angular.element('#' + $location.hash()).click();
+                        angular.element('a[href="#' + $location.hash() + '"]').click();
                     }, 1000);
                 }
             }
