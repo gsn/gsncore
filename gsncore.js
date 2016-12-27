@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.8.69
+ * version 1.8.70
  * gsncore repository
- * Build date: Tue Dec 27 2016 16:39:01 GMT-0600 (CST)
+ * Build date: Tue Dec 27 2016 16:48:07 GMT-0600 (CST)
  */
 ;(function() {
   'use strict';
@@ -8602,7 +8602,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         if ($scope.couponType.length < 1 || $scope.couponType == $scope.friendlyPath) {
             $scope.couponType = 'printable';
         }
-        if ($cope.couponiFrame) {
+        if ($scope.couponiFrame) {
             $scope.couponType = 'store';
             if (gsnApi.isNull(gsnApi.getSelectedStoreId(), 0) <= 0) {
                 $scope.goUrl('/storelocator?fromUrl=' + encodeURIComponent($location.url()));

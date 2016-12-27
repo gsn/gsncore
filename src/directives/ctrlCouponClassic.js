@@ -59,7 +59,7 @@
         if ($scope.couponType.length < 1 || $scope.couponType == $scope.friendlyPath) {
             $scope.couponType = 'printable';
         }
-        if ($cope.couponiFrame) {
+        if ($scope.couponiFrame) {
             $scope.couponType = 'store';
             if (gsnApi.isNull(gsnApi.getSelectedStoreId(), 0) <= 0) {
                 $scope.goUrl('/storelocator?fromUrl=' + encodeURIComponent($location.url()));
