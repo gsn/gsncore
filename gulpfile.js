@@ -58,27 +58,27 @@ gulp.task('build-basic', function () {
     .pipe(gulp.dest('.'));
 });
 
-
+/*
+    .pipe($.header(banner, {
+      pkg: pkg
+    }))
+ */
 gulp.task('default', ['build', 'build-basic'], function () {
   gulp.src('./gsncore-basic.js')
     .pipe(sourcemaps.init())
     .pipe($.uglify())
-    .pipe($.header(banner, {
-      pkg: pkg
-    }))
     .pipe($.rename({
       suffix: '.min'
-    })).pipe(sourcemaps.write('maps'))
+    }))
+    .pipe(sourcemaps.write('maps'))
     .pipe(gulp.dest('.'));
 
   return gulp.src('./gsncore.js')
     .pipe(sourcemaps.init())
     .pipe($.uglify())
-    .pipe($.header(banner, {
-      pkg: pkg
-    }))
     .pipe($.rename({
       suffix: '.min'
-    })).pipe(sourcemaps.write('maps'))
+    }))
+    .pipe(sourcemaps.write('maps'))
     .pipe(gulp.dest('.'));
 });
