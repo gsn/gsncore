@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.8.73
+ * version 1.8.74
  * gsncore repository
- * Build date: Thu Jan 05 2017 13:12:16 GMT-0600 (CST)
+ * Build date: Thu Jan 05 2017 13:30:51 GMT-0600 (CST)
  */
 ;(function() {
   'use strict';
@@ -13087,11 +13087,11 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     }
   }]);
 })(angular);
-(function(angular, undefined) {
+(function (angular, undefined) {
 
   angular.module('gsn.core')
     .directive('gsnShoppingList', ['gsnApi', '$timeout', 'gsnProfile', '$routeParams', '$rootScope', 'gsnStore', '$location', 'gsnCouponPrinter', '$filter',
-      function(gsnApi, $timeout, gsnProfile, $routeParams, $rootScope, gsnStore, $location, gsnCouponPrinter, $filter) {
+      function (gsnApi, $timeout, gsnProfile, $routeParams, $rootScope, gsnStore, $location, gsnCouponPrinter, $filter) {
         // Usage:  use to manipulate a shopping list on the UI
         //
         // Creates: 2014-01-13 TomN
@@ -13134,8 +13134,8 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
             total: 0
           };
 
-          $scope.reloadShoppingList = function(shoppingListId) {
-            $timeout(function() {
+          $scope.reloadShoppingList = function (shoppingListId) {
+            $timeout(function () {
               if ($attrs.gsnShoppingList == 'savedlists') {
                 if ($scope.getSelectedShoppingListId) {
                   shoppingListId = $scope.getSelectedShoppingListId();
@@ -13159,7 +13159,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
             }, 50);
           };
 
-          $scope.doMassageList = function(list) {
+          $scope.doMassageList = function (list) {
             if (gsnApi.isNull(list, null) === null) return null;
 
             $scope.coupons.length = 0;
@@ -13191,7 +13191,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
 
             var categories = gsnStore.getCategories();
 
-            angular.forEach(items, function(item, idx) {
+            angular.forEach(items, function (item, idx) {
               if (gsnApi.isNull(item.CategoryName, null) === null) {
                 // in javascript, null is actually != to undefined
                 var cat = categories[item.CategoryId || null];
@@ -13240,7 +13240,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
                   $scope.manufacturerCoupons.push(item);
                 }
               } else if (item.ItemTypeId == 0 && item.Meta) {
-                if (!item.LinkedItem && (item.Meta+ '').indexOf('}') > 0) {
+                if (!item.LinkedItem && (item.Meta + '').indexOf('}') > 0) {
                   item.LinkedItem = JSON.parse(item.Meta);
                 }
                 if (item.LinkedItem) {
@@ -13290,6 +13290,13 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
               item.NewQuantity = item.Quantity;
               item.selected = false;
               item.zIndex = 900 - idx;
+
+              // resolve circular reference
+              if (item.LinkedItem == item) {
+                var newItem = angular.copy(item);
+                gsnApi.del(newItem, 'LinkedItem');
+                item.LinkedItem = newItem;
+              }
             });
 
             $scope.totalQuantity = totalQuantity;
@@ -13315,7 +13322,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
                 items: items
               }];
             } else {
-              newAllItems = gsnApi.groupBy(items, $scope.groupBy, function(item) {
+              newAllItems = gsnApi.groupBy(items, $scope.groupBy, function (item) {
                 gsnApi.sortOn(item.items, 'Description');
               });
             }
@@ -13337,24 +13344,24 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
             return list;
           };
 
-          $scope.doUpdateQuantity = function(item) {
+          $scope.doUpdateQuantity = function (item) {
             var list = $scope.mylist;
             item.OldQuantity = item.Quantity;
             item.Quantity = parseInt(item.NewQuantity);
             list.syncItem(item);
           };
 
-          $scope.doAddSelected = function() {
+          $scope.doAddSelected = function () {
             var list = $scope.mylist;
             var toAdd = [];
-            angular.forEach(list.items, function(item, k) {
+            angular.forEach(list.items, function (item, k) {
               if (true === item.selected) {
                 toAdd.push(item);
               }
             });
 
             //  Issue: The previous version of this code was adding to the list regardless of if it was previously added. Causing the count to be off.
-            angular.forEach(toAdd, function(item, k) {
+            angular.forEach(toAdd, function (item, k) {
               if (false === gsnProfile.isOnList(item)) {
                 gsnProfile.addItem(item);
               } else {
@@ -13364,14 +13371,14 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
             });
           };
 
-          $scope.doDeleteList = function() {
+          $scope.doDeleteList = function () {
             gsnProfile.deleteShoppingList($scope.mylist);
 
             // cause this list to refresh
             $scope.$emit('gsnevent:savedlists-deleted', $scope.mylist);
           };
 
-          $scope.doAddOwnItem = function() {
+          $scope.doAddOwnItem = function () {
             var list = $scope.mylist;
             var addString = gsnApi.isNull($scope.addString, '');
             if (addString.length < 1) {
@@ -13390,7 +13397,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
             $scope.doMassageList(list);
           };
 
-          $scope.doSaveList = function(newTitle) {
+          $scope.doSaveList = function (newTitle) {
             // save list just means to change the title
             if (!gsnApi.isLoggedIn()) {
               // fallback message
@@ -13399,27 +13406,27 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
             }
 
             var list = $scope.mylist;
-            list.setTitle(newTitle).then(function(response) {});
+            list.setTitle(newTitle).then(function (response) {});
           };
 
-          $scope.doSelectAll = function() {
+          $scope.doSelectAll = function () {
             var list = $scope.mylist;
             if (list.items[0]) {
               var selected = (list.items[0].selected) ? false : true;
-              angular.forEach(list.items, function(v, k) {
+              angular.forEach(list.items, function (v, k) {
                 v.selected = selected;
               });
             }
           };
 
           /* begin item menu actions */
-          $scope.doItemRemove = function(item) {
+          $scope.doItemRemove = function (item) {
             var list = $scope.mylist;
             list.removeItem(item);
             $scope.doMassageList(list);
           };
 
-          $scope.doItemAddToCurrentList = function(item) {
+          $scope.doItemAddToCurrentList = function (item) {
             if (gsn.isNull(item, null) !== null) {
 
               //var mainList = gsnProfile.getShoppingList();
@@ -13427,9 +13434,9 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
             }
           };
 
-          $scope.doRefreshList = function() {
+          $scope.doRefreshList = function () {
             if ($scope.mylist) {
-              $scope.mylist.updateShoppingList().then(function(response) {
+              $scope.mylist.updateShoppingList().then(function (response) {
                 if (response.success) {
                   // refresh
                   $scope.doMassageList($scope.mylist);
@@ -13466,7 +13473,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
           $scope.$on('gsnevent:shoppinglist-page-loaded', handleShoppingListEvent);
           $scope.$on('gsnevent:savedlists-selected', handleShoppingListEvent);
 
-          $scope.$on('gsnevent:circular-loaded', function(event, data) {
+          $scope.$on('gsnevent:circular-loaded', function (event, data) {
             if (data.success) {
               $scope.reloadShoppingList();
             }
@@ -13475,20 +13482,20 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
           });
 
           // Events for modal confirmation.
-          $scope.$on('gsnevent:shopping-list-saved', function() {
+          $scope.$on('gsnevent:shopping-list-saved', function () {
             $scope.shoppinglistsaved++;
           });
 
-          $scope.$on('gsnevent:shopping-list-deleted', function() {
+          $scope.$on('gsnevent:shopping-list-deleted', function () {
             $scope.shoppinglistdeleted++;
           });
 
           // Per Request: signal that the list has been created.
-          $scope.$on('gsnevent:shopping-list-created', function(event, data) {
+          $scope.$on('gsnevent:shopping-list-created', function (event, data) {
             $scope.shoppinglistcreated++;
           });
 
-          $scope.$on('gsnevent:gsnshoppinglist-itemavailable', function(event) {
+          $scope.$on('gsnevent:gsnshoppinglist-itemavailable', function (event) {
             if ($scope.manufacturerCoupons.length <= 0) return;
             if ($scope.hasInitializePrinter) return;
 
@@ -13506,16 +13513,16 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
           });
 
           // trigger modal
-          $scope.$on('gsnevent:gcprinter-not-supported', function() {
+          $scope.$on('gsnevent:gcprinter-not-supported', function () {
             $scope.printer.notsupported++;
           });
-          $scope.$on('gsnevent:gcprinter-blocked', function() {
+          $scope.$on('gsnevent:gcprinter-blocked', function () {
             $scope.printer.blocked++;
           });
-          $scope.$on('gsnevent:gcprinter-not-found', function() {
+          $scope.$on('gsnevent:gcprinter-not-found', function () {
             $scope.printer.notinstalled++;
           });
-          $scope.$on('gsnevent:gcprinter-printed', function(evt, e, rsp) {
+          $scope.$on('gsnevent:gcprinter-printed', function (evt, e, rsp) {
             $scope.printer.printed = e;
             if (rsp) {
               $scope.printer.errors = gsnApi.isNull(rsp.ErrorCoupons, []);
@@ -13526,7 +13533,8 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
             }
           });
         }
-      }]);
+      }
+    ]);
 
 })(angular);
 
