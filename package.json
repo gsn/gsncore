@@ -4,20 +4,20 @@
   "version": "1.8.75",
   "homepage": "https://github.com/gsn/gsncore",
   "author": {
-    "name": "Grocery Shopping Network",
-    "email": "tech@groceryshopping.net",
-    "url": "http://www.groceryshopping.net"
+    "name": "Brick, Inc.",
+    "email": "tech@trybrick.com",
+    "url": "https://trybrick.com"
   },
   "contributors": [
     {
       "name": "Tom Nguyen",
-      "email": "tnguyen@groceryshopping.net",
-      "url": "http://www.groceryshopping.net"
+      "email": "tnguyen@trybrick.com",
+      "url": "https://trybrick.com"
     }
   ],
   "repository": {
     "type": "git",
-    "url": "git@github.com:gsn/gsncore.git"
+    "url": "git@github.com:trybrick/gsncore.git"
   },
   "keywords": [
     "website"
