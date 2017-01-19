@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.8.76
+ * version 1.8.77
  * gsncore repository
- * Build date: Thu Jan 19 2017 15:06:05 GMT-0600 (CST)
+ * Build date: Thu Jan 19 2017 17:46:38 GMT-0600 (CST)
  */
 ;(function() {
   'use strict';
@@ -5407,8 +5407,8 @@
         CircularPageId: pages[0].CircularPageId,
         CircularType: circ.CircularType,
         CircularTypeId: circ.CircularTypeId,
-        ImageUrl: pages[0].ImageUrl,
-        SmallImageUrl: pages[0].SmallImageUrl,
+        ImageUrl: pages[0].ImageUrl.replace('http://', '//'),
+        SmallImageUrl: pages[0].SmallImageUrl.replace('http://', '//'),
         items: []
       };
 
@@ -5419,6 +5419,8 @@
         //pageCopy.Items = [];
         itemCount += page.Items.length;
         page.Circular = circ;
+        page.ImageUrl = page.ImageUrl.replace('http://', '//');
+        page.SmallImageUrl = page.SmallImageUrl.replace('http://', '//');
 
         processingQueue.push(function() {
           processCircularPage(items, circularMaster, page);
@@ -7097,6 +7099,7 @@
           if (name == 'gsnFtArticle') {
             gsnStore.getFeaturedArticle().then(function (result) {
               if (result.success) {
+                result.response.ImageUrl = (result.response.ImageUrl || {}).replace('http://', '//');
                 scope.item = result.response;
               }
             });
@@ -7104,6 +7107,7 @@
           else if (name == 'gsnFtRecipe') {
             gsnStore.getFeaturedRecipe().then(function (result) {
               if (result.success) {
+                result.response.ImageUrl = (result.response.ImageUrl || {}).replace('http://', '//');
                 scope.item = result.response;
               }
             });
@@ -7111,6 +7115,7 @@
           else if (name == 'gsnFtAskthechef') {
             gsnStore.getAskTheChef().then(function (result) {
               if (result.success) {
+                result.response.ImageUrl = (result.response.ImageUrl || {}).replace('http://', '//');
                 scope.item = result.response;
               }
             });
@@ -7118,6 +7123,7 @@
           else if (name == 'gsnFtVideo') {
             gsnStore.getFeaturedVideo().then(function (result) {
               if (result.success) {
+                result.response.ImageUrl = (result.response.ImageUrl || {}).replace('http://', '//');
                 scope.item = result.response;
               }
             });
@@ -7125,6 +7131,7 @@
           else if (name == 'gsnFtCookingtip') {
             gsnStore.getCookingTip().then(function (result) {
               if (result.success) {
+                result.response.ImageUrl = (result.response.ImageUrl || {}).replace('http://', '//');
                 scope.item = result.response;
               }
             });

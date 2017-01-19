@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.8.76
+ * version 1.8.77
  * gsncore repository
- * Build date: Thu Jan 19 2017 15:06:05 GMT-0600 (CST)
+ * Build date: Thu Jan 19 2017 17:46:38 GMT-0600 (CST)
  */
 ;(function() {
   'use strict';
@@ -7398,8 +7398,8 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         CircularPageId: pages[0].CircularPageId,
         CircularType: circ.CircularType,
         CircularTypeId: circ.CircularTypeId,
-        ImageUrl: pages[0].ImageUrl,
-        SmallImageUrl: pages[0].SmallImageUrl,
+        ImageUrl: pages[0].ImageUrl.replace('http://', '//'),
+        SmallImageUrl: pages[0].SmallImageUrl.replace('http://', '//'),
         items: []
       };
 
@@ -7410,6 +7410,8 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         //pageCopy.Items = [];
         itemCount += page.Items.length;
         page.Circular = circ;
+        page.ImageUrl = page.ImageUrl.replace('http://', '//');
+        page.SmallImageUrl = page.SmallImageUrl.replace('http://', '//');
 
         processingQueue.push(function() {
           processCircularPage(items, circularMaster, page);
@@ -7980,7 +7982,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     return directive;
   }
 
-  function myController($scope, gsnStore, gsnApi, $location) {    
+  function myController($scope, gsnStore, gsnApi, $location) {
     var pathId = angular.lowercase($location.path()).replace(/\D*/, '')
     $scope.myId = ($location.search().id || pathId || 'featured');
 
@@ -8001,6 +8003,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
 
       myFunction.then(function (result) {
         if (result.success) {
+          result.response.ImageUrl = (result.response.ImageUrl || {}).replace('http://', '//');
           $scope.article = result.response;
         }
       });
@@ -10186,7 +10189,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     $controller('ctrlBaseRecipeSearch', {
 		$scope: $scope
 	});
-	
+
     $scope.activate = activate;
     $scope.addSelectedIngredients = addSelectedIngredients;
     $scope.selectAllIngredients = selectAllIngredients;
@@ -10214,6 +10217,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
 
       myFunction.then(function (result) {
         if (result.success) {
+          result.response.ImageUrl = (result.response.ImageUrl || {}).replace('http://', '//');
           $scope.vm.recipe = result.response;
 
           $scope.nutrients = gsnApi.mapObject($scope.vm.recipe.Nutrients, 'Description');
@@ -10266,9 +10270,9 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     function addSelectedIngredients() {
       var toAdd = [];
       angular.forEach($scope.vm.recipe.Ingredients, function (v, k) {
-        if (v.selected) {          
-            v.Quantity = 1; 
-            v.Comment=v.StandardText;		
+        if (v.selected) {
+            v.Quantity = 1;
+            v.Comment=v.StandardText;
 
           toAdd.push(v);
         }
@@ -10310,7 +10314,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     $controller('ctrlBaseRecipeSearch', {
 		$scope: $scope
 	});
-	
+
     $scope.activate = activate;
     $scope.vm = {
       mealPlanners: [],
@@ -10348,24 +10352,28 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
 
       gsnStore.getFeaturedRecipe().then(function (result) {
         if (result.success) {
+          result.response.ImageUrl = (result.response.ImageUrl || {}).replace('http://', '//');
           $scope.vm.featuredRecipe = result.response;
         }
       });
 
       gsnStore.getAskTheChef().then(function (result) {
         if (result.success) {
+          result.response.ImageUrl = (result.response.ImageUrl || {}).replace('http://', '//');
           $scope.vm.askTheChef = result.response;
         }
       });
 
       gsnStore.getFeaturedArticle().then(function (result) {
         if (result.success) {
+          result.response.ImageUrl = (result.response.ImageUrl || {}).replace('http://', '//');
           $scope.vm.featuredArticle = result.response;
         }
       });
 
       gsnStore.getCookingTip().then(function (result) {
         if (result.success) {
+          result.response.ImageUrl = (result.response.ImageUrl || {}).replace('http://', '//');
           $scope.vm.cookingTip = result.response;
         }
       });
@@ -10393,12 +10401,13 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     }
 
     $scope.activate();
-    //#region Internal Methods        
+    //#region Internal Methods
 
     //#endregion
   }
 
 })(angular);
+
 (function (angular, undefined) {
   'use strict';
 
@@ -10499,10 +10508,11 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
           }
         }
       });
-    
+
       if ($scope.id == 'featured') {
         gsnStore.getFeaturedVideo().then(function(result){
           if (result.success) {
+            result.response.ImageUrl = (result.response.ImageUrl || {}).replace('http://', '//');
             $scope.vm.video = result.response;
           }
         });
@@ -12126,6 +12136,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
           if (name == 'gsnFtArticle') {
             gsnStore.getFeaturedArticle().then(function (result) {
               if (result.success) {
+                result.response.ImageUrl = (result.response.ImageUrl || {}).replace('http://', '//');
                 scope.item = result.response;
               }
             });
@@ -12133,6 +12144,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
           else if (name == 'gsnFtRecipe') {
             gsnStore.getFeaturedRecipe().then(function (result) {
               if (result.success) {
+                result.response.ImageUrl = (result.response.ImageUrl || {}).replace('http://', '//');
                 scope.item = result.response;
               }
             });
@@ -12140,6 +12152,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
           else if (name == 'gsnFtAskthechef') {
             gsnStore.getAskTheChef().then(function (result) {
               if (result.success) {
+                result.response.ImageUrl = (result.response.ImageUrl || {}).replace('http://', '//');
                 scope.item = result.response;
               }
             });
@@ -12147,6 +12160,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
           else if (name == 'gsnFtVideo') {
             gsnStore.getFeaturedVideo().then(function (result) {
               if (result.success) {
+                result.response.ImageUrl = (result.response.ImageUrl || {}).replace('http://', '//');
                 scope.item = result.response;
               }
             });
@@ -12154,6 +12168,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
           else if (name == 'gsnFtCookingtip') {
             gsnStore.getCookingTip().then(function (result) {
               if (result.success) {
+                result.response.ImageUrl = (result.response.ImageUrl || {}).replace('http://', '//');
                 scope.item = result.response;
               }
             });

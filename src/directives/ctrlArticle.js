@@ -1,4 +1,4 @@
-﻿(function (angular, undefined) {
+(function (angular, undefined) {
   'use strict';
 
   var myDirectiveName = 'ctrlArticle';
@@ -17,7 +17,7 @@
     return directive;
   }
 
-  function myController($scope, gsnStore, gsnApi, $location) {    
+  function myController($scope, gsnStore, gsnApi, $location) {
     var pathId = angular.lowercase($location.path()).replace(/\D*/, '')
     $scope.myId = ($location.search().id || pathId || 'featured');
 
@@ -38,6 +38,7 @@
 
       myFunction.then(function (result) {
         if (result.success) {
+          result.response.ImageUrl = (result.response.ImageUrl || {}).replace('http://', '//');
           $scope.article = result.response;
         }
       });

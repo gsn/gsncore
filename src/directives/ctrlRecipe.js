@@ -1,4 +1,4 @@
-﻿(function (angular, undefined) {
+(function (angular, undefined) {
   'use strict';
 
   var myDirectiveName = 'ctrlRecipe';
@@ -21,7 +21,7 @@
     $controller('ctrlBaseRecipeSearch', {
 		$scope: $scope
 	});
-	
+
     $scope.activate = activate;
     $scope.addSelectedIngredients = addSelectedIngredients;
     $scope.selectAllIngredients = selectAllIngredients;
@@ -49,6 +49,7 @@
 
       myFunction.then(function (result) {
         if (result.success) {
+          result.response.ImageUrl = (result.response.ImageUrl || {}).replace('http://', '//');
           $scope.vm.recipe = result.response;
 
           $scope.nutrients = gsnApi.mapObject($scope.vm.recipe.Nutrients, 'Description');
@@ -101,9 +102,9 @@
     function addSelectedIngredients() {
       var toAdd = [];
       angular.forEach($scope.vm.recipe.Ingredients, function (v, k) {
-        if (v.selected) {          
-            v.Quantity = 1; 
-            v.Comment=v.StandardText;		
+        if (v.selected) {
+            v.Quantity = 1;
+            v.Comment=v.StandardText;
 
           toAdd.push(v);
         }

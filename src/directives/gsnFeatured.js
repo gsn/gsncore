@@ -1,4 +1,4 @@
-﻿(function (angular, undefined) {
+(function (angular, undefined) {
   var createDirective, module, pluginName, _i, _len, _ref;
 
   module = angular.module('gsn.core');
@@ -23,6 +23,7 @@
           if (name == 'gsnFtArticle') {
             gsnStore.getFeaturedArticle().then(function (result) {
               if (result.success) {
+                result.response.ImageUrl = (result.response.ImageUrl || {}).replace('http://', '//');
                 scope.item = result.response;
               }
             });
@@ -30,6 +31,7 @@
           else if (name == 'gsnFtRecipe') {
             gsnStore.getFeaturedRecipe().then(function (result) {
               if (result.success) {
+                result.response.ImageUrl = (result.response.ImageUrl || {}).replace('http://', '//');
                 scope.item = result.response;
               }
             });
@@ -37,6 +39,7 @@
           else if (name == 'gsnFtAskthechef') {
             gsnStore.getAskTheChef().then(function (result) {
               if (result.success) {
+                result.response.ImageUrl = (result.response.ImageUrl || {}).replace('http://', '//');
                 scope.item = result.response;
               }
             });
@@ -44,6 +47,7 @@
           else if (name == 'gsnFtVideo') {
             gsnStore.getFeaturedVideo().then(function (result) {
               if (result.success) {
+                result.response.ImageUrl = (result.response.ImageUrl || {}).replace('http://', '//');
                 scope.item = result.response;
               }
             });
@@ -51,6 +55,7 @@
           else if (name == 'gsnFtCookingtip') {
             gsnStore.getCookingTip().then(function (result) {
               if (result.success) {
+                result.response.ImageUrl = (result.response.ImageUrl || {}).replace('http://', '//');
                 scope.item = result.response;
               }
             });

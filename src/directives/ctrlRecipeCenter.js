@@ -1,4 +1,4 @@
-﻿(function (angular, undefined) {
+(function (angular, undefined) {
   'use strict';
 
   var myDirectiveName = 'ctrlRecipeCenter';
@@ -21,7 +21,7 @@
     $controller('ctrlBaseRecipeSearch', {
 		$scope: $scope
 	});
-	
+
     $scope.activate = activate;
     $scope.vm = {
       mealPlanners: [],
@@ -59,24 +59,28 @@
 
       gsnStore.getFeaturedRecipe().then(function (result) {
         if (result.success) {
+          result.response.ImageUrl = (result.response.ImageUrl || {}).replace('http://', '//');
           $scope.vm.featuredRecipe = result.response;
         }
       });
 
       gsnStore.getAskTheChef().then(function (result) {
         if (result.success) {
+          result.response.ImageUrl = (result.response.ImageUrl || {}).replace('http://', '//');
           $scope.vm.askTheChef = result.response;
         }
       });
 
       gsnStore.getFeaturedArticle().then(function (result) {
         if (result.success) {
+          result.response.ImageUrl = (result.response.ImageUrl || {}).replace('http://', '//');
           $scope.vm.featuredArticle = result.response;
         }
       });
 
       gsnStore.getCookingTip().then(function (result) {
         if (result.success) {
+          result.response.ImageUrl = (result.response.ImageUrl || {}).replace('http://', '//');
           $scope.vm.cookingTip = result.response;
         }
       });
@@ -104,7 +108,7 @@
     }
 
     $scope.activate();
-    //#region Internal Methods        
+    //#region Internal Methods
 
     //#endregion
   }

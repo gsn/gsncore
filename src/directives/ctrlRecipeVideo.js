@@ -44,10 +44,11 @@
           }
         }
       });
-    
+
       if ($scope.id == 'featured') {
         gsnStore.getFeaturedVideo().then(function(result){
           if (result.success) {
+            result.response.ImageUrl = (result.response.ImageUrl || {}).replace('http://', '//');
             $scope.vm.video = result.response;
           }
         });

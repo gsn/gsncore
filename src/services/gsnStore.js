@@ -616,8 +616,8 @@
         CircularPageId: pages[0].CircularPageId,
         CircularType: circ.CircularType,
         CircularTypeId: circ.CircularTypeId,
-        ImageUrl: pages[0].ImageUrl,
-        SmallImageUrl: pages[0].SmallImageUrl,
+        ImageUrl: pages[0].ImageUrl.replace('http://', '//'),
+        SmallImageUrl: pages[0].SmallImageUrl.replace('http://', '//'),
         items: []
       };
 
@@ -628,6 +628,8 @@
         //pageCopy.Items = [];
         itemCount += page.Items.length;
         page.Circular = circ;
+        page.ImageUrl = page.ImageUrl.replace('http://', '//');
+        page.SmallImageUrl = page.SmallImageUrl.replace('http://', '//');
 
         processingQueue.push(function() {
           processCircularPage(items, circularMaster, page);
