@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.8.75
+ * version 1.8.76
  * gsncore repository
- * Build date: Wed Jan 11 2017 14:08:31 GMT-0600 (CST)
+ * Build date: Thu Jan 19 2017 15:06:05 GMT-0600 (CST)
  */
 ;(function() {
   'use strict';
@@ -7920,7 +7920,7 @@
 
   myModule.directive('gsnProfileInfo', ['gsnApi', 'gsnProfile', '$interpolate', function (gsnApi, gsnProfile, $interpolate) {
     // Usage: add profile info
-    // 
+    //
     // Creates: 2013-12-12 TomN
     // History:
     //          2015-02-27 TomN - add ability to interpolate gsnProfileInfo data
@@ -7934,7 +7934,7 @@
 
     function link(scope, element, attrs) {
       var compiledTemplate;
-      
+
       function setProfileData() {
         gsnProfile.getProfile().then(function (rst) {
           if (rst.success) {
@@ -7948,7 +7948,7 @@
               html = compiledTemplate(scope);
             } else {
               if (scope.profile.FacebookUserId) {
-                html = '<a href="/profile"><img alt="temp customer image" class="accountImage" src="http:\/\/graph.facebook.com\/' + scope.profile.FacebookUserId + '\/picture?type=small" \/><\/a>' + html;
+                html = '<a href="/profile"><img alt="temp customer image" class="accountImage" src="https:\/\/graph.facebook.com\/' + scope.profile.FacebookUserId + '\/picture?type=small" \/><\/a>' + html;
               }
             }
             element.html(html);
@@ -7961,6 +7961,7 @@
     }
   }]);
 })(angular);
+
 (function(angular, undefined) {
   'use strict';
   var myModule = angular.module('gsn.core');
