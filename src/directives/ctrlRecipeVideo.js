@@ -57,6 +57,8 @@
     }
 
     function playVideo() {
+      $scope.vm.video.Thumbnail = gsnApi.isNull($scope.vm.video.Thumbnail, {}).replace('http://', '//');
+      $scope.vm.video.Url = gsnApi.isNull($scope.vm.video.Url, {}).replace('http://', '//');
       $timeout(function () {
         flowplayer('RecipeVideoPlayer', 'https://cdn.gsngrocers.com/script/lib/flowplayer-3.2.18.swf', {
           clip: {
