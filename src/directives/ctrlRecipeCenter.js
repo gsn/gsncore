@@ -40,7 +40,7 @@
 
       gsnStore.getFeaturedVideo().then(function (result) {
         if (result.success) {
-          result.response.ImageUrl = (result.response.ImageUrl || {}).replace('http://', '//');
+          result.response.Thumbnail = gsnApi.isNull(result.response.Thumbnail, {}).replace('http://', '//');
           $scope.vm.featuredVideo = result.response;
         }
       });
@@ -60,7 +60,7 @@
 
       gsnStore.getFeaturedRecipe().then(function (result) {
         if (result.success) {
-          result.response.ImageUrl = (result.response.ImageUrl || {}).replace('http://', '//');
+          result.response.ImageUrl = gsnApi.isNull(result.response.ImageUrl, {}).replace('http://', '//');
           angular.forEach(result.response.Images, function (item) {
             item.RecipeImageUrl = (item.RecipeImageUrl || {}).replace('http://', '//');
           });
@@ -70,7 +70,7 @@
 
       gsnStore.getAskTheChef().then(function (result) {
         if (result.success) {
-          result.response.ImageUrl = (result.response.ImageUrl || {}).replace('http://', '//');
+          result.response.ImageUrl = gsnApi.isNull(result.response.ImageUrl, {}).replace('http://', '//');
           $scope.vm.askTheChef = result.response;
         }
       });

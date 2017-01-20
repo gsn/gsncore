@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.8.78
+ * version 1.8.79
  * gsncore repository
- * Build date: Thu Jan 19 2017 18:04:08 GMT-0600 (CST)
+ * Build date: Thu Jan 19 2017 18:18:45 GMT-0600 (CST)
  */
 ;(function() {
   'use strict';
@@ -7099,7 +7099,7 @@
           if (name == 'gsnFtArticle') {
             gsnStore.getFeaturedArticle().then(function (result) {
               if (result.success) {
-                result.response.ImageUrl = (result.response.ImageUrl || {}).replace('http://', '//');
+                result.response.ImageUrl = gsnApi.isNull(result.response.ImageUrl, {}).replace('http://', '//');
                 scope.item = result.response;
               }
             });
@@ -7107,7 +7107,7 @@
           else if (name == 'gsnFtRecipe') {
             gsnStore.getFeaturedRecipe().then(function (result) {
               if (result.success) {
-                result.response.ImageUrl = (result.response.ImageUrl || {}).replace('http://', '//');
+                result.response.ImageUrl = gsnApi.isNull(result.response.ImageUrl, {}).replace('http://', '//');
                 angular.forEach(result.response.Images, function (item) {
                   item.RecipeImageUrl = (item.RecipeImageUrl || {}).replace('http://', '//');
                 });
@@ -7118,7 +7118,7 @@
           else if (name == 'gsnFtAskthechef') {
             gsnStore.getAskTheChef().then(function (result) {
               if (result.success) {
-                result.response.ImageUrl = (result.response.ImageUrl || {}).replace('http://', '//');
+                result.response.ImageUrl = gsnApi.isNull(result.response.ImageUrl, {}).replace('http://', '//');
                 scope.item = result.response;
               }
             });
@@ -7126,7 +7126,7 @@
           else if (name == 'gsnFtVideo') {
             gsnStore.getFeaturedVideo().then(function (result) {
               if (result.success) {
-                result.response.ImageUrl = (result.response.ImageUrl || {}).replace('http://', '//');
+                result.response.Thumbnail = gsnApi.isNull(result.response.Thumbnail, {}).replace('http://', '//');
                 scope.item = result.response;
               }
             });
@@ -7134,14 +7134,14 @@
           else if (name == 'gsnFtCookingtip') {
             gsnStore.getCookingTip().then(function (result) {
               if (result.success) {
-                result.response.ImageUrl = (result.response.ImageUrl || {}).replace('http://', '//');
+                result.response.ImageUrl = gsnApi.isNull(result.response.ImageUrl, {}).replace('http://', '//');
                 scope.item = result.response;
               }
             });
           }
           else if (name == 'gsnFtConfig') {
             scope.item = gsnApi.parseStoreSpecificContent(gsnApi.getHomeData().ConfigData[attrs.gsnFtConfig]);
-            if (attrs.overwrite && ((scope.item.Description || '').length > 0)) {
+            if (attrs.overwrite && (gsnApi.isNull(scope.item.Description, '').length > 0)) {
               element.html(scope.item.Description);
             }
           }
