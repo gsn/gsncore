@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.8.79
+ * version 1.9.1
  * gsncore repository
- * Build date: Thu Jan 19 2017 18:18:45 GMT-0600 (CST)
+ * Build date: Thu Jan 19 2017 18:19:48 GMT-0600 (CST)
  */
 ;(function() {
   'use strict';
@@ -8003,7 +8003,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
 
       myFunction.then(function (result) {
         if (result.success) {
-          result.response.ImageUrl = (result.response.ImageUrl || {}).replace('http://', '//');
+          result.response.ImageUrl = gsnApi.isNull(result.response.ImageUrl, {}).replace('http://', '//');
           $scope.article = result.response;
         }
       });
@@ -10217,7 +10217,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
 
       myFunction.then(function (result) {
         if (result.success) {
-          result.response.ImageUrl = (result.response.ImageUrl || {}).replace('http://', '//');
+          result.response.ImageUrl = gsnApi.isNull(result.response.ImageUrl, {}).replace('http://', '//');
           angular.forEach(result.response.Images, function (item) {
             item.RecipeImageUrl = (item.RecipeImageUrl || {}).replace('http://', '//');
           });
@@ -10373,14 +10373,14 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
 
       gsnStore.getFeaturedArticle().then(function (result) {
         if (result.success) {
-          result.response.ImageUrl = (result.response.ImageUrl || {}).replace('http://', '//');
+          result.response.ImageUrl = gsnApi.isNull(result.response.ImageUrl, {}).replace('http://', '//');
           $scope.vm.featuredArticle = result.response;
         }
       });
 
       gsnStore.getCookingTip().then(function (result) {
         if (result.success) {
-          result.response.ImageUrl = (result.response.ImageUrl || {}).replace('http://', '//');
+          result.response.ImageUrl = gsnApi.isNull(result.response.ImageUrl, {}).replace('http://', '//');
           $scope.vm.cookingTip = result.response;
         }
       });
@@ -10519,7 +10519,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       if ($scope.id == 'featured') {
         gsnStore.getFeaturedVideo().then(function(result){
           if (result.success) {
-            result.response.ImageUrl = (result.response.ImageUrl || {}).replace('http://', '//');
+            result.response.Thumbnail = gsnApi.isNull(result.response.Thumbnail, {}).replace('http://', '//');
             $scope.vm.video = result.response;
           }
         });

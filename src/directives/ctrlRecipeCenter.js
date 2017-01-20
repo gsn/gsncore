@@ -77,14 +77,14 @@
 
       gsnStore.getFeaturedArticle().then(function (result) {
         if (result.success) {
-          result.response.ImageUrl = (result.response.ImageUrl || {}).replace('http://', '//');
+          result.response.ImageUrl = gsnApi.isNull(result.response.ImageUrl, {}).replace('http://', '//');
           $scope.vm.featuredArticle = result.response;
         }
       });
 
       gsnStore.getCookingTip().then(function (result) {
         if (result.success) {
-          result.response.ImageUrl = (result.response.ImageUrl || {}).replace('http://', '//');
+          result.response.ImageUrl = gsnApi.isNull(result.response.ImageUrl, {}).replace('http://', '//');
           $scope.vm.cookingTip = result.response;
         }
       });
