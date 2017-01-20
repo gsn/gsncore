@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.9.3
+ * version 1.9.5
  * gsncore repository
- * Build date: Thu Jan 19 2017 18:48:08 GMT-0600 (CST)
+ * Build date: Thu Jan 19 2017 18:53:25 GMT-0600 (CST)
  */
 ;(function() {
   'use strict';
@@ -10528,6 +10528,8 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     }
 
     function playVideo() {
+      $scope.vm.video.Thumbnail = gsnApi.isNull($scope.vm.video.Thumbnail, {}).replace('http://', '//');
+      $scope.vm.video.Url = gsnApi.isNull($scope.vm.video.Url, {}).replace('http://', '//');
       $timeout(function () {
         flowplayer('RecipeVideoPlayer', 'https://cdn.gsngrocers.com/script/lib/flowplayer-3.2.18.swf', {
           clip: {
