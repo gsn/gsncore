@@ -605,7 +605,7 @@
 
   //#region dynamic script loader
   function loadSingleScript(uri, callbackFunc) {
-    if (uri.indexOf('//') === 0) {
+    if (uri.indexOf('//') < 0) {
       uri = 'http:' + uri;
     }
 

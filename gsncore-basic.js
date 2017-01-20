@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.9.2
+ * version 1.9.3
  * gsncore repository
- * Build date: Thu Jan 19 2017 18:31:45 GMT-0600 (CST)
+ * Build date: Thu Jan 19 2017 18:48:08 GMT-0600 (CST)
  */
 ;(function() {
   'use strict';
@@ -611,7 +611,7 @@
 
   //#region dynamic script loader
   function loadSingleScript(uri, callbackFunc) {
-    if (uri.indexOf('//') === 0) {
+    if (uri.indexOf('//') < 0) {
       uri = 'http:' + uri;
     }
 
