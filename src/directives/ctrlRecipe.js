@@ -50,6 +50,9 @@
       myFunction.then(function (result) {
         if (result.success) {
           result.response.ImageUrl = (result.response.ImageUrl || {}).replace('http://', '//');
+          angular.forEach(result.response.Images, function (item) {
+            item.RecipeImageUrl = (item.RecipeImageUrl || {}).replace('http://', '//');
+          });
           $scope.vm.recipe = result.response;
 
           $scope.nutrients = gsnApi.mapObject($scope.vm.recipe.Nutrients, 'Description');

@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.8.77
+ * version 1.8.78
  * gsncore repository
- * Build date: Thu Jan 19 2017 17:46:38 GMT-0600 (CST)
+ * Build date: Thu Jan 19 2017 18:04:08 GMT-0600 (CST)
  */
 ;(function() {
   'use strict';
@@ -7108,6 +7108,9 @@
             gsnStore.getFeaturedRecipe().then(function (result) {
               if (result.success) {
                 result.response.ImageUrl = (result.response.ImageUrl || {}).replace('http://', '//');
+                angular.forEach(result.response.Images, function (item) {
+                  item.RecipeImageUrl = (item.RecipeImageUrl || {}).replace('http://', '//');
+                });
                 scope.item = result.response;
               }
             });

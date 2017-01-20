@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.8.77
+ * version 1.8.78
  * gsncore repository
- * Build date: Thu Jan 19 2017 17:46:38 GMT-0600 (CST)
+ * Build date: Thu Jan 19 2017 18:04:08 GMT-0600 (CST)
  */
 ;(function() {
   'use strict';
@@ -10218,6 +10218,9 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       myFunction.then(function (result) {
         if (result.success) {
           result.response.ImageUrl = (result.response.ImageUrl || {}).replace('http://', '//');
+          angular.forEach(result.response.Images, function (item) {
+            item.RecipeImageUrl = (item.RecipeImageUrl || {}).replace('http://', '//');
+          });
           $scope.vm.recipe = result.response;
 
           $scope.nutrients = gsnApi.mapObject($scope.vm.recipe.Nutrients, 'Description');
@@ -10333,6 +10336,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
 
       gsnStore.getFeaturedVideo().then(function (result) {
         if (result.success) {
+          result.response.ImageUrl = (result.response.ImageUrl || {}).replace('http://', '//');
           $scope.vm.featuredVideo = result.response;
         }
       });
@@ -10353,6 +10357,9 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       gsnStore.getFeaturedRecipe().then(function (result) {
         if (result.success) {
           result.response.ImageUrl = (result.response.ImageUrl || {}).replace('http://', '//');
+          angular.forEach(result.response.Images, function (item) {
+            item.RecipeImageUrl = (item.RecipeImageUrl || {}).replace('http://', '//');
+          });
           $scope.vm.featuredRecipe = result.response;
         }
       });
@@ -12145,6 +12152,9 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
             gsnStore.getFeaturedRecipe().then(function (result) {
               if (result.success) {
                 result.response.ImageUrl = (result.response.ImageUrl || {}).replace('http://', '//');
+                angular.forEach(result.response.Images, function (item) {
+                  item.RecipeImageUrl = (item.RecipeImageUrl || {}).replace('http://', '//');
+                });
                 scope.item = result.response;
               }
             });
