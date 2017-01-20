@@ -49,6 +49,7 @@
         gsnStore.getFeaturedVideo().then(function(result){
           if (result.success) {
             result.response.Thumbnail = gsnApi.isNull(result.response.Thumbnail, {}).replace('http://', '//');
+            result.response.Url = gsnApi.isNull(result.response.Url, {}).replace('http://', '//');
             $scope.vm.video = result.response;
           }
         });
