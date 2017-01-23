@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.8.74
+ * version 1.9.5
  * gsncore repository
- * Build date: Thu Jan 05 2017 13:30:51 GMT-0600 (CST)
+ * Build date: Thu Jan 19 2017 18:53:25 GMT-0600 (CST)
  */
 ;(function() {
   'use strict';
@@ -611,7 +611,7 @@
 
   //#region dynamic script loader
   function loadSingleScript(uri, callbackFunc) {
-    if (uri.indexOf('//') === 0) {
+    if (uri.indexOf('//') < 0) {
       uri = 'http:' + uri;
     }
 
@@ -5407,8 +5407,8 @@
         CircularPageId: pages[0].CircularPageId,
         CircularType: circ.CircularType,
         CircularTypeId: circ.CircularTypeId,
-        ImageUrl: pages[0].ImageUrl,
-        SmallImageUrl: pages[0].SmallImageUrl,
+        ImageUrl: pages[0].ImageUrl.replace('http://', '//'),
+        SmallImageUrl: pages[0].SmallImageUrl.replace('http://', '//'),
         items: []
       };
 
@@ -5419,6 +5419,8 @@
         //pageCopy.Items = [];
         itemCount += page.Items.length;
         page.Circular = circ;
+        page.ImageUrl = page.ImageUrl.replace('http://', '//');
+        page.SmallImageUrl = page.SmallImageUrl.replace('http://', '//');
 
         processingQueue.push(function() {
           processCircularPage(items, circularMaster, page);
@@ -7097,6 +7099,7 @@
           if (name == 'gsnFtArticle') {
             gsnStore.getFeaturedArticle().then(function (result) {
               if (result.success) {
+                result.response.ImageUrl = gsnApi.isNull(result.response.ImageUrl, {}).replace('http://', '//');
                 scope.item = result.response;
               }
             });
@@ -7104,6 +7107,10 @@
           else if (name == 'gsnFtRecipe') {
             gsnStore.getFeaturedRecipe().then(function (result) {
               if (result.success) {
+                result.response.ImageUrl = gsnApi.isNull(result.response.ImageUrl, {}).replace('http://', '//');
+                angular.forEach(result.response.Images, function (item) {
+                  item.RecipeImageUrl = (item.RecipeImageUrl || {}).replace('http://', '//');
+                });
                 scope.item = result.response;
               }
             });
@@ -7111,6 +7118,7 @@
           else if (name == 'gsnFtAskthechef') {
             gsnStore.getAskTheChef().then(function (result) {
               if (result.success) {
+                result.response.ImageUrl = gsnApi.isNull(result.response.ImageUrl, {}).replace('http://', '//');
                 scope.item = result.response;
               }
             });
@@ -7118,6 +7126,7 @@
           else if (name == 'gsnFtVideo') {
             gsnStore.getFeaturedVideo().then(function (result) {
               if (result.success) {
+                result.response.Thumbnail = gsnApi.isNull(result.response.Thumbnail, {}).replace('http://', '//');
                 scope.item = result.response;
               }
             });
@@ -7125,13 +7134,14 @@
           else if (name == 'gsnFtCookingtip') {
             gsnStore.getCookingTip().then(function (result) {
               if (result.success) {
+                result.response.ImageUrl = gsnApi.isNull(result.response.ImageUrl, {}).replace('http://', '//');
                 scope.item = result.response;
               }
             });
           }
           else if (name == 'gsnFtConfig') {
             scope.item = gsnApi.parseStoreSpecificContent(gsnApi.getHomeData().ConfigData[attrs.gsnFtConfig]);
-            if (attrs.overwrite && ((scope.item.Description || '').length > 0)) {
+            if (attrs.overwrite && (gsnApi.isNull(scope.item.Description, '').length > 0)) {
               element.html(scope.item.Description);
             }
           }
@@ -7675,113 +7685,97 @@
     }
   }]);
 })(angular);
-(function(angular, undefined) {
-    'use strict';
-    var myModule = angular.module('gsn.core');
-    myModule.directive('gsnPartialContent', ['$timeout', 'gsnStore', 'gsnApi', '$location', '$anchorScroll', function($timeout, gsnStore, gsnApi, $location, $anchorScroll) {
-        // Usage:   allow for store specific partial content
-        //
-        // Creates: 2015-02-26
-        //
-        var directive = {
-            link: link,
-            restrict: 'EA',
-            scope: true,
-        };
-        return directive;
+(function (angular, undefined) {
+  'use strict';
+  var myModule = angular.module('gsn.core');
+  myModule.directive('gsnPartialContent', ['$timeout', 'gsnStore', 'gsnApi', '$location', '$anchorScroll', function ($timeout, gsnStore, gsnApi, $location, $anchorScroll) {
+    // Usage:   allow for store specific partial content
+    //
+    // Creates: 2015-02-26
+    //
+    var directive = {
+      link: link,
+      restrict: 'EA',
+      scope: true,
+    };
+    return directive;
 
-        function link(scope, element, attrs) {
-            var currentPath = angular.lowercase(gsnApi.isNull($location.path().replace(/^\/+/gi, ''), '').replace(/[\-]/gi, ' '));
-            attrs.gsnPartialContent = attrs.gsnPartialContent || currentPath;
-            scope.activate = activate;
-            scope.pcvm = {
-                hasScript: false,
-                notFound: false,
-                isLoading: true,
-                layout: 'default',
-                tab: $location.search().tab || 0
-            }
-            scope.partialContents = [];
-            scope.contentDetail = {
-                url: gsnApi.isNull(attrs.gsnPartialContent.replace(/^\/+/gi, ''), '').replace(/[\-]/gi, ' '),
-                name: '',
-                subName: ''
-            };
-            var partialData = {
-                ContentData: {},
-                ConfigData: {},
-                ContentList: []
-            };
+    function link(scope, element, attrs) {
+      var currentPath = gsnApi.isNull($location.path(), '');
+      attrs.gsnPartialContent = angular.lowercase(attrs.gsnPartialContent || currentPath).replace(/^\/+|\/+$/, '').replace(/[\-\/]/gi, ' ');
+      scope.activate = activate;
+      scope.pcvm = {
+        hasScript: false,
+        notFound: false,
+        isLoading: true,
+        layout: 'default',
+        tab: $location.search().tab || 0
+      }
+      scope.partialContents = [];
+      scope.contentDetail = {
+        url: attrs.gsnPartialContent
+      };
+      var partialData = {
+        ContentData: {},
+        ConfigData: {},
+        ContentList: []
+      };
 
-            function activate() {
-                // parse contentName by forward slash
-                var contentNames = scope.contentDetail.url.split('/');
-                if (contentNames.length > 1) {
-                    scope.contentDetail.subName = contentNames[1];
-                }
-                scope.contentDetail.name = contentNames[0];
-                if (scope.contentDetail.url.indexOf('.aspx') > 0) {
-                    return;
-                }
-                // attempt to retrieve static content remotely
-                gsnStore.getPartial(scope.contentDetail.name).then(function(rst) {
-                    scope.pcvm.hasScript = false
-                    scope.pcvm.isLoading = false
-                    if (rst.success) {
-                        scope.pcvm.notFound = rst.response == "null";
-                        processData(rst.response);
-                    }
-                });
+      function activate() {
+        // attempt to retrieve static content remotely
+        gsnStore.getPartial(scope.contentDetail.url).then(function (rst) {
+          scope.pcvm.hasScript = false
+          scope.pcvm.isLoading = false
+          if (rst.success) {
+            scope.pcvm.notFound = rst.response == "null";
+            processData(rst.response);
+          }
+        });
+      }
+      scope.getContentList = function () {
+        var result = [];
+        if (partialData.ContentList) {
+          for (var i = 0; i < partialData.ContentList.length; i++) {
+            var data = gsnApi.parseStoreSpecificContent(partialData.ContentList[i]);
+            if (data.Headline || data.SortBy) {
+              // match any script with src
+              if (/<script.+src=/gi.test(data.Description || '')) {
+                scope.pcvm.hasScript = true
+              }
+              result.push(data);
             }
-            scope.getContentList = function() {
-                var result = [];
-                if (partialData.ContentList) {
-                    for (var i = 0; i < partialData.ContentList.length; i++) {
-                        var data = gsnApi.parseStoreSpecificContent(partialData.ContentList[i]);
-                        if (data.Headline || data.SortBy) {
-                            // match any script with src
-                            if (/<script.+src=/gi.test(data.Description || '')) {
-                                scope.pcvm.hasScript = true
-                            }
-                            if (gsnApi.isNull(scope.contentDetail.subName, 0).length <= 0) {
-                                result.push(data);
-                                continue;
-                            }
-                            if (angular.lowercase(data.Headline || '') == scope.contentDetail.subName || data.SortBy == scope.contentDetail.subName) {
-                                result.push(data);
-                            }
-                        }
-                    }
-                }
-                return result;
-            };
-            scope.getContent = function(index) {
-                return gsnApi.parseStoreSpecificContent(partialData.ContentData[index]);
-            };
-            scope.getConfig = function(name) {
-                return gsnApi.parseStoreSpecificContent(partialData.ConfigData[name]) || {};
-            };
-            scope.getConfigDescription = function(name, defaultValue) {
-                var resultObj = scope.getConfig(name).Description;
-                return gsnApi.isNull(resultObj, defaultValue);
-            };
-            scope.activate();
-            //#region Internal Methods
-            function processData(data) {
-                partialData = gsnApi.parsePartialContentData(data);
-                scope.partialContents = scope.getContentList();
-                scope.pcvm.layout = scope.getConfig('layout').Description || 'default';
-                if ($location.hash()) {
-                    $timeout(function() {
-                        $anchorScroll();
-                        angular.element('a[href="#' + $location.hash() + '"]').click();
-                    }, 1000);
-                }
-            }
-            //#endregion
+          }
         }
-    }]);
+        return result;
+      };
+      scope.getContent = function (index) {
+        return gsnApi.parseStoreSpecificContent(partialData.ContentData[index]);
+      };
+      scope.getConfig = function (name) {
+        return gsnApi.parseStoreSpecificContent(partialData.ConfigData[name]) || {};
+      };
+      scope.getConfigDescription = function (name, defaultValue) {
+        var resultObj = scope.getConfig(name).Description;
+        return gsnApi.isNull(resultObj, defaultValue);
+      };
+      scope.activate();
+      //#region Internal Methods
+      function processData(data) {
+        partialData = gsnApi.parsePartialContentData(data);
+        scope.partialContents = scope.getContentList();
+        scope.pcvm.layout = scope.getConfig('layout').Description || 'default';
+        if ($location.hash()) {
+          $timeout(function () {
+            $anchorScroll();
+            angular.element('a[href="#' + $location.hash() + '"]').click();
+          }, 1000);
+        }
+      }
+      //#endregion
+    }
+  }]);
 })(angular);
+
 (function (angular, undefined) {
   'use strict';
   var myModule = angular.module('gsn.core');
@@ -7936,7 +7930,7 @@
 
   myModule.directive('gsnProfileInfo', ['gsnApi', 'gsnProfile', '$interpolate', function (gsnApi, gsnProfile, $interpolate) {
     // Usage: add profile info
-    // 
+    //
     // Creates: 2013-12-12 TomN
     // History:
     //          2015-02-27 TomN - add ability to interpolate gsnProfileInfo data
@@ -7950,7 +7944,7 @@
 
     function link(scope, element, attrs) {
       var compiledTemplate;
-      
+
       function setProfileData() {
         gsnProfile.getProfile().then(function (rst) {
           if (rst.success) {
@@ -7964,7 +7958,7 @@
               html = compiledTemplate(scope);
             } else {
               if (scope.profile.FacebookUserId) {
-                html = '<a href="/profile"><img alt="temp customer image" class="accountImage" src="http:\/\/graph.facebook.com\/' + scope.profile.FacebookUserId + '\/picture?type=small" \/><\/a>' + html;
+                html = '<a href="/profile"><img alt="temp customer image" class="accountImage" src="https:\/\/graph.facebook.com\/' + scope.profile.FacebookUserId + '\/picture?type=small" \/><\/a>' + html;
               }
             }
             element.html(html);
@@ -7977,6 +7971,7 @@
     }
   }]);
 })(angular);
+
 (function(angular, undefined) {
   'use strict';
   var myModule = angular.module('gsn.core');

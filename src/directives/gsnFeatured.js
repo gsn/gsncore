@@ -1,4 +1,4 @@
-﻿(function (angular, undefined) {
+(function (angular, undefined) {
   var createDirective, module, pluginName, _i, _len, _ref;
 
   module = angular.module('gsn.core');
@@ -23,6 +23,7 @@
           if (name == 'gsnFtArticle') {
             gsnStore.getFeaturedArticle().then(function (result) {
               if (result.success) {
+                result.response.ImageUrl = gsnApi.isNull(result.response.ImageUrl, {}).replace('http://', '//');
                 scope.item = result.response;
               }
             });
@@ -30,6 +31,10 @@
           else if (name == 'gsnFtRecipe') {
             gsnStore.getFeaturedRecipe().then(function (result) {
               if (result.success) {
+                result.response.ImageUrl = gsnApi.isNull(result.response.ImageUrl, {}).replace('http://', '//');
+                angular.forEach(result.response.Images, function (item) {
+                  item.RecipeImageUrl = (item.RecipeImageUrl || {}).replace('http://', '//');
+                });
                 scope.item = result.response;
               }
             });
@@ -37,6 +42,7 @@
           else if (name == 'gsnFtAskthechef') {
             gsnStore.getAskTheChef().then(function (result) {
               if (result.success) {
+                result.response.ImageUrl = gsnApi.isNull(result.response.ImageUrl, {}).replace('http://', '//');
                 scope.item = result.response;
               }
             });
@@ -44,6 +50,7 @@
           else if (name == 'gsnFtVideo') {
             gsnStore.getFeaturedVideo().then(function (result) {
               if (result.success) {
+                result.response.Thumbnail = gsnApi.isNull(result.response.Thumbnail, {}).replace('http://', '//');
                 scope.item = result.response;
               }
             });
@@ -51,13 +58,14 @@
           else if (name == 'gsnFtCookingtip') {
             gsnStore.getCookingTip().then(function (result) {
               if (result.success) {
+                result.response.ImageUrl = gsnApi.isNull(result.response.ImageUrl, {}).replace('http://', '//');
                 scope.item = result.response;
               }
             });
           }
           else if (name == 'gsnFtConfig') {
             scope.item = gsnApi.parseStoreSpecificContent(gsnApi.getHomeData().ConfigData[attrs.gsnFtConfig]);
-            if (attrs.overwrite && ((scope.item.Description || '').length > 0)) {
+            if (attrs.overwrite && (gsnApi.isNull(scope.item.Description, '').length > 0)) {
               element.html(scope.item.Description);
             }
           }
