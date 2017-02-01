@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.9.5
+ * version 1.9.6
  * gsncore repository
- * Build date: Thu Jan 19 2017 18:53:25 GMT-0600 (CST)
+ * Build date: Mon Jan 30 2017 14:57:43 GMT-0600 (CST)
  */
 ;(function() {
   'use strict';
@@ -10217,7 +10217,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
 
       myFunction.then(function (result) {
         if (result.success) {
-          result.response.ImageUrl = gsnApi.isNull(result.response.ImageUrl, {}).replace('http://', '//');
+          result.response.ImageUrl = gsnApi.isNull(result.response.ImageUrl, '').replace('http://', '//');
           angular.forEach(result.response.Images, function (item) {
             item.RecipeImageUrl = (item.RecipeImageUrl || {}).replace('http://', '//');
           });
