@@ -73,7 +73,7 @@
     };
 
     $scope.getStoreDisplayName = function (store) {
-      return store.StoreName + ' - ' + store.PrimaryAddress + '(#' + store.StoreNumber + ')';
+      return store.StoreName + ' - ' + store.PrimaryAddress;
     };
 
     $scope.doSubmit = function () {
