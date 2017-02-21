@@ -280,7 +280,13 @@
 
         function addCouponToCard(evt, item) {
             if ($scope.youtech.isAvailable(item.ProductCode)) {
+                if (item.isClipping) {
+                  return;
+                }
+                item.isClipping = true;
                 $scope.youtech.addCouponTocard(item.ProductCode).then(function (rst) {
+                    item.isClipping = false;
+
                     if (rst.success) {
                         // log coupon add to card
                         //var cat = gsnStore.getCategories()[item.CategoryId];
@@ -305,10 +311,12 @@
                         $notification.alert('Error applying coupon: ' + rst.response);
                     }
                 });
+
                 // if coupon has SubCategory, add to the Roundy's card
                 if (gsnApi.isNull(item.SubCategory, '') != '') {
                     gsnRoundyProfile.addOffer(item.SubCategory);
                 }
+
             } else {
                 // log coupon remove from card
                 //var cat = gsnStore.getCategories()[item.CategoryId];
