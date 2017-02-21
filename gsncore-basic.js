@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.9.7
+ * version 1.9.8
  * gsncore repository
- * Build date: Tue Feb 21 2017 12:12:35 GMT-0600 (Central Standard Time)
+ * Build date: Tue Feb 21 2017 13:40:35 GMT-0600 (Central Standard Time)
  */
 ;(function() {
   'use strict';
@@ -6263,11 +6263,6 @@
           {
             "Value": "Website",
             "Text": "Website",
-            "ParentOption": ""
-          },
-          {
-            "Value": "Pharmacy",
-            "Text": "Pharmacy (specify store below)",
             "ParentOption": ""
           }
       ];

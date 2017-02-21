@@ -142,11 +142,6 @@
             "Value": "Website",
             "Text": "Website",
             "ParentOption": ""
-          },
-          {
-            "Value": "Pharmacy",
-            "Text": "Pharmacy (specify store below)",
-            "ParentOption": ""
           }
       ];
     }
