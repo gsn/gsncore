@@ -265,6 +265,10 @@
     };
 
     returnObj.getPartial = function(contentName) {
+      if (!contentName) {
+        contentName = "Home Page";
+      }
+
       var url = gsnApi.getContentServiceUrl('GetPartial');
       var today = new Date();
       var nocache = today.getFullYear() + '' + today.getMonth() + '' + today.getDate() + '' + today.getHours();

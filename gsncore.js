@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.9.9
+ * version 1.9.10
  * gsncore repository
- * Build date: Tue Feb 21 2017 14:17:39 GMT-0600 (CST)
+ * Build date: Wed Feb 22 2017 16:27:58 GMT-0600 (CST)
  */
 ;(function() {
   'use strict';
@@ -7047,6 +7047,10 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     };
 
     returnObj.getPartial = function(contentName) {
+      if (!contentName) {
+        contentName = "Home Page";
+      }
+
       var url = gsnApi.getContentServiceUrl('GetPartial');
       var today = new Date();
       var nocache = today.getFullYear() + '' + today.getMonth() + '' + today.getDate() + '' + today.getHours();
