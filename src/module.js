@@ -460,10 +460,10 @@
       // assume access token data is available at this point
       var accessTokenData = getAccessToken();
       var payload = {
-        site_id: returnObj.getChainId(),
-        store_id: returnObj.getSelectedStoreId(),
-        profile_id: returnObj.getProfileId(),
-        access_token: accessTokenData.access_token,
+        "X-SITE-ID": returnObj.getChainId(),
+        "X-STORE-ID": returnObj.getSelectedStoreId(),
+        "X-PROFILE-ID": returnObj.getProfileId(),
+        "X-ACCESS-TOKEN": accessTokenData.access_token,
         'Content-Type': 'application/json'
       };
 
@@ -520,7 +520,7 @@
       $http.post(gsn.config.AuthServiceUrl + "/Token2", payload, {
         headers: {
           'Content-Type': 'application/json',
-          shopping_list_id: returnObj.getShoppingListId()
+          "X-SHOPPING-LIST-ID": returnObj.getShoppingListId()
         }
       })
         .success(function(response) {

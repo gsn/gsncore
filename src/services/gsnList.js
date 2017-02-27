@@ -74,7 +74,7 @@
 
             var url = gsnApi.getShoppingListApiUrl() + '/UpdateItem/' + returnObj.ShoppingListId;
             var hPayload = gsnApi.getApiHeaders();
-            hPayload.shopping_list_id = returnObj.ShoppingListId;
+            hPayload["X-SHOPPING-LIST-ID"] = returnObj.ShoppingListId;
             $http.post(url, itemToPost, { headers: hPayload }).success(function (response) {
               if (response.Id) {
                 processServerItem(response, existingItem);
@@ -167,7 +167,7 @@
 
           var url = gsnApi.getShoppingListApiUrl() + '/SaveItems/' + returnObj.ShoppingListId;
           var hPayload = gsnApi.getApiHeaders();
-          hPayload.shopping_list_id = returnObj.ShoppingListId;
+          hPayload["X-SHOPPING-LIST-ID"] = returnObj.ShoppingListId;
           $http.post(url, toAdd, { headers: hPayload }).success(function (response) {
             $rootScope.$broadcast('gsnevent:shoppinglist-changed', returnObj);
             deferred.resolve({ success: true, response: response });
@@ -210,7 +210,7 @@
 
             var url = gsnApi.getShoppingListApiUrl() + '/DeleteItems/' + returnObj.ShoppingListId;
             var hPayload = gsnApi.getApiHeaders();
-            hPayload.shopping_list_id = returnObj.ShoppingListId;
+            hPayload["X-SHOPPING-LIST-ID"] = returnObj.ShoppingListId;
             $http.post(url, [item.Id || item.ItemId], { headers: hPayload }).success(function (response) {
               $rootScope.$broadcast('gsnevent:shoppinglist-changed', returnObj);
               saveListToSession();
@@ -313,7 +313,7 @@
 
           var url = gsnApi.getShoppingListApiUrl() + '/Delete/' + returnObj.ShoppingListId;
           var hPayload = gsnApi.getApiHeaders();
-          hPayload.shopping_list_id = returnObj.ShoppingListId;
+          hPayload["X-SHOPPING-LIST-ID"] = returnObj.ShoppingListId;
           $http.post(url, {}, { headers: hPayload }).success(function (response) {
             // do nothing
             $rootScope.$broadcast('gsnevent:shoppinglist-deleted', returnObj);
@@ -347,7 +347,7 @@
 
           var url = gsnApi.getShoppingListApiUrl() + '/DeleteOtherItems/' + returnObj.ShoppingListId;
           var hPayload = gsnApi.getApiHeaders();
-          hPayload.shopping_list_id = returnObj.ShoppingListId;
+          hPayload["X-SHOPPING-LIST-ID"] = returnObj.ShoppingListId;
           $http.post(url, syncitems, { headers: hPayload }).success(function (response) {
             deferred.resolve({ success: true, response: returnObj });
             returnObj.savingDeferred = null;
@@ -372,7 +372,7 @@
 
           var url = gsnApi.getShoppingListApiUrl() + '/Update/' + returnObj.ShoppingListId + '?title=' + encodeURIComponent(title);
           var hPayload = gsnApi.getApiHeaders();
-          hPayload.shopping_list_id = returnObj.ShoppingListId;
+          hPayload["X-SHOPPING-LIST-ID"] = returnObj.ShoppingListId;
           $http.post(url, {}, { headers: hPayload }).success(function (response) {
             deferred.resolve({ success: true, response: returnObj });
             $mySavedData.list.Title = title;
@@ -464,7 +464,7 @@
               var url = gsnApi.getShoppingListApiUrl() + '/ItemsBy/' + returnObj.ShoppingListId + '?nocache=' + (new Date()).getTime();
 
               var hPayload = gsnApi.getApiHeaders();
-              hPayload.shopping_list_id = returnObj.ShoppingListId;
+              hPayload["X-SHOPPING-LIST-ID"] = returnObj.ShoppingListId;
               $http.get(url, { headers: hPayload }).success(function (response) {
                 processShoppingList(response);
                 $rootScope.$broadcast('gsnevent:shoppinglist-loaded', returnObj, $mySavedData.items);
