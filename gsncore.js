@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.9.6
+ * version 1.9.10
  * gsncore repository
- * Build date: Mon Jan 30 2017 14:57:43 GMT-0600 (CST)
+ * Build date: Wed Feb 22 2017 16:27:58 GMT-0600 (CST)
  */
 ;(function() {
   'use strict';
@@ -7047,6 +7047,10 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     };
 
     returnObj.getPartial = function(contentName) {
+      if (!contentName) {
+        contentName = "Home Page";
+      }
+
       var url = gsnApi.getContentServiceUrl('GetPartial');
       var today = new Date();
       var nocache = today.getFullYear() + '' + today.getMonth() + '' + today.getDate() + '' + today.getHours();
@@ -8464,7 +8468,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     };
 
     $scope.getStoreDisplayName = function (store) {
-      return store.StoreName + ' - ' + store.PrimaryAddress + '(#' + store.StoreNumber + ')';
+      return store.StoreName + ' - ' + store.PrimaryAddress;
     };
 
     $scope.doSubmit = function () {
@@ -8532,11 +8536,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
           {
             "Value": "Website",
             "Text": "Website",
-            "ParentOption": ""
-          },
-          {
-            "Value": "Pharmacy",
-            "Text": "Pharmacy (specify store below)",
             "ParentOption": ""
           }
       ];
