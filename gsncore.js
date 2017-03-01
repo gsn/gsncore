@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.9.11
+ * version 1.9.12
  * gsncore repository
- * Build date: Mon Feb 27 2017 17:20:04 GMT-0600 (CST)
+ * Build date: Wed Mar 01 2017 11:03:02 GMT-0600 (CST)
  */
 ;(function() {
   'use strict';
@@ -7398,6 +7398,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       gsnApi.sortOn(pages, 'PageNumber');
       circ.pages = pages;
       circ.CircularType = circularTypes[circ.CircularTypeId].Name;
+      circ.ImageUrl = gsnApi.isNull(circ.ImageUrl, {}).replace('http://', '//');
       var circularMaster = {
         CircularPageId: pages[0].CircularPageId,
         CircularType: circ.CircularType,
