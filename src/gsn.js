@@ -551,6 +551,8 @@
         'https://*.gsn2.com/**',
         'http://*.gsngrocers.com/**',
         'https://*.gsngrocers.com/**',
+        'http://*.trybrick.com/**',
+        'https://*.trybrick.com/**',
         'http://*.gsnretailer.com/**',
         'https://*.gsnretailer.com/**',
         'http://*.brickinc.net/**',

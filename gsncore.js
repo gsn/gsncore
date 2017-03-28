@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.9.12
+ * version 1.9.13
  * gsncore repository
- * Build date: Wed Mar 01 2017 11:03:02 GMT-0600 (CST)
+ * Build date: Tue Mar 28 2017 15:13:58 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -557,6 +557,8 @@
         'https://*.gsn2.com/**',
         'http://*.gsngrocers.com/**',
         'https://*.gsngrocers.com/**',
+        'http://*.trybrick.com/**',
+        'https://*.trybrick.com/**',
         'http://*.gsnretailer.com/**',
         'https://*.gsnretailer.com/**',
         'http://*.brickinc.net/**',
