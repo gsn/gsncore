@@ -616,6 +616,7 @@
       gsnApi.sortOn(pages, 'PageNumber');
       circ.pages = pages;
       circ.CircularType = circularTypes[circ.CircularTypeId].Name;
+      circ.ImageUrl = gsnApi.isNull(circ.ImageUrl, {}).replace('http://', '//');
       var circularMaster = {
         CircularPageId: pages[0].CircularPageId,
         CircularType: circ.CircularType,
