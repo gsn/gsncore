@@ -70,7 +70,7 @@
       }
 
       gsnApi.setSelectedStoreId(newValue);
-      $scope.vm.selectedOption = '';
+      $scope.vm.selectedOption = '0';
     });
     $scope.activate();
   }
