@@ -24,7 +24,7 @@
       currentStore: null,
       myIP: null,
       stores: null,
-      selectedOption: ''
+      selectedOption: '0'
     };
 
     gsnStore.getStores().then(function(rsp) {
