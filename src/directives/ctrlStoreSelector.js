@@ -50,6 +50,7 @@
 
     gsnStore.getStore().then(function(store) {
       $scope.vm.currentStore = store;
+      $scope.vm.selectedOption = store.StoreId;
     });
 
     function activate() {

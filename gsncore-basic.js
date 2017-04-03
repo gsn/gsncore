@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.9.21
+ * version 1.9.22
  * gsncore repository
- * Build date: Mon Apr 03 2017 13:43:09 GMT-0500 (CDT)
+ * Build date: Mon Apr 03 2017 13:52:19 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
