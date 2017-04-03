@@ -56,21 +56,16 @@
       // do nothing
     }
 
-    $scope.selectStore = function(store, reload) {
-      gsnApi.setSelectedStoreId(store.StoreId);
-      // cause a reload
-    };
-
     $scope.$watch('vm.selectedOption', function(newValue, oldValue) {
       if (!newValue) return;
 
       if ((newValue + '').indexOf('/') >= 0) {
         gsnApi.goUrl(newValue);
+        $scope.vm.selectedOption = '';
         return;
       }
 
       gsnApi.setSelectedStoreId(newValue);
-      $scope.vm.selectedOption = '';
     });
     $scope.activate();
   }

@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.9.20
+ * version 1.9.21
  * gsncore repository
- * Build date: Mon Apr 03 2017 13:25:40 GMT-0500 (CDT)
+ * Build date: Mon Apr 03 2017 13:43:09 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -11687,21 +11687,16 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       // do nothing
     }
 
-    $scope.selectStore = function(store, reload) {
-      gsnApi.setSelectedStoreId(store.StoreId);
-      // cause a reload
-    };
-
     $scope.$watch('vm.selectedOption', function(newValue, oldValue) {
       if (!newValue) return;
 
       if ((newValue + '').indexOf('/') >= 0) {
         gsnApi.goUrl(newValue);
+        $scope.vm.selectedOption = '';
         return;
       }
 
       gsnApi.setSelectedStoreId(newValue);
-      $scope.vm.selectedOption = '';
     });
     $scope.activate();
   }
