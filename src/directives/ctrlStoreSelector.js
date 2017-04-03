@@ -24,7 +24,8 @@
       currentStore: null,
       myIP: null,
       stores: null,
-      selectedOption: ''
+      selectedOption: '',
+      ignoreNext: false
     };
 
     gsnStore.getStores().then(function(rsp) {
@@ -62,7 +63,15 @@
 
       if ((newValue + '').indexOf('/') >= 0) {
         gsnApi.goUrl(newValue);
-        $scope.vm.selectedOption = '';
+
+        $scope.vm.ignoreNext = true;
+        // revert to old value
+        $scope.vm.selectedOption = oldValue;
+        return;
+      }
+
+      if ($scope.vm.ignoreNext) {
+        $scope.vm.ignoreNext = false;
         return;
       }
 
