@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.9.14
+ * version 1.9.15
  * gsncore repository
- * Build date: Mon Apr 03 2017 12:22:46 GMT-0500 (CDT)
+ * Build date: Mon Apr 03 2017 12:29:37 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -11670,12 +11670,12 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
           myFn = wu.geoOrderByOrigin;
         }
 
-        myFn(storeList, origin, function(rst) {
+        myFn.apply(wu, [storeList, origin, function(rst) {
           $timeout(function() {
             $scope.vm.myIP = rst.origin;
             $scope.vm.stores = rst.results;
           }, 200);
-        });
+        }]);
       }
     });
 
