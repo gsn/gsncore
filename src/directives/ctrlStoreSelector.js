@@ -24,7 +24,7 @@
       currentStore: null,
       myIP: null,
       stores: null,
-      selectedOption: '0'
+      selectedOption: ''
     };
 
     gsnStore.getStores().then(function(rsp) {
@@ -70,7 +70,7 @@
       }
 
       gsnApi.setSelectedStoreId(newValue);
-      $scope.vm.selectedOption = '0';
+      $scope.vm.selectedOption = '';
     });
     $scope.activate();
   }
