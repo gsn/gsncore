@@ -75,6 +75,7 @@
         return;
       }
 
+      $scope.gvm.reloadOnStoreSelection = true;
       gsnApi.setSelectedStoreId(newValue);
     });
     $scope.activate();
