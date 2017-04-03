@@ -20,7 +20,7 @@
   function myController($scope, gsnApi, $notification, $timeout, $rootScope, $location, gsnStore, debounce) {
     $scope.activate = activate;
     $scope.vm = {
-      storeList: null,
+      storeList: [],
       currentStore: null,
       myIP: null,
       stores: null,
