@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.9.26
+ * version 1.9.27
  * gsncore repository
- * Build date: Mon Apr 03 2017 14:28:41 GMT-0500 (CDT)
+ * Build date: Tue Apr 04 2017 11:57:24 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -4402,6 +4402,8 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
             $scope.defaultLayout = gsnApi.getDefaultLayout(gsnApi.getThemeUrl('/views/layout.html'));
             $scope.currentLayout = $scope.defaultLayout;
             $scope.currentPath = '/';
+            $scope.notFoundDefaultLayout = gsnApi.getThemeUrl('/views/404.html');
+            $scope.notFoundLayout = $scope.notFoundDefaultLayout;
             $scope.gvm = {
                 loginCounter: 0,
                 menuInactive: false,
@@ -4589,10 +4591,17 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
                         return;
                     }
                 }
+
                 $scope.currentLayout = $scope.defaultLayout;
                 if (gsnApi.isNull(next.layout, '').length > 0) {
                     $scope.currentLayout = next.layout;
                 }
+
+                $scope.notFoundLayout = $scope.notFoundDefaultLayout;
+                if (gsnApi.isNull(next.notFoundLayout, '').length > 0) {
+                    $scope.notFoundLayout = next.notFoundLayout;
+                }
+
                 $scope.gvm.selectedItem = null;
             });
             $scope.$on('gsnevent:profile-load-success', function(event, result) {
@@ -4818,6 +4827,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         } // init
     }
 })(angular);
+
 (function (angular, undefined) {
   'use strict';
   var serviceId = 'gsnList';

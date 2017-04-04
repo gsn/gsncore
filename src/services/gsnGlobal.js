@@ -25,6 +25,8 @@
             $scope.defaultLayout = gsnApi.getDefaultLayout(gsnApi.getThemeUrl('/views/layout.html'));
             $scope.currentLayout = $scope.defaultLayout;
             $scope.currentPath = '/';
+            $scope.notFoundDefaultLayout = gsnApi.getThemeUrl('/views/404.html');
+            $scope.notFoundLayout = $scope.notFoundDefaultLayout;
             $scope.gvm = {
                 loginCounter: 0,
                 menuInactive: false,
@@ -212,10 +214,17 @@
                         return;
                     }
                 }
+
                 $scope.currentLayout = $scope.defaultLayout;
                 if (gsnApi.isNull(next.layout, '').length > 0) {
                     $scope.currentLayout = next.layout;
                 }
+
+                $scope.notFoundLayout = $scope.notFoundDefaultLayout;
+                if (gsnApi.isNull(next.notFoundLayout, '').length > 0) {
+                    $scope.notFoundLayout = next.notFoundLayout;
+                }
+
                 $scope.gvm.selectedItem = null;
             });
             $scope.$on('gsnevent:profile-load-success', function(event, result) {
