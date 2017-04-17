@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.9.27
+ * version 1.9.28
  * gsncore repository
- * Build date: Tue Apr 04 2017 11:57:24 GMT-0500 (CDT)
+ * Build date: Mon Apr 17 2017 15:21:43 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -718,8 +718,8 @@
       });
 
       result.Contents = null;
-      result.ConfigData = gsn.mapObject(configData, 'Headline');
-      result.ContentData = gsn.mapObject(contentData, 'SortBy');
+      result.ConfigData = gsn.mapObject(configData, 'Headline') || {};
+      result.ContentData = gsn.mapObject(contentData, 'SortBy') || {};
       var contentList = [];
       for (var i = 0; i < contentData.length; i++) {
         contentList.push(contentData[i]);
