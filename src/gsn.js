@@ -712,8 +712,8 @@
       });
 
       result.Contents = null;
-      result.ConfigData = gsn.mapObject(configData, 'Headline');
-      result.ContentData = gsn.mapObject(contentData, 'SortBy');
+      result.ConfigData = gsn.mapObject(configData, 'Headline') || {};
+      result.ContentData = gsn.mapObject(contentData, 'SortBy') || {};
       var contentList = [];
       for (var i = 0; i < contentData.length; i++) {
         contentList.push(contentData[i]);
