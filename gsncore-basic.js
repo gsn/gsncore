@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.9.29
+ * version 1.9.30
  * gsncore repository
- * Build date: Wed Apr 19 2017 14:44:58 GMT-0500 (CDT)
+ * Build date: Wed Apr 19 2017 15:21:08 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -694,7 +694,7 @@
   //#endregion
 
   gsn.parsePartialContentData = function(data) {
-    if (gsn.isNull(data, null) === null) {
+    if (gsn.isNull(data, null) === null || data === 'null') {
       data = {
         ConfigData: {},
         ContentData: {},
