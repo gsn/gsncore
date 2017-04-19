@@ -58,6 +58,9 @@
             $scope.$win = $window;
             $scope.seo = {};
             $scope._tk = $window._tk;
+            $scope.newDate = function(dateArg1) {
+              return dateArg1 ? new Date(dateArg1) : new Date();
+            };
             $scope.validateRegistration = function(rsp) {
                 // attempt to authenticate user with facebook
                 // get token

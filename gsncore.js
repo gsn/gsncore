@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.9.28
+ * version 1.9.29
  * gsncore repository
- * Build date: Mon Apr 17 2017 15:21:43 GMT-0500 (CDT)
+ * Build date: Wed Apr 19 2017 14:44:58 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -4435,6 +4435,9 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
             $scope.$win = $window;
             $scope.seo = {};
             $scope._tk = $window._tk;
+            $scope.newDate = function(dateArg1) {
+              return dateArg1 ? new Date(dateArg1) : new Date();
+            };
             $scope.validateRegistration = function(rsp) {
                 // attempt to authenticate user with facebook
                 // get token
@@ -9413,7 +9416,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     .controller(myDirectiveName, ['$scope', 'gsnApi', 'gsnStore', myController])
     .directive(myDirectiveName, myDirective);
 
-
   function myDirective() {
     var directive = {
       restrict: 'EA',
@@ -9485,7 +9487,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     };
 
     $scope.getConfig = function (name) {
-      return gsnApi.parseStoreSpecificContent(partialData.ConfigData[name]);
+      return gsnApi.parseStoreSpecificContent(partialData.ConfigData[name]) || {};
     };
 
     $scope.getConfigDescription = function (name, defaultValue) {
@@ -9495,7 +9497,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
 
     $scope.activate();
 
-    //#region Internal Methods        
+    //#region Internal Methods
     function processData(data) {
       partialData = gsnApi.parsePartialContentData(data);
     }
@@ -9503,6 +9505,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
   }
 
 })(angular);
+
 (function (angular, undefined) {
   'use strict';
 
