@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.9.28
+ * version 1.9.30
  * gsncore repository
- * Build date: Mon Apr 17 2017 15:21:43 GMT-0500 (CDT)
+ * Build date: Wed Apr 19 2017 15:21:08 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -694,7 +694,7 @@
   //#endregion
 
   gsn.parsePartialContentData = function(data) {
-    if (gsn.isNull(data, null) === null) {
+    if (gsn.isNull(data, null) === null || data === 'null') {
       data = {
         ConfigData: {},
         ContentData: {},
@@ -2490,6 +2490,9 @@
             $scope.$win = $window;
             $scope.seo = {};
             $scope._tk = $window._tk;
+            $scope.newDate = function(dateArg1) {
+              return dateArg1 ? new Date(dateArg1) : new Date();
+            };
             $scope.validateRegistration = function(rsp) {
                 // attempt to authenticate user with facebook
                 // get token
@@ -6461,7 +6464,6 @@
     .controller(myDirectiveName, ['$scope', 'gsnApi', 'gsnStore', myController])
     .directive(myDirectiveName, myDirective);
 
-
   function myDirective() {
     var directive = {
       restrict: 'EA',
@@ -6533,7 +6535,7 @@
     };
 
     $scope.getConfig = function (name) {
-      return gsnApi.parseStoreSpecificContent(partialData.ConfigData[name]);
+      return gsnApi.parseStoreSpecificContent(partialData.ConfigData[name]) || {};
     };
 
     $scope.getConfigDescription = function (name, defaultValue) {
@@ -6543,7 +6545,7 @@
 
     $scope.activate();
 
-    //#region Internal Methods        
+    //#region Internal Methods
     function processData(data) {
       partialData = gsnApi.parsePartialContentData(data);
     }
@@ -6551,6 +6553,7 @@
   }
 
 })(angular);
+
 (function (angular, undefined) {
   'use strict';
 

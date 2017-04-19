@@ -688,7 +688,7 @@
   //#endregion
 
   gsn.parsePartialContentData = function(data) {
-    if (gsn.isNull(data, null) === null) {
+    if (gsn.isNull(data, null) === null || data === 'null') {
       data = {
         ConfigData: {},
         ContentData: {},

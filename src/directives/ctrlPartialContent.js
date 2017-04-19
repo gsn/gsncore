@@ -1,4 +1,4 @@
-﻿(function (angular, undefined) {
+(function (angular, undefined) {
   'use strict';
 
   var myDirectiveName = 'ctrlPartialContent';
@@ -6,7 +6,6 @@
   angular.module('gsn.core')
     .controller(myDirectiveName, ['$scope', 'gsnApi', 'gsnStore', myController])
     .directive(myDirectiveName, myDirective);
-
 
   function myDirective() {
     var directive = {
@@ -79,7 +78,7 @@
     };
 
     $scope.getConfig = function (name) {
-      return gsnApi.parseStoreSpecificContent(partialData.ConfigData[name]);
+      return gsnApi.parseStoreSpecificContent(partialData.ConfigData[name]) || {};
     };
 
     $scope.getConfigDescription = function (name, defaultValue) {
@@ -89,7 +88,7 @@
 
     $scope.activate();
 
-    //#region Internal Methods        
+    //#region Internal Methods
     function processData(data) {
       partialData = gsnApi.parsePartialContentData(data);
     }
