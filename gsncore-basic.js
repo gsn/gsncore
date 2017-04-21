@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.9.30
+ * version 1.9.31
  * gsncore repository
- * Build date: Wed Apr 19 2017 15:21:08 GMT-0500 (CDT)
+ * Build date: Fri Apr 21 2017 17:58:21 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -465,11 +465,12 @@
       if (root.ga) {
         ga('send', 'pageview', path);
       }
-
+/*
       // piwik tracking
       if (root._tk) {
         _tk.pageview()
       }
+*/
     });
 
     /**
@@ -497,7 +498,7 @@
           nonInteraction: 1
         });
       }
-
+/*
       if (root._tk) {
         var extra = {};
         var item = properties.item;
@@ -524,15 +525,17 @@
 
         _tk.event(properties.category, action, properties.label, properties.property, properties.value, extra);
       }
+*/
     });
   };
 
   gsn.init = function($locationProvider, $sceDelegateProvider, $sceProvider, $httpProvider, FacebookProvider, $analyticsProvider) {
     gsn.initAngular($sceProvider, $sceDelegateProvider, $locationProvider, $httpProvider, FacebookProvider);
     gsn.initAnalytics($analyticsProvider);
-    if (typeof (root._tk) !== 'undefined') {
+/*    if (typeof (root._tk) !== 'undefined') {
       root._tk.util.Emitter(gsn);
     }
+*/
   };
 
   // support angular initialization
@@ -2489,7 +2492,7 @@
             $scope.getShoppingListCount = gsnProfile.getShoppingListCount;
             $scope.$win = $window;
             $scope.seo = {};
-            $scope._tk = $window._tk;
+            // $scope._tk = $window._tk;
             $scope.newDate = function(dateArg1) {
               return dateArg1 ? new Date(dateArg1) : new Date();
             };
@@ -2861,7 +2864,7 @@
             }
             $scope.$on('gsnevent:gsnmodal-hide', gsnModalTracking);
             $scope.$on('gsnevent:gsnmodal-show', gsnModalTracking);
-
+/*
             function doTrakless() {
                 if (gsnApi.isNull($window._tk, null) === null) {
                     $timeout(doTrakless, 50);
@@ -2881,6 +2884,7 @@
                     });
                 }
             }
+*/
             //#endregion
         } // init
     }
