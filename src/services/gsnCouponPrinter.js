@@ -17,10 +17,10 @@
     var coupons = [];
 
 	activate();
-	
+
 	$rootScope.$on('gsnevent:circular-loaded', function(event, data) {
       if (!service.activated) activate();
-    });    
+    });
 
     return service;
 
@@ -38,7 +38,7 @@
         service.loadingScript = true;
 
         // dynamically load google
-        var src = '//cdn.gsngrocers.com/script/gcprinter/gcprinter.min.js';
+        var src = '//cdn.brickinc.net/script/gcprinter/gcprinter.min.js';
 
         gsnApi.loadScripts([src], activate);
         return;
