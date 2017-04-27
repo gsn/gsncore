@@ -113,9 +113,8 @@
     returnObj.getContentServiceUrl = function(method) {
       var url = gsn.getContentServiceUrl('/' + method + '/' + returnObj.getChainId() + '/' + returnObj.isNull(returnObj.getSelectedStoreId(), '0') + '/');
       if (gsn.config.useProxy) {
-        url = url.replace('clientapi.gsn2.com/', '/').replace('https://', '').replace('http://', '');
-        url = url.replace('clientapix.gsn2.com/', '/').replace('/api/v1', '/proxy');
-        url = url.replace(/clientapi.*.brickinc.net/gi, '');
+        url = url.replace(/clientapi\.[^\/]*\//gi, '/').replace('https://', '').replace('http://', '').replace('/api/v1', '/proxy');
+        url = url.replace(/clientapi(.*)\.brickinc\.net/gi, '');
         return url;
       }
 
