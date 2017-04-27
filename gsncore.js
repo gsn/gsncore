@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.10.0
+ * version 1.10.1
  * gsncore repository
- * Build date: Wed Apr 26 2017 14:13:28 GMT-0500 (CDT)
+ * Build date: Thu Apr 27 2017 14:55:56 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -732,6 +732,10 @@
         result.ContentList = gsn.sortOn(contentList, "SortBy");
       }
     }
+
+    result.ConfigData = result.ConfigData || {};
+    result.ContentData = result.ContentData || {};
+    result.ContentList = result.ContentList || [];
 
     return result;
   };

@@ -727,6 +727,10 @@
       }
     }
 
+    result.ConfigData = result.ConfigData || {};
+    result.ContentData = result.ContentData || {};
+    result.ContentList = result.ContentList || [];
+
     return result;
   };
 }).call(this);
