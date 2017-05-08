@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.9.30
+ * version 1.10.4
  * gsncore repository
- * Build date: Wed Apr 19 2017 15:21:08 GMT-0500 (CDT)
+ * Build date: Thu Apr 27 2017 15:36:19 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -465,11 +465,12 @@
       if (root.ga) {
         ga('send', 'pageview', path);
       }
-
+/*
       // piwik tracking
       if (root._tk) {
         _tk.pageview()
       }
+*/
     });
 
     /**
@@ -497,7 +498,7 @@
           nonInteraction: 1
         });
       }
-
+/*
       if (root._tk) {
         var extra = {};
         var item = properties.item;
@@ -524,15 +525,17 @@
 
         _tk.event(properties.category, action, properties.label, properties.property, properties.value, extra);
       }
+*/
     });
   };
 
   gsn.init = function($locationProvider, $sceDelegateProvider, $sceProvider, $httpProvider, FacebookProvider, $analyticsProvider) {
     gsn.initAngular($sceProvider, $sceDelegateProvider, $locationProvider, $httpProvider, FacebookProvider);
     gsn.initAnalytics($analyticsProvider);
-    if (typeof (root._tk) !== 'undefined') {
+/*    if (typeof (root._tk) !== 'undefined') {
       root._tk.util.Emitter(gsn);
     }
+*/
   };
 
   // support angular initialization
@@ -730,6 +733,10 @@
       }
     }
 
+    result.ConfigData = result.ConfigData || {};
+    result.ContentData = result.ContentData || {};
+    result.ContentList = result.ContentList || [];
+
     return result;
   };
 }).call(this);
@@ -849,9 +856,9 @@
     returnObj.getContentServiceUrl = function(method) {
       var url = gsn.getContentServiceUrl('/' + method + '/' + returnObj.getChainId() + '/' + returnObj.isNull(returnObj.getSelectedStoreId(), '0') + '/');
       if (gsn.config.useProxy) {
-        url = url.replace('clientapi.gsn2.com/', '/').replace('https://', '').replace('http://', '');
-        url = url.replace('clientapix.gsn2.com/', '/').replace('/api/v1', '/proxy');
-        url = url.replace(/clientapi\.\w+\.trybrick\.com/gi, '');
+        var contentStart = url.indexOf("/api/v1");
+        url = url.substring(contentStart + 7);
+        url = "/proxy" + url;
         return url;
       }
 
@@ -2122,10 +2129,10 @@
     var coupons = [];
 
 	activate();
-	
+
 	$rootScope.$on('gsnevent:circular-loaded', function(event, data) {
       if (!service.activated) activate();
-    });    
+    });
 
     return service;
 
@@ -2143,7 +2150,7 @@
         service.loadingScript = true;
 
         // dynamically load google
-        var src = '//cdn.gsngrocers.com/script/gcprinter/gcprinter.min.js';
+        var src = '//cdn.brickinc.net/script/gcprinter/gcprinter.min.js';
 
         gsnApi.loadScripts([src], activate);
         return;
@@ -2333,6 +2340,7 @@
     ;
   } // end service function
 })(angular);
+
 (function (angular, Gsn, undefined) {
   'use strict';
   var serviceId = 'gsnDfp';
@@ -2489,7 +2497,7 @@
             $scope.getShoppingListCount = gsnProfile.getShoppingListCount;
             $scope.$win = $window;
             $scope.seo = {};
-            $scope._tk = $window._tk;
+            // $scope._tk = $window._tk;
             $scope.newDate = function(dateArg1) {
               return dateArg1 ? new Date(dateArg1) : new Date();
             };
@@ -2861,7 +2869,7 @@
             }
             $scope.$on('gsnevent:gsnmodal-hide', gsnModalTracking);
             $scope.$on('gsnevent:gsnmodal-show', gsnModalTracking);
-
+/*
             function doTrakless() {
                 if (gsnApi.isNull($window._tk, null) === null) {
                     $timeout(doTrakless, 50);
@@ -2881,6 +2889,7 @@
                     });
                 }
             }
+*/
             //#endregion
         } // init
     }
@@ -11213,7 +11222,8 @@ provides: [facebook]
 	}
 }());
 
-;(function(){"use strict";angular.module("angular-loading-bar",["chieffancypants.loadingBar"]);angular.module("chieffancypants.loadingBar",[]).config(["$httpProvider",function(e){var t=["$q","$cacheFactory","$timeout","$rootScope","cfpLoadingBar",function(t,n,r,i,s){function l(){r.cancel(f);s.complete();u=0;o=0}function c(t){var r;var i=e.defaults;if(t.method!=="GET"||t.cache===false){t.cached=false;return false}if(t.cache===true&&i.cache===undefined){r=n.get("$http")}else if(i.cache!==undefined){r=i.cache}else{r=t.cache}var s=r!==undefined?r.get(t.url)!==undefined:false;if(t.cached!==undefined&&s!==t.cached){return t.cached}t.cached=s;return s}var o=0;var u=0;var a=s.latencyThreshold;var f;return{request:function(e){if(!e.ignoreLoadingBar&&!c(e)){i.$broadcast("cfpLoadingBar:loading",{url:e.url});if(o===0){f=r(function(){s.start()},a)}o++;s.set(u/o)}return e},response:function(e){if(!c(e.config)){u++;i.$broadcast("cfpLoadingBar:loaded",{url:e.config.url});if(u>=o){l()}else{s.set(u/o)}}return e},responseError:function(e){if(!c(e.config)){u++;i.$broadcast("cfpLoadingBar:loaded",{url:e.config.url});if(u>=o){l()}else{s.set(u/o)}}return t.reject(e)}}}];e.interceptors.push(t)}]).provider("cfpLoadingBar",function(){this.includeSpinner=true;this.includeBar=true;this.latencyThreshold=100;this.parentSelector="body";this.$get=["$document","$timeout","$animate","$rootScope",function(e,t,n,r){function v(){t.cancel(l);if(c){return}r.$broadcast("cfpLoadingBar:started");c=true;if(d){n.enter(o,s)}if(p){n.enter(a,s)}m(.02)}function m(e){if(!c){return}var n=e*100+"%";u.css("width",n);h=e;t.cancel(f);f=t(function(){g()},250)}function g(){if(y()>=1){return}var e=0;var t=y();if(t>=0&&t<.25){e=(Math.random()*(5-3+1)+3)/100}else if(t>=.25&&t<.65){e=Math.random()*3/100}else if(t>=.65&&t<.9){e=Math.random()*2/100}else if(t>=.9&&t<.99){e=.005}else{e=0}var n=y()+e;m(n)}function y(){return h}function b(){r.$broadcast("cfpLoadingBar:completed");m(1);l=t(function(){n.leave(o,function(){h=0;c=false});n.leave(a)},500)}var i=this.parentSelector,s=e.find(i),o=angular.element('<div id="loading-bar"><div class="bar"><div class="peg"></div></div></div>'),u=o.find("div").eq(0),a=angular.element('<div id="loading-bar-spinner"><img src="//cdn.gsngrocers.com/script/images/loading.gif" alt="loading spinner" class="spinner-icon" /></div>');var f,l,c=false,h=0;var p=this.includeSpinner;var d=this.includeBar;return{start:v,set:m,status:y,inc:g,complete:b,includeSpinner:this.includeSpinner,latencyThreshold:this.latencyThreshold,parentSelector:this.parentSelector}}]})})();
+;(function(){"use strict";angular.module("angular-loading-bar",["chieffancypants.loadingBar"]);angular.module("chieffancypants.loadingBar",[]).config(["$httpProvider",function(e){var t=["$q","$cacheFactory","$timeout","$rootScope","cfpLoadingBar",function(t,n,r,i,s){function l(){r.cancel(f);s.complete();u=0;o=0}function c(t){var r;var i=e.defaults;if(t.method!=="GET"||t.cache===false){t.cached=false;return false}if(t.cache===true&&i.cache===undefined){r=n.get("$http")}else if(i.cache!==undefined){r=i.cache}else{r=t.cache}var s=r!==undefined?r.get(t.url)!==undefined:false;if(t.cached!==undefined&&s!==t.cached){return t.cached}t.cached=s;return s}var o=0;var u=0;var a=s.latencyThreshold;var f;return{request:function(e){if(!e.ignoreLoadingBar&&!c(e)){i.$broadcast("cfpLoadingBar:loading",{url:e.url});if(o===0){f=r(function(){s.start()},a)}o++;s.set(u/o)}return e},response:function(e){if(!c(e.config)){u++;i.$broadcast("cfpLoadingBar:loaded",{url:e.config.url});if(u>=o){l()}else{s.set(u/o)}}return e},responseError:function(e){if(!c(e.config)){u++;i.$broadcast("cfpLoadingBar:loaded",{url:e.config.url});if(u>=o){l()}else{s.set(u/o)}}return t.reject(e)}}}];e.interceptors.push(t)}]).provider("cfpLoadingBar",function(){this.includeSpinner=true;this.includeBar=true;this.latencyThreshold=100;this.parentSelector="body";this.$get=["$document","$timeout","$animate","$rootScope",function(e,t,n,r){function v(){t.cancel(l);if(c){return}r.$broadcast("cfpLoadingBar:started");c=true;if(d){n.enter(o,s)}if(p){n.enter(a,s)}m(.02)}function m(e){if(!c){return}var n=e*100+"%";u.css("width",n);h=e;t.cancel(f);f=t(function(){g()},250)}function g(){if(y()>=1){return}var e=0;var t=y();if(t>=0&&t<.25){e=(Math.random()*(5-3+1)+3)/100}else if(t>=.25&&t<.65){e=Math.random()*3/100}else if(t>=.65&&t<.9){e=Math.random()*2/100}else if(t>=.9&&t<.99){e=.005}else{e=0}var n=y()+e;m(n)}function y(){return h}function b(){r.$broadcast("cfpLoadingBar:completed");m(1);l=t(function(){n.leave(o,function(){h=0;c=false});n.leave(a)},500)}var i=this.parentSelector,s=e.find(i),o=angular.element('<div id="loading-bar"><div class="bar"><div class="peg"></div></div></div>'),u=o.find("div").eq(0),a=angular.element('<div id="loading-bar-spinner"><img src="//cdn.brickinc.net/script/images/loading.gif" alt="loading spinner" class="spinner-icon" /></div>');var f,l,c=false,h=0;var p=this.includeSpinner;var d=this.includeBar;return{start:v,set:m,status:y,inc:g,complete:b,includeSpinner:this.includeSpinner,latencyThreshold:this.latencyThreshold,parentSelector:this.parentSelector}}]})})();
+
 /* ng-infinite-scroll - v1.0.0 - 2013-02-23 */
 var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",["$rootScope","$window","$timeout",function(i,n,e){return{link:function(t,l,o){var r,c,f,a;return n=angular.element(n),f=0,null!=o.infiniteScrollDistance&&t.$watch(o.infiniteScrollDistance,function(i){return f=parseInt(i,10)}),a=!0,r=!1,null!=o.infiniteScrollDisabled&&t.$watch(o.infiniteScrollDisabled,function(i){return a=!i,a&&r?(r=!1,c()):void 0}),c=function(){var e,c,u,d;return d=n.height()+n.scrollTop(),e=l.offset().top+l.height(),c=e-d,u=n.height()*f>=c,u&&a?i.$$phase?t.$eval(o.infiniteScroll):t.$apply(o.infiniteScroll):u?r=!0:void 0},n.on("scroll",c),t.$on("$destroy",function(){return n.off("scroll",c)}),e(function(){return o.infiniteScrollImmediateCheck?t.$eval(o.infiniteScrollImmediateCheck)?c():void 0:c()},0)}}}]);
 /**

@@ -57,7 +57,7 @@
             $scope.getShoppingListCount = gsnProfile.getShoppingListCount;
             $scope.$win = $window;
             $scope.seo = {};
-            $scope._tk = $window._tk;
+            // $scope._tk = $window._tk;
             $scope.newDate = function(dateArg1) {
               return dateArg1 ? new Date(dateArg1) : new Date();
             };
@@ -429,7 +429,7 @@
             }
             $scope.$on('gsnevent:gsnmodal-hide', gsnModalTracking);
             $scope.$on('gsnevent:gsnmodal-show', gsnModalTracking);
-
+/*
             function doTrakless() {
                 if (gsnApi.isNull($window._tk, null) === null) {
                     $timeout(doTrakless, 50);
@@ -449,6 +449,7 @@
                     });
                 }
             }
+*/
             //#endregion
         } // init
     }

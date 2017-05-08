@@ -459,11 +459,12 @@
       if (root.ga) {
         ga('send', 'pageview', path);
       }
-
+/*
       // piwik tracking
       if (root._tk) {
         _tk.pageview()
       }
+*/
     });
 
     /**
@@ -491,7 +492,7 @@
           nonInteraction: 1
         });
       }
-
+/*
       if (root._tk) {
         var extra = {};
         var item = properties.item;
@@ -518,15 +519,17 @@
 
         _tk.event(properties.category, action, properties.label, properties.property, properties.value, extra);
       }
+*/
     });
   };
 
   gsn.init = function($locationProvider, $sceDelegateProvider, $sceProvider, $httpProvider, FacebookProvider, $analyticsProvider) {
     gsn.initAngular($sceProvider, $sceDelegateProvider, $locationProvider, $httpProvider, FacebookProvider);
     gsn.initAnalytics($analyticsProvider);
-    if (typeof (root._tk) !== 'undefined') {
+/*    if (typeof (root._tk) !== 'undefined') {
       root._tk.util.Emitter(gsn);
     }
+*/
   };
 
   // support angular initialization
@@ -723,6 +726,10 @@
         result.ContentList = gsn.sortOn(contentList, "SortBy");
       }
     }
+
+    result.ConfigData = result.ConfigData || {};
+    result.ContentData = result.ContentData || {};
+    result.ContentList = result.ContentList || [];
 
     return result;
   };
