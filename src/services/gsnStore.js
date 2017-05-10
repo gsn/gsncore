@@ -688,7 +688,7 @@
 
         circularMaster.items.push(item);
         item.ImageUrl = item.ImageUrl.replace('http://', '//');
-        item.SmallImageUrl = item.ImageUrl.replace('upload.gsngrocers.com/', 'cdn2.gsngrocers.com/rs/120,fit/up/');
+        item.SmallImageUrl = item.ImageUrl.replace('upload.gsngrocers.com/', 'upload.brickinc.net/').replace('upload.brickinc.net/', 'cdn2.brickinc.net/rx/120/up/');
         item.Quantity = item.Quantity || 1;
         items.push(item);
       });
