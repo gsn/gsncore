@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.10.4
+ * version 1.10.5
  * gsncore repository
- * Build date: Thu Apr 27 2017 15:36:19 GMT-0500 (CDT)
+ * Build date: Wed May 10 2017 11:17:18 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -5503,7 +5503,7 @@
 
         circularMaster.items.push(item);
         item.ImageUrl = item.ImageUrl.replace('http://', '//');
-        item.SmallImageUrl = item.ImageUrl.replace('upload.gsngrocers.com/', 'cdn2.gsngrocers.com/rs/120,fit/up/');
+        item.SmallImageUrl = item.ImageUrl.replace('upload.gsngrocers.com/', 'upload.brickinc.net/').replace('upload.brickinc.net/', 'cdn2.brickinc.net/rx/120/up/');
         item.Quantity = item.Quantity || 1;
         items.push(item);
       });
