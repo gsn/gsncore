@@ -89,6 +89,12 @@
       $scope.gvm.reloadOnStoreSelection = true;
       gsnApi.setSelectedStoreId(storeId);
     }
+
+    $scope.$on('gsnevent:store-persisted', function(evt, store) {
+      if ($scope.gvm.reloadOnStoreSelection) {
+        $scope.goUrl($scope.currentPath, '_reload');
+      }
+    });
     $scope.activate();
   }
 
