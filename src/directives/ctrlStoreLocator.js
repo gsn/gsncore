@@ -128,7 +128,7 @@
       }
 
       // set default search with query string
-      var search = $location.search;
+      var search = $location.search();
       $scope.search.storeLocator = search.search || search.q;
       $scope.doSearch(true);
     }
