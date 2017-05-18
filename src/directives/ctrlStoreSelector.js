@@ -77,7 +77,7 @@
         return;
       }
 
-      $scope.gvm.selectStore(newValue);
+      $scope.selectStore(newValue);
     });
 
     $scope.selectStore = function(storeId) {
