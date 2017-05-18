@@ -77,9 +77,18 @@
         return;
       }
 
-      $scope.gvm.reloadOnStoreSelection = true;
-      gsnApi.setSelectedStoreId(newValue);
+      $scope.gvm.selectStore(newValue);
     });
+
+    $scope.selectStore = function(storeId) {
+      var currentStore = $scope.vm.currentStore || {};
+      if (!storeId || (currentStore.StoreId == storeId)) {
+        return;
+      }
+
+      $scope.gvm.reloadOnStoreSelection = true;
+      gsnApi.setSelectedStoreId(storeId);
+    }
     $scope.activate();
   }
 
