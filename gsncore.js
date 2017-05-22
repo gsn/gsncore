@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.10.5
+ * version 1.10.11
  * gsncore repository
- * Build date: Wed May 10 2017 11:17:18 GMT-0500 (CDT)
+ * Build date: Mon May 22 2017 07:49:16 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -11362,7 +11362,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       }
 
       // set default search with query string
-      var search = $location.search;
+      var search = $location.search();
       $scope.search.storeLocator = search.search || search.q;
       $scope.doSearch(true);
     }
@@ -11688,9 +11688,9 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       if (typeof (Wu) !== 'undefined') {
         var wu = new Wu();
         var myFn = wu.geoOrderByIP;
-        var origin = $scope.vm.myIP;
+        var origin = $scope.vm.myIP || ('https://cdn2.brickinc.net/geoip/?type=json&cb' + (new Date().getTime()));
 
-        if (origin) {
+        if ($scope.vm.myIP) {
           myFn = wu.geoOrderByOrigin;
         }
 
@@ -11731,8 +11731,23 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         return;
       }
 
+      $scope.selectStore(newValue);
+    });
+
+    $scope.selectStore = function(storeId) {
+      var currentStore = $scope.vm.currentStore || {};
+      if (!storeId || (currentStore.StoreId == storeId)) {
+        return;
+      }
+
       $scope.gvm.reloadOnStoreSelection = true;
-      gsnApi.setSelectedStoreId(newValue);
+      gsnApi.setSelectedStoreId(storeId);
+    }
+
+    $scope.$on('gsnevent:store-persisted', function(evt, store) {
+      if ($scope.gvm.reloadOnStoreSelection) {
+        $scope.goUrl($scope.currentPath, '_reload');
+      }
     });
     $scope.activate();
   }

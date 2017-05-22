@@ -34,9 +34,9 @@
       if (typeof (Wu) !== 'undefined') {
         var wu = new Wu();
         var myFn = wu.geoOrderByIP;
-        var origin = $scope.vm.myIP;
+        var origin = $scope.vm.myIP || ('https://cdn2.brickinc.net/geoip/?type=json&cb' + (new Date().getTime()));
 
-        if (origin) {
+        if ($scope.vm.myIP) {
           myFn = wu.geoOrderByOrigin;
         }
 
@@ -77,8 +77,23 @@
         return;
       }
 
+      $scope.selectStore(newValue);
+    });
+
+    $scope.selectStore = function(storeId) {
+      var currentStore = $scope.vm.currentStore || {};
+      if (!storeId || (currentStore.StoreId == storeId)) {
+        return;
+      }
+
       $scope.gvm.reloadOnStoreSelection = true;
-      gsnApi.setSelectedStoreId(newValue);
+      gsnApi.setSelectedStoreId(storeId);
+    }
+
+    $scope.$on('gsnevent:store-persisted', function(evt, store) {
+      if ($scope.gvm.reloadOnStoreSelection) {
+        $scope.goUrl($scope.currentPath, '_reload');
+      }
     });
     $scope.activate();
   }
