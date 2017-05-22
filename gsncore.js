@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.10.12
+ * version 1.10.13
  * gsncore repository
- * Build date: Mon May 22 2017 11:03:00 GMT-0500 (CDT)
+ * Build date: Mon May 22 2017 11:07:17 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -11695,7 +11695,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
           myFn = wu.geoOrderByOrigin;
         }
 
-        myFn.apply(wu, [storeList, origin, function(rst) {
+        myFn.apply(wu, [$scope.vm.storeList, origin, function(rst) {
           $timeout(function() {
             $scope.vm.myIP = rst.origin;
             $scope.vm.stores = rst.results;
@@ -11713,7 +11713,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
             $scope.vm.myIP = position.coords;
             doFilter();
           }, function (err) {
-            // do nothing
+            // do nothing as geoip is done by default
           }, { maximumAge: 60000, timeout: 5000, enableHighAccuracy: true} );
           return;
         }

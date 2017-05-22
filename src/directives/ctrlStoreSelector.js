@@ -41,7 +41,7 @@
           myFn = wu.geoOrderByOrigin;
         }
 
-        myFn.apply(wu, [storeList, origin, function(rst) {
+        myFn.apply(wu, [$scope.vm.storeList, origin, function(rst) {
           $timeout(function() {
             $scope.vm.myIP = rst.origin;
             $scope.vm.stores = rst.results;
