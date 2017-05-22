@@ -59,7 +59,7 @@
             $scope.vm.myIP = position.coords;
             doFilter();
           }, function (err) {
-            // do nothing
+            // do nothing as geoip is done by default
           }, { maximumAge: 60000, timeout: 5000, enableHighAccuracy: true} );
           return;
         }
