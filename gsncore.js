@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.10.11
+ * version 1.10.12
  * gsncore repository
- * Build date: Mon May 22 2017 07:49:16 GMT-0500 (CDT)
+ * Build date: Mon May 22 2017 11:03:00 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -11677,18 +11677,19 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       storeList: [],
       currentStore: null,
       myIP: null,
-      stores: null,
-      selectedOption: '',
-      ignoreNext: false
+      stores: null
     };
 
-    gsnStore.getStores().then(function(rsp) {
-      var storeList = rsp.response;
-      $scope.vm.storeList = storeList;
+    function doFilter() {
+      // wait for storeList
+      if ($scope.vm.storeList.length <= 0) {
+        return;
+      }
+
       if (typeof (Wu) !== 'undefined') {
         var wu = new Wu();
         var myFn = wu.geoOrderByIP;
-        var origin = $scope.vm.myIP || ('https://cdn2.brickinc.net/geoip/?type=json&cb' + (new Date().getTime()));
+        var origin = $scope.vm.myIP || ('//cdn2.brickinc.net/geoip/?type=json&cb=' + (new Date().getTime()));
 
         if ($scope.vm.myIP) {
           myFn = wu.geoOrderByOrigin;
@@ -11701,37 +11702,34 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
           }, 200);
         }]);
       }
+    }
+
+    function activate() {
+      // do nothing
+      if ($scope.useBrowserGeo) {
+        // Getting User's Location Using HTML 5 Geolocation API
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition( function (position) {
+            $scope.vm.myIP = position.coords;
+            doFilter();
+          }, function (err) {
+            // do nothing
+          }, { maximumAge: 60000, timeout: 5000, enableHighAccuracy: true} );
+          return;
+        }
+      }
+    }
+
+    gsnStore.getStores().then(function(rsp) {
+      var storeList = rsp.response;
+      $scope.vm.storeList = storeList;
+      doFilter();
     });
 
     gsnStore.getStore().then(function(store) {
       if (store) {
         $scope.vm.currentStore = store;
-        $scope.vm.selectedOption = store.StoreId;
       }
-    });
-
-    function activate() {
-      // do nothing
-    }
-
-    $scope.$watch('vm.selectedOption', function(newValue, oldValue) {
-      if (!newValue) return;
-
-      if ((newValue + '').indexOf('/') >= 0) {
-        gsnApi.goUrl(newValue);
-
-        $scope.vm.ignoreNext = true;
-        // revert to old value
-        $scope.vm.selectedOption = oldValue;
-        return;
-      }
-
-      if ($scope.vm.ignoreNext) {
-        $scope.vm.ignoreNext = false;
-        return;
-      }
-
-      $scope.selectStore(newValue);
     });
 
     $scope.selectStore = function(storeId) {
