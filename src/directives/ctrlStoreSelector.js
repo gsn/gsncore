@@ -34,9 +34,9 @@
       if (typeof (Wu) !== 'undefined') {
         var wu = new Wu();
         var myFn = wu.geoOrderByIP;
-        var origin = $scope.vm.myIP;
+        var origin = $scope.vm.myIP || ('https://cdn2.brickinc.net/geoip/?type=json&cb' + (new Date().getTime()));
 
-        if (origin) {
+        if ($scope.vm.myIP) {
           myFn = wu.geoOrderByOrigin;
         }
 
