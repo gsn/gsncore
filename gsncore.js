@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.10.13
+ * version 1.10.14
  * gsncore repository
- * Build date: Mon May 22 2017 11:07:17 GMT-0500 (CDT)
+ * Build date: Wed May 24 2017 09:25:52 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -11689,7 +11689,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       if (typeof (Wu) !== 'undefined') {
         var wu = new Wu();
         var myFn = wu.geoOrderByIP;
-        var origin = $scope.vm.myIP || ('//cdn2.brickinc.net/geoip/?type=json&cb=' + (new Date().getTime()));
+        var origin = $scope.vm.myIP || ('//cdn2.brickinc.net/geoipme/?cb=' + (new Date().getTime()));
 
         if ($scope.vm.myIP) {
           myFn = wu.geoOrderByOrigin;

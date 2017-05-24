@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.10.13
+ * version 1.10.14
  * gsncore repository
- * Build date: Mon May 22 2017 11:07:17 GMT-0500 (CDT)
+ * Build date: Wed May 24 2017 09:25:51 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
