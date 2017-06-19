@@ -45,7 +45,6 @@
       gsnStore.getStores().then(function (rsp) {
         $scope.stores = rsp.response;
 
-        // prebuild list base on roundy spec (ﾉωﾉ)
         // make sure that it is order by state, then by name
         $scope.storesById = gsnApi.mapObject($scope.stores, 'StoreId');
       });

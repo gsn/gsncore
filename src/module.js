@@ -133,10 +133,6 @@
       return gsn.config.YoutechCouponUrl;
     };
 
-    returnObj.getRoundyProfileUrl = function() {
-      return gsn.config.RoundyProfileUrl;
-    };
-
     returnObj.getProductServiceUrl = function() {
       return gsn.config.ProductServiceUrl;
     };

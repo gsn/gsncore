@@ -1,7 +1,7 @@
 (function (angular, undefined) {
     'use strict';
     var myDirectiveName = 'ctrlCouponClassic';
-    angular.module('gsn.core').controller(myDirectiveName, ['$scope', 'gsnStore', 'gsnApi', '$timeout', '$analytics', '$filter', 'gsnYoutech', 'gsnCouponPrinter', 'gsnProfile', 'gsnProLogicRewardCard', '$location', myController]).directive(myDirectiveName, myDirective);
+    angular.module('gsn.core').controller(myDirectiveName, ['$scope', 'gsnStore', 'gsnApi', '$timeout', '$analytics', '$filter', 'gsnYoutech', 'gsnProfile', 'gsnProLogicRewardCard', '$location', myController]).directive(myDirectiveName, myDirective);
 
     function myDirective() {
         var directive = {
@@ -12,7 +12,7 @@
         return directive;
     }
 
-    function myController($scope, gsnStore, gsnApi, $timeout, $analytics, $filter, gsnYoutech, gsnCouponPrinter, gsnProfile, gsnProLogicRewardCard, $location) {
+    function myController($scope, gsnStore, gsnApi, $timeout, $analytics, $filter, gsnYoutech, gsnProfile, gsnProLogicRewardCard, $location) {
         $scope.activate = activate;
         $scope.addCouponToCard = addCouponToCard;
         $scope.printManufacturerCoupon = printManufacturerCoupon;
@@ -114,9 +114,6 @@
             } else if ($scope.couponType == 'store') {
                 list.items = instoreCoupons.items;
             } else {
-                if (!$scope.disableCouponPrinter) {
-                    gsnCouponPrinter.init();
-                }
                 gsnStore.getManufacturerCouponTotalSavings().then(function (rst) {
                     $scope.selectedCoupons.totalSavings = parseFloat(rst.response).toFixed(2);
                 });
@@ -191,7 +188,6 @@
         //#region Internal Methods
         function printManufacturerCoupon(evt, item) {
             $scope.printer.total = 1;
-            gsnCouponPrinter.print([item]);
             $analytics.eventTrack('CouponPrintNow', {
                 category: item.ExtCategory,
                 label: item.Description,
