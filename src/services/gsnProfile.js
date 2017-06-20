@@ -1,9 +1,9 @@
 (function(angular, undefined) {
   'use strict';
   var serviceId = 'gsnProfile';
-  angular.module('gsn.core').service(serviceId, ['$rootScope', '$http', 'gsnApi', '$q', 'gsnList', 'gsnStore', '$location', '$timeout', '$sessionStorage', '$localStorage', gsnProfile]);
+  angular.module('gsn.core').service(serviceId, ['$rootScope', '$http', 'gsnApi', '$q', 'gsnList', 'gsnStore', '$location', '$timeout', '$sessionStorage', '$localStorage', 'gsnRoundyProfile', gsnProfile]);
 
-  function gsnProfile($rootScope, $http, gsnApi, $q, gsnList, gsnStore, $location, $timeout, $sessionStorage, $localStorage) {
+  function gsnProfile($rootScope, $http, gsnApi, $q, gsnList, gsnStore, $location, $timeout, $sessionStorage, $localStorage, gsnRoundyProfile) {
     var returnObj = {},
       previousProfileId = gsnApi.getProfileId(),
       couponStorage = $sessionStorage,
@@ -218,7 +218,26 @@
             });
             $profileDefer = null;
           } else {
-            gsnLoadProfile();
+
+            // cause Roundy profile to load from another method
+            if (gsnApi.getConfig().hasRoundyProfile) {
+              gsnRoundyProfile.getProfile().then(function(rst) {
+                if (rst.success) {
+                  $savedData.profile = rst.response;
+                  $rootScope.$broadcast('gsnevent:profile-load-success', {
+                    success: true,
+                    response: $savedData.profile
+                  });
+                  $profileDefer.resolve(rst);
+                  $profileDefer = null;
+                } else {
+                  gsnLoadProfile();
+                }
+              });
+
+            } else {
+              gsnLoadProfile();
+            }
           }
         });
 

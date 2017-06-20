@@ -18,6 +18,7 @@
             hasValidCard: hasValidCard,
             addCouponTocard: addCouponToCard,
             removeCouponFromCard: removeCouponFromCard,
+            isOldRoundyCard: isOldRoundyCard,
             isAvailable: isAvailable,
             isOnCard: isOnCard,
             hasRedeemed: hasRedeemed,
@@ -70,12 +71,20 @@
             return (gsnApi.isNull($saveData.currentProfile.ExternalId, '').length > 0);
         }
 
+        function isOldRoundyCard() {
+            return hasCard() && (gsnApi.isNaN(parseFloat($saveData.currentProfile.ExternalId), 0) < 48203769258);
+        }
+
         function hasValidCard() {
             return hasCard() && $saveData.isValidResponse;
         }
 
         function isValidCoupon(couponId) {
             var isValid = (isAvailable(couponId) || isOnCard(couponId));
+            if (isValid) {
+                // hack for Roundy's Black Friday coupons
+                isValid = ",1397829,1390056,1390053,1390050,1390047,1390044,1390041,".indexOf("," + couponId + ",") < 0;
+            }
             return isValid;
         }
 

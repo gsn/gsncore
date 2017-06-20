@@ -1,8 +1,8 @@
 (function (angular, undefined) {
 
   angular.module('gsn.core')
-    .directive('gsnShoppingList', ['gsnApi', '$timeout', 'gsnProfile', '$routeParams', '$rootScope', 'gsnStore', '$location', '$filter',
-      function (gsnApi, $timeout, gsnProfile, $routeParams, $rootScope, gsnStore, $location, $filter) {
+    .directive('gsnShoppingList', ['gsnApi', '$timeout', 'gsnProfile', '$routeParams', '$rootScope', 'gsnStore', '$location', 'gsnCouponPrinter', '$filter',
+      function (gsnApi, $timeout, gsnProfile, $routeParams, $rootScope, gsnStore, $location, gsnCouponPrinter, $filter) {
         // Usage:  use to manipulate a shopping list on the UI
         //
         // Creates: 2014-01-13 TomN
@@ -417,6 +417,7 @@
                 if ($scope.canPrint) {
                   $scope.printer.print = null;
                   $scope.printer.total = $scope.manufacturerCoupons.length;
+                  gsnCouponPrinter.print($scope.manufacturerCoupons);
                 }
               }
             }

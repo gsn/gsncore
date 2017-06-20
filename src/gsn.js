@@ -60,6 +60,7 @@
     ShoppingListServiceUrl: '/proxy/shoppinglist',
     LoggingServiceUrl: '/proxy/logging',
     YoutechCouponUrl: '/proxy/couponut',
+    RoundyProfileUrl: '/proxy/roundy',
     ApiUrl: '',
 
     // global config
@@ -93,6 +94,7 @@
     hasDigitalCoupon: false,
     hasStoreCoupon: false,
     hasPrintableCoupon: false,
+    hasRoundyProfile: false,
     hasInit: false
   };
 
@@ -534,6 +536,7 @@
   gsn.initAngular = function($sceProvider, $sceDelegateProvider, $locationProvider, $httpProvider, FacebookProvider) {
     gsn.applyConfig(root.globalConfig.data || {});
     gsn.config.ContentBaseUrl = root.location.port > 1000 && root.location.port < 5000 ? "/asset/" + gsn.config.ChainId : gsn.config.ContentBaseUrl;
+    gsn.config.hasRoundyProfile = [215, 216, 217, 218].indexOf(gsn.config.ChainId) > -1;
     gsn.config.DisableLimitedTimeCoupons = (215 === gsn.config.ChainId);
     if (gsn.config.Theme) {
       gsn.setTheme(gsn.config.Theme);

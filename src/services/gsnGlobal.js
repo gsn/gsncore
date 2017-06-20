@@ -2,9 +2,9 @@
 (function(angular, undefined) {
     'use strict';
     var serviceId = 'gsnGlobal';
-    angular.module('gsn.core').service(serviceId, ['$window', '$location', '$timeout', '$route', 'gsnApi', 'gsnProfile', 'gsnStore', '$rootScope', 'Facebook', '$analytics', 'gsnYoutech', 'gsnAdvertising', '$anchorScroll', gsnGlobal]);
+    angular.module('gsn.core').service(serviceId, ['$window', '$location', '$timeout', '$route', 'gsnApi', 'gsnProfile', 'gsnStore', '$rootScope', 'Facebook', '$analytics', 'gsnYoutech', 'gsnDfp', 'gsnAdvertising', '$anchorScroll', gsnGlobal]);
 
-    function gsnGlobal($window, $location, $timeout, $route, gsnApi, gsnProfile, gsnStore, $rootScope, Facebook, $analytics, gsnYoutech, gsnAdvertising, $anchorScroll) {
+    function gsnGlobal($window, $location, $timeout, $route, gsnApi, gsnProfile, gsnStore, $rootScope, Facebook, $analytics, gsnYoutech, gsnDfp, gsnAdvertising, $anchorScroll) {
         var returnObj = {
             init: init,
             hasInit: false
