@@ -60,7 +60,6 @@
     ShoppingListServiceUrl: '/proxy/shoppinglist',
     LoggingServiceUrl: '/proxy/logging',
     YoutechCouponUrl: '/proxy/couponut',
-    RoundyProfileUrl: '/proxy/roundy',
     ApiUrl: '',
 
     // global config
@@ -76,17 +75,14 @@
 
     ChainId: 0,
     ChainName: 'Brick, Inc.',
-    DfpNetworkId: '/6394/digitalstore.test',
     GoogleTagId: null,
     GoogleAnalyticAccountId1: null,
     GoogleSiteVerificationId: null,
     RegistrationFromEmailAddress: 'tech@grocerywebsites.com',
     RegistrationEmailLogo: null,
-    FacebookDisable: false,
     FacebookAppId: null,
     FacebookPermission: null,
     GoogleSiteSearchCode: null,
-    DisableLimitedTimeCoupons: false,
     Theme: null,
     HomePage: null,
     StoreList: null,
@@ -94,7 +90,6 @@
     hasDigitalCoupon: false,
     hasStoreCoupon: false,
     hasPrintableCoupon: false,
-    hasRoundyProfile: false,
     hasInit: false
   };
 
@@ -459,12 +454,6 @@
       if (root.ga) {
         ga('send', 'pageview', path);
       }
-/*
-      // piwik tracking
-      if (root._tk) {
-        _tk.pageview()
-      }
-*/
     });
 
     /**
@@ -492,51 +481,18 @@
           nonInteraction: 1
         });
       }
-/*
-      if (root._tk) {
-        var extra = {};
-        var item = properties.item;
-        if (item) {
-          // add department, aisle, category, shelf, brand
-          if (item.BrandName)
-            extra.bn = item.BrandName;
-          if (item.ProductCode)
-            extra.sku = item.ProductCode;
-          if (!item.ic && item.ItemId)
-            extra.ic = item.ItemId;
-          if (item.ShoppingListItemId)
-            extra.slic = item.ShoppingListItemId;
-          if (item.ShelfName)
-            extra.shf = item.ShelfName;
-          if (item.DepartmentName)
-            extra.dpt = item.DepartmentName;
-          if (item.CategoryName && !item.ec)
-            if (!item.ec)
-              extra.ec = item.CategoryName;
-          if (item.AisleName)
-            extra.ailse = item.AisleName;
-        }
-
-        _tk.event(properties.category, action, properties.label, properties.property, properties.value, extra);
-      }
-*/
     });
   };
 
   gsn.init = function($locationProvider, $sceDelegateProvider, $sceProvider, $httpProvider, FacebookProvider, $analyticsProvider) {
     gsn.initAngular($sceProvider, $sceDelegateProvider, $locationProvider, $httpProvider, FacebookProvider);
     gsn.initAnalytics($analyticsProvider);
-/*    if (typeof (root._tk) !== 'undefined') {
-      root._tk.util.Emitter(gsn);
-    }
-*/
   };
 
   // support angular initialization
   gsn.initAngular = function($sceProvider, $sceDelegateProvider, $locationProvider, $httpProvider, FacebookProvider) {
     gsn.applyConfig(root.globalConfig.data || {});
     gsn.config.ContentBaseUrl = root.location.port > 1000 && root.location.port < 5000 ? "/asset/" + gsn.config.ChainId : gsn.config.ContentBaseUrl;
-    gsn.config.hasRoundyProfile = [215, 216, 217, 218].indexOf(gsn.config.ChainId) > -1;
     gsn.config.DisableLimitedTimeCoupons = (215 === gsn.config.ChainId);
     if (gsn.config.Theme) {
       gsn.setTheme(gsn.config.Theme);
@@ -572,10 +528,10 @@
     if (typeof ($httpProvider) !== "undefined") {
       $httpProvider.interceptors.push('gsnAuthenticationHandler');
 
-      //Enable cross domain calls
+      // Enable cross domain calls
       $httpProvider.defaults.useXDomain = true;
 
-      //Remove the header used to identify ajax call  that would prevent CORS from working
+      // Remove the header used to identify ajax call  that would prevent CORS from working
       $httpProvider.defaults.headers.common['X-Requested-With'] = null;
     }
 
@@ -584,9 +540,7 @@
     }
 
     if (typeof (FacebookProvider) !== "undefined") {
-      if (gsn.config.FacebookDisable) {
-        FacebookProvider.init(gsn.config.FacebookAppId, false);
-      } else {
+      if (gsn.config.FacebookAppId) {
         if (gsn.config.facebookVersion) {
           FacebookProvider.init({
             appId: gsn.config.FacebookAppId,
@@ -596,6 +550,9 @@
         } else {
           FacebookProvider.init(gsn.config.FacebookAppId);
         }
+      }
+      else {
+        FacebookProvider.init(gsn.config.FacebookAppId, false);
       }
     }
   };

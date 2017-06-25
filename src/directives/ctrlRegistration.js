@@ -1,4 +1,4 @@
-﻿(function(angular, undefined) {
+(function(angular, undefined) {
   'use strict';
 
   var myDirectiveName = 'ctrlRegistration';
@@ -131,10 +131,7 @@
 
     $scope.$on('gsnevent:login-success', function(evt, result) {
       $scope.isSubmitting = false;
-      if (gsn.config.hasRoundyProfile) {
-        //go to the Roundy Profile Page
-        $location.url('/myaccount');
-      } else if (gsnApi.isNull($scope.profile.ExternalId, '').length > 2) {
+      if (gsnApi.isNull($scope.profile.ExternalId, '').length > 2) {
         $scope.goUrl('/profile/rewardcardupdate?registration=' + $scope.profile.ExternalId);
       } else {
         $timeout(gsnApi.reload, 500);

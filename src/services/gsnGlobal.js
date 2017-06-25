@@ -2,9 +2,9 @@
 (function(angular, undefined) {
     'use strict';
     var serviceId = 'gsnGlobal';
-    angular.module('gsn.core').service(serviceId, ['$window', '$location', '$timeout', '$route', 'gsnApi', 'gsnProfile', 'gsnStore', '$rootScope', 'Facebook', '$analytics', 'gsnYoutech', 'gsnDfp', 'gsnAdvertising', '$anchorScroll', gsnGlobal]);
+    angular.module('gsn.core').service(serviceId, ['$window', '$location', '$timeout', '$route', 'gsnApi', 'gsnProfile', 'gsnStore', '$rootScope', 'Facebook', '$analytics', 'gsnYoutech', 'gsnAdvertising', '$anchorScroll', gsnGlobal]);
 
-    function gsnGlobal($window, $location, $timeout, $route, gsnApi, gsnProfile, gsnStore, $rootScope, Facebook, $analytics, gsnYoutech, gsnDfp, gsnAdvertising, $anchorScroll) {
+    function gsnGlobal($window, $location, $timeout, $route, gsnApi, gsnProfile, gsnStore, $rootScope, Facebook, $analytics, gsnYoutech, gsnAdvertising, $anchorScroll) {
         var returnObj = {
             init: init,
             hasInit: false
@@ -429,27 +429,6 @@
             }
             $scope.$on('gsnevent:gsnmodal-hide', gsnModalTracking);
             $scope.$on('gsnevent:gsnmodal-show', gsnModalTracking);
-/*
-            function doTrakless() {
-                if (gsnApi.isNull($window._tk, null) === null) {
-                    $timeout(doTrakless, 50);
-                    return;
-                }
-                for (var k in $window._tk.trackers) {
-                    $window._tk.trackers[k].on('track', function(item) {
-                        // populate with page url, storeid, consumerid, is anonymous
-                        if (!item.dt) {
-                            item.dt = $scope.currentPath;
-                        }
-                        item.stid = gsnApi.getSelectedStoreId();
-                        item.anon = gsnApi.isLoggedIn();
-                        var profile = $scope.gvm.profile || {};
-                        if (profile.Id) item.uid = profile.Id;
-                        if (profile.ExternalId) item.loyid = profile.ExternalId;
-                    });
-                }
-            }
-*/
             //#endregion
         } // init
     }
