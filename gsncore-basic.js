@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.10.20
+ * version 1.10.22
  * gsncore repository
- * Build date: Sun Jun 25 2017 11:08:29 GMT-0500 (CDT)
+ * Build date: Mon Jun 26 2017 17:03:48 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -737,6 +737,7 @@
 
       $rootScope.siteMenu = gsnApi.getConfig().SiteMenu;
       $rootScope.win = $window;
+      angular.element('[name="url"]').text($window.location.href);
       gsnGlobal.init(true);
     }]);
 
@@ -7152,56 +7153,6 @@
   'use strict';
   var myModule = angular.module('gsn.core');
 
-  myModule.directive('gsnPathPixel', ['$sce', 'gsnApi', '$interpolate', function ($sce, gsnApi, $interpolate) {
-    // Usage: add pixel tracking on a page/path basis
-    // 
-    // Creates: 2013-12-12 TomN
-    // 
-    var directive = {
-      restrict: 'EA',
-      scope: true,
-      link: link
-    };
-    return directive;
-
-    function link(scope, element, attrs) {
-      var currentPath = '';
-      scope.$on('$routeChangeSuccess', function (evt, next, current) {
-        var matchPath = angular.lowercase(gsnApi.isNull(attrs.path, ''));
-
-        if (matchPath.length <= 0 || gsnApi.isNull(scope.currentPath, '').indexOf(matchPath) >= 0) {
-          if (currentPath == scope.currentPath) {
-            return;
-          }
-
-          // push this to non-ui thread
-          setTimeout(function() {
-            element.html('');
-            currentPath = scope.currentPath;
-            scope.ProfileId = gsnApi.getProfileId();
-            scope.CACHEBUSTER = new Date().getTime();
-
-            // profileid is required
-            if (scope.ProfileId <= 0) {
-              if (attrs.gsnPathPixel.indexOf('ProfileId') > 0) return;
-            }
-
-            scope.StoreId = gsnApi.getSelectedStoreId();
-            scope.ChainId = gsnApi.getChainId();
-            var url = $sce.trustAsResourceUrl($interpolate(attrs.gsnPathPixel.replace(/\[+/gi, '{{').replace(/\]+/gi, '}}'))(scope));
-            var img = new Image(1,1);
-            img.src = url;
-          }, 500);
-        }
-      });
-    }
-  }]);
-
-})(angular);
-(function (angular, undefined) {
-  'use strict';
-  var myModule = angular.module('gsn.core');
-
   myModule.directive("gsnPopover", ['$window', '$interpolate', '$timeout', 'debounce', function ($window, $interpolate, $timeout, debounce) {
     // Usage:   provide mouse hover capability
     //
@@ -7934,9 +7885,9 @@
 
   myModule.directive('gsnSpinner', ['$window', '$timeout', 'gsnApi', function ($window, $timeout, gsnApi) {
     // Usage:   Display spinner
-    // 
+    //
     // Creates: 2014-01-06
-    // 
+    //
     /*var opts = {
           lines: 13, // The number of lines to draw
           length: 20, // The length of each line
@@ -7973,15 +7924,15 @@
           scope.loadingScript = true;
 
           // dynamically load google
-          var src = '//cdnjs.cloudflare.com/ajax/libs/spin.js/1.3.2/spin.min.js';
+          var src = '//cdnjs.cloudflare.com/ajax/libs/spin.js/2.3.2/spin.min.js';
 
           gsnApi.loadScripts([src], activate);
           return;
         }
-        
+
         var options = scope.$eval(attrs.gsnSpinner);
         options.stopDelay = options.stopDelay || 200;
-        
+
         function stopSpinner() {
           if (scope.gsnSpinner) {
             scope.gsnSpinner.stop();
@@ -8016,6 +7967,7 @@
     }
   }]);
 })(angular);
+
 (function (angular, undefined) {
   'use strict';
   var myModule = angular.module('gsn.core');
@@ -8433,7 +8385,7 @@
   }]);
 
 })(angular);
-(function(angular, undefined) {
+(function(angular, $, undefined) {
   'use strict';
   var myModule = angular.module('gsn.core');
 
@@ -8443,6 +8395,11 @@
     // Creates: 2013-12-12 TomN
     // 2014-06-22 TomN - fix global variable
     var options = angular.copy(opt);
+
+    // dummy function if none defined
+    if (!options.on) {
+      options.on = function() {}
+    }
 
     return myModule.directive(options.name, [
       function() {
@@ -8494,12 +8451,14 @@
               if (currentModifier.isEnabled) {
                 currentValue = newValue;
                 options.set($element, newValue, oldValue);
+                options.on('activated', scope, $element, attrs, newValue, oldValue);
               }
             });
 
             // When we go out of scope restore the original value.
             scope.$on('$destroy', function() {
               options.set($element, originalValue, currentValue);
+              options.on('destroyed', scope, $element, attrs, newValue, oldValue);
 
               // Turn the parent back on, if it indeed was on.
               if (parentModifier) {
@@ -8516,7 +8475,7 @@
   // page title
   ngModifyElementDirective({
     name: 'gsnTitle',
-    selector: 'title',
+    selector: '[name="title"]',
     get: function(e) {
       return e.text();
     },
@@ -8525,29 +8484,18 @@
     }
   });
 
-  // viewpoint
+  // page title
   ngModifyElementDirective({
-    name: 'gsnMetaViewport',
-    selector: 'meta[name="viewport"]',
+    name: 'gsnMetaType',
+    selector: 'meta[itemprop="type"]',
     get: function(e) {
-      return e.attr('content');
+      return e.text();
     },
     set: function(e, v) {
-      return e.attr('content', v);
+      return e.text(v || "article");
     }
   });
 
-  // author
-  ngModifyElementDirective({
-    name: 'gsnMetaAuthor',
-    selector: 'meta[name="author"]',
-    get: function(e) {
-      return e.attr('content');
-    },
-    set: function(e, v) {
-      return e.attr('content', v);
-    }
-  });
 
   // description
   ngModifyElementDirective({
@@ -8561,35 +8509,10 @@
     }
   });
 
-  // keywords
-  ngModifyElementDirective({
-    name: 'gsnMetaKeywords',
-    selector: 'meta[name="keywords"]',
-    get: function(e) {
-      return e.attr('content');
-    },
-    set: function(e, v) {
-      return e.attr('content', v);
-    }
-  });
-
-
-  // keywords
+  // image
   ngModifyElementDirective({
     name: 'gsnMetaImage',
-    selector: 'meta[name="image"]',
-    get: function(e) {
-      return e.attr('content');
-    },
-    set: function(e, v) {
-      return e.attr('content', v);
-    }
-  });
-
-  // keywords
-  ngModifyElementDirective({
-    name: 'gsnMetaName',
-    selector: 'meta[name="name"]',
+    selector: 'meta[itemprop="image"]',
     get: function(e) {
       return e.attr('content');
     },
@@ -8610,73 +8533,7 @@
       return e.attr('content', v);
     }
   });
-
-  // Facebook OpenGraph integration
-  //  og:title - The title of your object as it should appear within the graph, e.g., "The Rock".
-  ngModifyElementDirective({
-    name: 'gsnOgTitle',
-    selector: 'meta[property="og:title"]',
-    html: '<meta property="og:title" content="" />',
-    get: function(e) {
-      return e.attr('content');
-    },
-    set: function(e, v) {
-      return e.attr('content', v);
-    }
-  });
-
-  // og:type - The type of your object, e.g., "movie". See the complete list of supported types.
-  ngModifyElementDirective({
-    name: 'gsnOgType',
-    selector: 'meta[property="og:type"]',
-    html: '<meta property="og:type" content="" />',
-    get: function(e) {
-      return e.attr('content');
-    },
-    set: function(e, v) {
-      return e.attr('content', v);
-    }
-  });
-
-  // og:image - An image URL which should represent your object within the graph. The image must be at least 50px by 50px and have a maximum aspect ratio of 3:1.
-  ngModifyElementDirective({
-    name: 'gsnOgImage',
-    selector: 'meta[id="default-og-image"]',
-    html: '<meta property="og:image" content="" id="default-og-image"/>',
-    get: function(e) {
-      return e.attr('content');
-    },
-    set: function(e, v) {
-      return e.attr('content', v);
-    }
-  });
-
-  // og:url - The canonical URL of your object that will be used as its permanent ID in the graph.
-  ngModifyElementDirective({
-    name: 'gsnOgUrl',
-    selector: 'meta[property="og:url"]',
-    html: '<meta property="og:url" content="" />',
-    get: function(e) {
-      return e.attr('content');
-    },
-    set: function(e, v) {
-      return e.attr('content', v);
-    }
-  });
-
-  // og:description - the description.
-  ngModifyElementDirective({
-    name: 'gsnOgDescription',
-    selector: 'meta[property="og:description"]',
-    html: '<meta property="og:description" content="" />',
-    get: function(e) {
-      return e.attr('content');
-    },
-    set: function(e, v) {
-      return e.attr('content', v);
-    }
-  });
-})(angular);
+})(angular, jQuery);
 
 (function (angular, undefined) {
   'use strict';

@@ -37,6 +37,7 @@
 
       $rootScope.siteMenu = gsnApi.getConfig().SiteMenu;
       $rootScope.win = $window;
+      angular.element('[name="url"]').text($window.location.href);
       gsnGlobal.init(true);
     }]);
 

@@ -1,12 +1,12 @@
-﻿(function (angular, undefined) {
+(function (angular, undefined) {
   'use strict';
   var myModule = angular.module('gsn.core');
 
   myModule.directive('gsnSpinner', ['$window', '$timeout', 'gsnApi', function ($window, $timeout, gsnApi) {
     // Usage:   Display spinner
-    // 
+    //
     // Creates: 2014-01-06
-    // 
+    //
     /*var opts = {
           lines: 13, // The number of lines to draw
           length: 20, // The length of each line
@@ -43,15 +43,15 @@
           scope.loadingScript = true;
 
           // dynamically load google
-          var src = '//cdnjs.cloudflare.com/ajax/libs/spin.js/1.3.2/spin.min.js';
+          var src = '//cdnjs.cloudflare.com/ajax/libs/spin.js/2.3.2/spin.min.js';
 
           gsnApi.loadScripts([src], activate);
           return;
         }
-        
+
         var options = scope.$eval(attrs.gsnSpinner);
         options.stopDelay = options.stopDelay || 200;
-        
+
         function stopSpinner() {
           if (scope.gsnSpinner) {
             scope.gsnSpinner.stop();
