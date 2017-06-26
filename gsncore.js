@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.10.23
+ * version 1.10.24
  * gsncore repository
- * Build date: Mon Jun 26 2017 18:03:57 GMT-0500 (CDT)
+ * Build date: Mon Jun 26 2017 18:28:39 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -737,7 +737,7 @@
 
       $rootScope.siteMenu = gsnApi.getConfig().SiteMenu;
       $rootScope.win = $window;
-      angular.element('head > [itemprop="url"]').text($window.location.href);
+      angular.element('head > [itemprop="url"]').attr("content", $window.location.href);
       gsnGlobal.init(true);
     }]);
 
@@ -13440,11 +13440,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     // 2014-06-22 TomN - fix global variable
     var options = angular.copy(opt);
 
-    // dummy function if none defined
-    if (!options.on) {
-      options.on = function() {}
-    }
-
     return myModule.directive(options.name, [
       function() {
         return {
@@ -13495,14 +13490,12 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
               if (currentModifier.isEnabled) {
                 currentValue = newValue;
                 options.set($element, newValue, oldValue);
-                options.on('activated', scope, $element, attrs, newValue, oldValue);
               }
             });
 
             // When we go out of scope restore the original value.
             scope.$on('$destroy', function() {
               options.set($element, originalValue, currentValue);
-              options.on('destroyed', scope, $element, attrs, newValue, oldValue);
 
               // Turn the parent back on, if it indeed was on.
               if (parentModifier) {
