@@ -45,7 +45,7 @@
             };
             scope[modifierName] = currentModifier;
 
-            var $element = angular.element(options.selector);
+            var $element = angular.element('head > ' + options.selector);
             if ($element.length <= 0 && typeof (options.html) == 'string') {
               $element = angular.element(options.html);
               var pNode = angular.element('head')[0];
@@ -88,7 +88,7 @@
   // page title
   ngModifyElementDirective({
     name: 'gsnTitle',
-    selector: '[name="title"]',
+    selector: '*[name="title"]',
     get: function(e) {
       return e.text();
     },

@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.10.22
+ * version 1.10.23
  * gsncore repository
- * Build date: Mon Jun 26 2017 17:03:48 GMT-0500 (CDT)
+ * Build date: Mon Jun 26 2017 18:03:57 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -737,7 +737,7 @@
 
       $rootScope.siteMenu = gsnApi.getConfig().SiteMenu;
       $rootScope.win = $window;
-      angular.element('[name="url"]').text($window.location.href);
+      angular.element('head > [itemprop="url"]').text($window.location.href);
       gsnGlobal.init(true);
     }]);
 
@@ -8432,7 +8432,7 @@
             };
             scope[modifierName] = currentModifier;
 
-            var $element = angular.element(options.selector);
+            var $element = angular.element('head > ' + options.selector);
             if ($element.length <= 0 && typeof (options.html) == 'string') {
               $element = angular.element(options.html);
               var pNode = angular.element('head')[0];
@@ -8475,7 +8475,7 @@
   // page title
   ngModifyElementDirective({
     name: 'gsnTitle',
-    selector: '[name="title"]',
+    selector: '*[name="title"]',
     get: function(e) {
       return e.text();
     },
