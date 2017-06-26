@@ -83,9 +83,10 @@
     name: 'gsnTitle',
     selector: '*[name="title"]',
     get: function(e) {
-      return e.text();
+      return e.text() || e.attr("content");
     },
     set: function(e, v) {
+      e.attr("content", v);
       return e.text(v);
     }
   });
@@ -95,10 +96,10 @@
     name: 'gsnMetaType',
     selector: 'meta[itemprop="type"]',
     get: function(e) {
-      return e.text();
+      return e.attr("content");
     },
     set: function(e, v) {
-      return e.text(v || "article");
+      return e.attr(content, v || "article");
     }
   });
 

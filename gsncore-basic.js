@@ -2,7 +2,7 @@
  * gsncore
  * version 1.10.25
  * gsncore repository
- * Build date: Mon Jun 26 2017 18:36:50 GMT-0500 (CDT)
+ * Build date: Mon Jun 26 2017 18:41:04 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -8470,9 +8470,10 @@
     name: 'gsnTitle',
     selector: '*[name="title"]',
     get: function(e) {
-      return e.text();
+      return e.text() || e.attr("content");
     },
     set: function(e, v) {
+      e.attr("content", v);
       return e.text(v);
     }
   });
@@ -8482,10 +8483,10 @@
     name: 'gsnMetaType',
     selector: 'meta[itemprop="type"]',
     get: function(e) {
-      return e.text();
+      return e.attr("content");
     },
     set: function(e, v) {
-      return e.text(v || "article");
+      return e.attr(content, v || "article");
     }
   });
 
