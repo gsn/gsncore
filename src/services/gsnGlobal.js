@@ -189,6 +189,7 @@
                         $anchorScroll();
                     }, 1000);
                 }
+                angular.element('head > [itemprop="url"]').attr("content", $window.location.href);
             });
             // events handling
             $scope.$on('$locationChangeStart', function(evt, nxt, current) {

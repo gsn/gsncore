@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.10.24
+ * version 1.10.25
  * gsncore repository
- * Build date: Mon Jun 26 2017 18:28:39 GMT-0500 (CDT)
+ * Build date: Mon Jun 26 2017 18:36:50 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -737,7 +737,6 @@
 
       $rootScope.siteMenu = gsnApi.getConfig().SiteMenu;
       $rootScope.win = $window;
-      angular.element('head > [itemprop="url"]').attr("content", $window.location.href);
       gsnGlobal.init(true);
     }]);
 
@@ -4199,6 +4198,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
                         $anchorScroll();
                     }, 1000);
                 }
+                angular.element('head > [itemprop="url"]').attr("content", $window.location.href);
             });
             // events handling
             $scope.$on('$locationChangeStart', function(evt, nxt, current) {
