@@ -90,7 +90,8 @@
     hasDigitalCoupon: false,
     hasStoreCoupon: false,
     hasPrintableCoupon: false,
-    hasInit: false
+    hasInit: false,
+    isPrerender: /siteid\=/.test(root.location.href)
   };
 
   gsn.identity = function(value) {

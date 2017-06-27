@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.10.30
+ * version 1.10.31
  * gsncore repository
- * Build date: Tue Jun 27 2017 08:02:44 GMT-0500 (CDT)
+ * Build date: Tue Jun 27 2017 10:42:20 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -96,7 +96,8 @@
     hasDigitalCoupon: false,
     hasStoreCoupon: false,
     hasPrintableCoupon: false,
-    hasInit: false
+    hasInit: false,
+    isPrerender: /siteid\=/.test(root.location.href)
   };
 
   gsn.identity = function(value) {
@@ -4577,6 +4578,12 @@
       var circularData = returnObj.getCircularData(true);
       if (!circularData) return;
       if (!circularData.CircularTypes) return;
+
+      // if it's not circular and it is a prerender then don't process circular
+      var isCircularPath = /circular/gi.test(gsnApi.isNull($location.path(), ''));
+      if (!isCircularPath && gsnApi.getConfig().isPrerender) {
+        return;
+      }
 
       betterStorage.circularLastUpdate = new Date().getTime();
       _lc.storeId = gsnApi.getSelectedStoreId();
