@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.10.33
+ * version 1.10.34
  * gsncore repository
- * Build date: Tue Jun 27 2017 17:18:41 GMT-0500 (CDT)
+ * Build date: Tue Jun 27 2017 18:34:17 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -13532,7 +13532,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       return e.text() || e.attr("content");
     },
     set: function(e, v) {
-      angular.element('head > meta[name="title"').attr("content", v);
+      angular.element('head > meta[name="title"]').attr("content", v);
       return e.text(v);
     }
   });

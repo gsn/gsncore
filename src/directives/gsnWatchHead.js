@@ -86,7 +86,7 @@
       return e.text() || e.attr("content");
     },
     set: function(e, v) {
-      angular.element('head > meta[name="title"').attr("content", v);
+      angular.element('head > meta[name="title"]').attr("content", v);
       return e.text(v);
     }
   });
