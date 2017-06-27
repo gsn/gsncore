@@ -189,7 +189,12 @@
                         $anchorScroll();
                     }, 1000);
                 }
-                angular.element('head > [itemprop="url"]').attr("content", $window.location.href);
+                var url = $window.location.href;
+                url = url.replace("sfs=true", "")
+                  .replace("siteid=" + gsnApi.getChainId(), "")
+                  .replace(/cb\=\d+/gi, "")
+                  .replace(/\&\&/gi, "");
+                angular.element('head > [itemprop="url"]').attr("content", url);
             });
             // events handling
             $scope.$on('$locationChangeStart', function(evt, nxt, current) {
