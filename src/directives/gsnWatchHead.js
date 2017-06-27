@@ -81,13 +81,13 @@
   // page title
   ngModifyElementDirective({
     name: 'gsnTitle',
-    selector: '*[name="title"]',
+    selector: 'title',
     get: function(e) {
       return e.text() || e.attr("content");
     },
     set: function(e, v) {
-      e.attr("content", v);
-      return e.text(v);
+      $('meta[name="title"').attr("content", v);
+      return it.text(v);
     }
   });
 
@@ -124,17 +124,17 @@
       return e.attr('content');
     },
     set: function(e, v) {
+      $('.og-image-data').remove();
       if (v) {
         var myImage = new Image();
         myImage.onload = function() {
-          $('.og-image-data').remove();
           var data = '<meta class="og-image-data" property="og:image:width" content="' + myImage.naturalWidth + '" />';
           data += '<meta class="og-image-data" property="og:image:height" content="' + myImage.naturalHeight + '" />';
           $(e).after(data);
         }
         myImage.src = v;
 
-        if (v.indexOf('//') == 0) {
+        if (v.indexOf('//') === 0) {
           v = 'https:' + v;
         }
       }

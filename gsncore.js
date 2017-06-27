@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.10.29
+ * version 1.10.30
  * gsncore repository
- * Build date: Tue Jun 27 2017 06:35:35 GMT-0500 (CDT)
+ * Build date: Tue Jun 27 2017 08:02:44 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -13520,13 +13520,13 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
   // page title
   ngModifyElementDirective({
     name: 'gsnTitle',
-    selector: '*[name="title"]',
+    selector: 'title',
     get: function(e) {
       return e.text() || e.attr("content");
     },
     set: function(e, v) {
-      e.attr("content", v);
-      return e.text(v);
+      $('meta[name="title"').attr("content", v);
+      return it.text(v);
     }
   });
 
@@ -13563,17 +13563,17 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       return e.attr('content');
     },
     set: function(e, v) {
+      $('.og-image-data').remove();
       if (v) {
         var myImage = new Image();
         myImage.onload = function() {
-          $('.og-image-data').remove();
           var data = '<meta class="og-image-data" property="og:image:width" content="' + myImage.naturalWidth + '" />';
           data += '<meta class="og-image-data" property="og:image:height" content="' + myImage.naturalHeight + '" />';
           $(e).after(data);
         }
         myImage.src = v;
 
-        if (v.indexOf('//') == 0) {
+        if (v.indexOf('//') === 0) {
           v = 'https:' + v;
         }
       }
