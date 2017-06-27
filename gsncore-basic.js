@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.10.28
+ * version 1.10.29
  * gsncore repository
- * Build date: Tue Jun 27 2017 05:40:08 GMT-0500 (CDT)
+ * Build date: Tue Jun 27 2017 06:31:27 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -8524,9 +8524,13 @@
           $('.og-image-data').remove();
           var data = '<meta class="og-image-data" property="og:image:width" content="' + myImage.naturalWidth + '" />';
           data += '<meta class="og-image-data" property="og:image:height" content="' + myImage.naturalHeight + '" />';
-          $('head').append(data);
+          $(e).after(data);
         }
         myImage.src = v;
+
+        if (v.indexOf('//') == 0) {
+          v = 'https:' + v;
+        }
       }
       return e.attr('content', v);
     }

@@ -130,9 +130,13 @@
           $('.og-image-data').remove();
           var data = '<meta class="og-image-data" property="og:image:width" content="' + myImage.naturalWidth + '" />';
           data += '<meta class="og-image-data" property="og:image:height" content="' + myImage.naturalHeight + '" />';
-          $('head').append(data);
+          $(e).after(data);
         }
         myImage.src = v;
+
+        if (v.indexOf('//') == 0) {
+          v = 'https:' + v;
+        }
       }
       return e.attr('content', v);
     }
