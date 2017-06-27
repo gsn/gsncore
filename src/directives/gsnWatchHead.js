@@ -124,6 +124,16 @@
       return e.attr('content');
     },
     set: function(e, v) {
+      if (v) {
+        var myImage = new Image();
+        myImage.onload = function() {
+          $('.og-image-data').remove();
+          var data = '<meta class="og-image-data" property="og:image:width" content="' + myImage.naturalWidth + '" />';
+          data += '<meta class="og-image-data" property="og:image:height" content="' + myImage.naturalHeight + '" />';
+          $('head').append(data);
+        }
+        myImage.src = v;
+      }
       return e.attr('content', v);
     }
   });

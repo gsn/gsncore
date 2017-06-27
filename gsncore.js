@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.10.27
+ * version 1.10.28
  * gsncore repository
- * Build date: Mon Jun 26 2017 20:41:09 GMT-0500 (CDT)
+ * Build date: Tue Jun 27 2017 05:40:08 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -13562,6 +13562,16 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       return e.attr('content');
     },
     set: function(e, v) {
+      if (v) {
+        var myImage = new Image();
+        myImage.onload = function() {
+          $('.og-image-data').remove();
+          var data = '<meta class="og-image-data" property="og:image:width" content="' + myImage.naturalWidth + '" />';
+          data += '<meta class="og-image-data" property="og:image:height" content="' + myImage.naturalHeight + '" />';
+          $('head').append(data);
+        }
+        myImage.src = v;
+      }
       return e.attr('content', v);
     }
   });
