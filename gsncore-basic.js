@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.10.26
+ * version 1.10.27
  * gsncore repository
- * Build date: Mon Jun 26 2017 20:34:40 GMT-0500 (CDT)
+ * Build date: Mon Jun 26 2017 20:41:09 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -2256,7 +2256,9 @@
                 url = url.replace("sfs=true", "")
                   .replace("siteid=" + gsnApi.getChainId(), "")
                   .replace(/cb\=\d+/gi, "")
-                  .replace(/\&\&/gi, "");
+                  .replace(/(\&\&)+/gi, "&")
+                  .replace(/\&+$/gi, "")
+                  .replace(/\?+$/gi, "");
                 angular.element('head > [itemprop="url"]').attr("content", url);
             });
             // events handling
