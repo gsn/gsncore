@@ -1,4 +1,4 @@
-(function(angular, $, undefined) {
+(function(angular, undefined) {
   'use strict';
   var myModule = angular.module('gsn.core');
 
@@ -86,7 +86,7 @@
       return e.text() || e.attr("content");
     },
     set: function(e, v) {
-      $('meta[name="title"').attr("content", v);
+      angular.element('head > meta[name="title"').attr("content", v);
       return e.text(v);
     }
   });
@@ -124,13 +124,13 @@
       return e.attr('content');
     },
     set: function(e, v) {
-      $('.og-image-data').remove();
+      angular.element('.og-image-data').remove();
       if (v) {
         var myImage = new Image();
         myImage.onload = function() {
           var data = '<meta class="og-image-data" property="og:image:width" content="' + myImage.naturalWidth + '" />';
           data += '<meta class="og-image-data" property="og:image:height" content="' + myImage.naturalHeight + '" />';
-          $(e).after(data);
+          angular.element(e).after(data);
         }
         myImage.src = v;
 
@@ -154,4 +154,4 @@
       return e.attr('content', v);
     }
   });
-})(angular, jQuery);
+})(angular);
