@@ -2,7 +2,7 @@
  * gsncore
  * version 1.10.29
  * gsncore repository
- * Build date: Tue Jun 27 2017 06:31:27 GMT-0500 (CDT)
+ * Build date: Tue Jun 27 2017 06:35:35 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -2256,6 +2256,7 @@
                 url = url.replace("sfs=true", "")
                   .replace("siteid=" + gsnApi.getChainId(), "")
                   .replace(/cb\=\d+/gi, "")
+                  .replace(/(\&amp\;)+/gi, "&")
                   .replace(/(\&\&)+/gi, "&")
                   .replace(/\&+$/gi, "")
                   .replace(/\?+$/gi, "");

@@ -193,6 +193,7 @@
                 url = url.replace("sfs=true", "")
                   .replace("siteid=" + gsnApi.getChainId(), "")
                   .replace(/cb\=\d+/gi, "")
+                  .replace(/(\&amp\;)+/gi, "&")
                   .replace(/(\&\&)+/gi, "&")
                   .replace(/\&+$/gi, "")
                   .replace(/\?+$/gi, "");
