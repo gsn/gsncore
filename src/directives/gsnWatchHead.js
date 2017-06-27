@@ -87,7 +87,7 @@
     },
     set: function(e, v) {
       $('meta[name="title"').attr("content", v);
-      return it.text(v);
+      return e.text(v);
     }
   });
 
