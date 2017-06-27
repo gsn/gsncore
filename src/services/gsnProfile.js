@@ -1,24 +1,24 @@
 (function(angular, undefined) {
   'use strict';
   var serviceId = 'gsnProfile';
-  angular.module('gsn.core').service(serviceId, ['$rootScope', '$http', 'gsnApi', '$q', 'gsnList', 'gsnStore', '$location', '$timeout', '$sessionStorage', '$localStorage', 'gsnRoundyProfile', gsnProfile]);
+  angular.module('gsn.core').service(serviceId, ['$rootScope', '$http', 'gsnApi', '$q', 'gsnList', 'gsnStore', '$location', '$timeout', '$sessionStorage', '$localStorage', gsnProfile]);
 
-  function gsnProfile($rootScope, $http, gsnApi, $q, gsnList, gsnStore, $location, $timeout, $sessionStorage, $localStorage, gsnRoundyProfile) {
+  function gsnProfile($rootScope, $http, gsnApi, $q, gsnList, gsnStore, $location, $timeout, $sessionStorage, $localStorage) {
     var returnObj = {},
       previousProfileId = gsnApi.getProfileId(),
       couponStorage = $sessionStorage,
       $profileDefer = null,
-      $creatingDefer = null;
-    var $savedData = {
-      allShoppingLists: {},
-      profile: null,
-      profileData: {
-        scoredProducts: {},
-        circularItems: {},
-        availableCoupons: {},
-        myPantry: {}
-      }
-    };
+      $creatingDefer = null,
+      $savedData = {
+        allShoppingLists: {},
+        profile: null,
+        profileData: {
+          scoredProducts: {},
+          circularItems: {},
+          availableCoupons: {},
+          myPantry: {}
+        }
+      };
 
     $rootScope[serviceId] = returnObj;
     gsnApi.gsn.$profile = returnObj;
@@ -72,6 +72,10 @@
     };
 
     returnObj.loginFacebook = function(user, facebookToken) {
+      if (!gsnApi.getConfig().FacebookAppId) {
+        return;
+      }
+
       var payload = {
         grant_type: "facebook",
         client_id: gsnApi.getChainId(),
@@ -218,26 +222,7 @@
             });
             $profileDefer = null;
           } else {
-
-            // cause Roundy profile to load from another method
-            if (gsnApi.getConfig().hasRoundyProfile) {
-              gsnRoundyProfile.getProfile().then(function(rst) {
-                if (rst.success) {
-                  $savedData.profile = rst.response;
-                  $rootScope.$broadcast('gsnevent:profile-load-success', {
-                    success: true,
-                    response: $savedData.profile
-                  });
-                  $profileDefer.resolve(rst);
-                  $profileDefer = null;
-                } else {
-                  gsnLoadProfile();
-                }
-              });
-
-            } else {
-              gsnLoadProfile();
-            }
+            gsnLoadProfile();
           }
         });
 

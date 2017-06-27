@@ -1,10 +1,9 @@
-﻿(function (angular, undefined) {
+(function (angular, undefined) {
   'use strict';
   var myModule = angular.module('gsn.core');
 
   /**
    * allow width to be flexible
-   * initially created for Roundy coupons bottom panel
    */
   myModule.directive('gsnFlexibleWidth', ['debounce', '$window', function (debounce, $window) {
     var directive = {

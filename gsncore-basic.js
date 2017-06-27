@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.10.11
+ * version 1.10.32
  * gsncore repository
- * Build date: Mon May 22 2017 07:49:16 GMT-0500 (CDT)
+ * Build date: Tue Jun 27 2017 11:02:15 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -66,7 +66,6 @@
     ShoppingListServiceUrl: '/proxy/shoppinglist',
     LoggingServiceUrl: '/proxy/logging',
     YoutechCouponUrl: '/proxy/couponut',
-    RoundyProfileUrl: '/proxy/roundy',
     ApiUrl: '',
 
     // global config
@@ -82,17 +81,14 @@
 
     ChainId: 0,
     ChainName: 'Brick, Inc.',
-    DfpNetworkId: '/6394/digitalstore.test',
     GoogleTagId: null,
     GoogleAnalyticAccountId1: null,
     GoogleSiteVerificationId: null,
     RegistrationFromEmailAddress: 'tech@grocerywebsites.com',
     RegistrationEmailLogo: null,
-    FacebookDisable: false,
     FacebookAppId: null,
     FacebookPermission: null,
     GoogleSiteSearchCode: null,
-    DisableLimitedTimeCoupons: false,
     Theme: null,
     HomePage: null,
     StoreList: null,
@@ -100,8 +96,8 @@
     hasDigitalCoupon: false,
     hasStoreCoupon: false,
     hasPrintableCoupon: false,
-    hasRoundyProfile: false,
-    hasInit: false
+    hasInit: false,
+    isPrerender: /siteid\=/.test(root.location.href)
   };
 
   gsn.identity = function(value) {
@@ -465,12 +461,6 @@
       if (root.ga) {
         ga('send', 'pageview', path);
       }
-/*
-      // piwik tracking
-      if (root._tk) {
-        _tk.pageview()
-      }
-*/
     });
 
     /**
@@ -498,51 +488,18 @@
           nonInteraction: 1
         });
       }
-/*
-      if (root._tk) {
-        var extra = {};
-        var item = properties.item;
-        if (item) {
-          // add department, aisle, category, shelf, brand
-          if (item.BrandName)
-            extra.bn = item.BrandName;
-          if (item.ProductCode)
-            extra.sku = item.ProductCode;
-          if (!item.ic && item.ItemId)
-            extra.ic = item.ItemId;
-          if (item.ShoppingListItemId)
-            extra.slic = item.ShoppingListItemId;
-          if (item.ShelfName)
-            extra.shf = item.ShelfName;
-          if (item.DepartmentName)
-            extra.dpt = item.DepartmentName;
-          if (item.CategoryName && !item.ec)
-            if (!item.ec)
-              extra.ec = item.CategoryName;
-          if (item.AisleName)
-            extra.ailse = item.AisleName;
-        }
-
-        _tk.event(properties.category, action, properties.label, properties.property, properties.value, extra);
-      }
-*/
     });
   };
 
   gsn.init = function($locationProvider, $sceDelegateProvider, $sceProvider, $httpProvider, FacebookProvider, $analyticsProvider) {
     gsn.initAngular($sceProvider, $sceDelegateProvider, $locationProvider, $httpProvider, FacebookProvider);
     gsn.initAnalytics($analyticsProvider);
-/*    if (typeof (root._tk) !== 'undefined') {
-      root._tk.util.Emitter(gsn);
-    }
-*/
   };
 
   // support angular initialization
   gsn.initAngular = function($sceProvider, $sceDelegateProvider, $locationProvider, $httpProvider, FacebookProvider) {
     gsn.applyConfig(root.globalConfig.data || {});
     gsn.config.ContentBaseUrl = root.location.port > 1000 && root.location.port < 5000 ? "/asset/" + gsn.config.ChainId : gsn.config.ContentBaseUrl;
-    gsn.config.hasRoundyProfile = [215, 216, 217, 218].indexOf(gsn.config.ChainId) > -1;
     gsn.config.DisableLimitedTimeCoupons = (215 === gsn.config.ChainId);
     if (gsn.config.Theme) {
       gsn.setTheme(gsn.config.Theme);
@@ -578,10 +535,10 @@
     if (typeof ($httpProvider) !== "undefined") {
       $httpProvider.interceptors.push('gsnAuthenticationHandler');
 
-      //Enable cross domain calls
+      // Enable cross domain calls
       $httpProvider.defaults.useXDomain = true;
 
-      //Remove the header used to identify ajax call  that would prevent CORS from working
+      // Remove the header used to identify ajax call  that would prevent CORS from working
       $httpProvider.defaults.headers.common['X-Requested-With'] = null;
     }
 
@@ -590,9 +547,7 @@
     }
 
     if (typeof (FacebookProvider) !== "undefined") {
-      if (gsn.config.FacebookDisable) {
-        FacebookProvider.init(gsn.config.FacebookAppId, false);
-      } else {
+      if (gsn.config.FacebookAppId) {
         if (gsn.config.facebookVersion) {
           FacebookProvider.init({
             appId: gsn.config.FacebookAppId,
@@ -602,6 +557,9 @@
         } else {
           FacebookProvider.init(gsn.config.FacebookAppId);
         }
+      }
+      else {
+        FacebookProvider.init(gsn.config.FacebookAppId, false);
       }
     }
   };
@@ -769,11 +727,13 @@
   ])
     .run(['$rootScope', 'gsnGlobal', 'gsnApi', '$window', function($rootScope, gsnGlobal, gsnApi, $window) {
       var head = angular.element('head');
-      var myHtml = '<!--[if lt IE 10]>\n' +
+      var myHtml = '<!--begin:exclude-->\n<!--[if lt IE 10]>\n' +
         '<script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7/html5shiv.min.js"></script>' +
         '<script src="https://cdnjs.cloudflare.com/ajax/libs/es5-shim/2.2.0/es5-shim.min.js"></script>' +
         '<script src="https://cdnjs.cloudflare.com/ajax/libs/json2/20130526/json2.min.js"></script>' +
         '\n<![endif]-->';
+      myHtml += '\n<link href="//cdn.brickinc.net/asset/common/styles/print.css" rel="stylesheet" type="text/css" media="print">';
+      myHtml += '\n<!--end:exclude-->\n'
       head.append(myHtml);
 
       $rootScope.siteMenu = gsnApi.getConfig().SiteMenu;
@@ -876,10 +836,6 @@
       return gsn.config.YoutechCouponUrl;
     };
 
-    returnObj.getRoundyProfileUrl = function() {
-      return gsn.config.RoundyProfileUrl;
-    };
-
     returnObj.getProductServiceUrl = function() {
       return gsn.config.ProductServiceUrl;
     };
@@ -929,10 +885,6 @@
 
     returnObj.getEmailRegEx = function() {
       return gsn.config.EmailRegex;
-    };
-
-    returnObj.getDfpNetworkId = function() {
-      return gsn.config.DfpNetworkId;
     };
 
     returnObj.getServiceUnavailableMessage = function() {
@@ -2110,341 +2062,13 @@
     return returnObj;
   }
 })(angular);
-(function(angular, undefined) {
-  'use strict';
-  var serviceId = 'gsnCouponPrinter';
-  angular.module('gsn.core').service(serviceId, ['$rootScope', 'gsnApi', '$log', '$timeout', 'gsnStore', 'gsnProfile', '$window', gsnCouponPrinter]);
-
-  function gsnCouponPrinter($rootScope, gsnApi, $log, $timeout, gsnStore, gsnProfile, $window) {
-    var service = {
-      print: print,
-      init: init,
-      loadingScript: false,
-      isScriptReady: false,
-      activated: false,
-      isDetecting: false,
-      pluginFound: false
-    };
-    var couponClasses = [];
-    var coupons = [];
-
-	activate();
-
-	$rootScope.$on('gsnevent:circular-loaded', function(event, data) {
-      if (!service.activated) activate();
-    });
-
-    return service;
-
-    function activate() {
-      if (!gsnApi.getConfig().hasPrintableCoupon) {
-        return;
-      }
-
-      if (typeof (gcprinter) == 'undefined') {
-        $log.log('waiting for gcprinter...');
-        $timeout(activate, 500);
-
-        if (service.loadingScript) return;
-
-        service.loadingScript = true;
-
-        // dynamically load google
-        var src = '//cdn.brickinc.net/script/gcprinter/gcprinter.min.js';
-
-        gsnApi.loadScripts([src], activate);
-        return;
-      }
-
-      if (service.activated) return;
-      service.activated = true
-
-      gcprinter.on('printed', function(e, rsp) {
-        $timeout(function() {
-          // process coupon error message
-          var errors = gsnApi.isNull(rsp.ErrorCoupons, []);
-          if (errors.length > 0) {
-            angular.forEach(errors, function(item) {
-              angular.element('.coupon-message-' + item.CouponId).html(item.ErrorMessage);
-            });
-          }
-          $rootScope.$broadcast('gsnevent:gcprinter-printed', e, rsp);
-        }, 5);
-      });
-
-      gcprinter.on('printing', function(e) {
-        $timeout(function() {
-          angular.element(couponClasses.join(',')).html('Printing...');
-          $rootScope.$broadcast('gsnevent:gcprinter-printing', e);
-        }, 5);
-      });
-
-      gcprinter.on('printfail', function(e, rsp) {
-        $timeout(function() {
-          if (e == 'gsn-server') {
-            angular.element(couponClasses.join(',')).html('Print limit reached...');
-          } else if (e == 'gsn-cancel') {
-            angular.element(couponClasses.join(',')).html('Print canceled...');
-          } else {
-            angular.element(couponClasses.join(',')).html('Print failed...');
-          }
-          $rootScope.$broadcast('gsnevent:gcprinter-printfail', rsp);
-        }, 5);
-      });
-
-      // keep trying to init until ready
-      gcprinter.on('initcomplete', function() {
-        service.isScriptReady = true;
-        init();
-        $rootScope.$broadcast('gsnevent:gcprinter-initcomplete');
-      });
-      return;
-    }
-
-    function init() {
-      if (!gsnApi.getConfig().hasPrintableCoupon) {
-        return;
-      }
-
-      // do not need coupon printer for mobile
-      if (gsnApi.isMobile) {
-        return;
-      }
-
-      if (typeof (gcprinter) === 'undefined') {
-        $timeout(init, 500);
-        return;
-      }
-
-      if (!service.isScriptReady) {
-        gcprinter.init();
-        return;
-      }
-
-      $timeout(printInternal, 5);
-    }
-
-    function print(items) {
-      if ((items || []).length <= 0) {
-        return;
-      }
-
-      if (gsnStore.getProcessDate() == 0) {
-        // wait until all coupons has been processed
-        $timeout(function() {
-          print(items);
-          return;
-        }, 1000);
-        return;
-      }
-
-      coupons.length = 0;
-      couponClasses.length = 0;
-      angular.forEach(items, function(v, k) {
-        if (gsnApi.isNull(v, null) === null) {
-          return;
-        }
-
-        var item = v;
-        if (gsnApi.isNull(v.ProductCode, null) === null) {
-          item = gsnStore.getCoupon(v.ItemId, v.ItemTypeId) || v;
-        }
-
-        couponClasses.push('.coupon-message-' + item.ProductCode);
-        coupons.push(item.ProductCode);
-      });
-
-      $timeout(function() {
-        angular.element(couponClasses.join(',')).html('Checking, please wait...');
-      }, 5);
-
-      if (!gcprinter.isReady) {
-        // call to trigger printer init
-        init();
-        return;
-      }
-
-      $timeout(printInternal, 5);
-    }
-
-    function printInternal() {
-      if (!isPluginInstalled()) {
-        $rootScope.$broadcast('gsnevent:gcprinter-not-found');
-
-        if (!service.isDetecting) {
-          service.isDetecting = true;
-          continousDetect();
-        }
-      } else if (gcprinter.isPluginBlocked()) {
-        $rootScope.$broadcast('gsnevent:gcprinter-blocked');
-      } else if (!isPrinterSupported()) {
-        $rootScope.$broadcast('gsnevent:gcprinter-not-supported');
-      } else if (coupons.length > 0) {
-        var siteId = gsnApi.getChainId();
-        angular.forEach(coupons, function(v) {
-          gsnProfile.addPrinted(v);
-        });
-        gcprinter.print(siteId, coupons);
-      }
-    }
-    ;
-
-    // continously checks plugin to detect when it's installed
-    function continousDetect() {
-      if (isPluginInstalled()) {
-        pluginSuccess();
-        return;
-      }
-
-      if (gcprinter.isChrome) {
-        gcprinter.checkInstall(pluginSuccess, continousDetect);
-      } else {
-        // use faster checkInstall method for non-chrome
-        setTimeout(function() {
-          gcprinter.checkInstall(continousDetect, continousDetect);
-        }, 2000);
-      }
-    }
-    ;
-
-    function pluginSuccess() {
-      // force init
-      service.pluginFound = true;
-
-      $timeout(function() {
-        $rootScope.$broadcast('gsnevent:gcprinter-ready');
-      }, 5);
-
-      gcprinter.init(true);
-    }
-    ;
-
-    function isPluginInstalled() {
-      if (gcprinter.isChrome) {
-        return service.pluginFound;
-      }
-
-      return gcprinter.hasPlugin();
-    }
-    ;
-
-    function isPrinterSupported() {
-      var result = false;
-      try {
-        result = gcprinter.isPrinterSupported();
-      } catch (e) {
-        result = true;
-      }
-      return result;
-    }
-    ;
-  } // end service function
-})(angular);
-
-(function (angular, Gsn, undefined) {
-  'use strict';
-  var serviceId = 'gsnDfp';
-  angular.module('gsn.core').service(serviceId, ['$rootScope', 'gsnApi', 'gsnStore', 'gsnProfile', '$sessionStorage', '$window', '$timeout', '$location', 'debounce', gsnDfp]);
-
-  function gsnDfp($rootScope, gsnApi, gsnStore, gsnProfile, $sessionStorage, $window, $timeout, $location, debounce) {
-    var service = {
-      forceRefresh: true,
-      actionParam: null,
-      doRefresh: debounce(doRefresh, 500)
-    };
-    var bricktag = $window.bricktag || {
-      addDept: function() {},
-      refresh: function() {},
-      setDefault: function() {}
-    };
-
-    function shoppingListItemChange(event, shoppingList, item) {
-      var currentListId = gsnApi.getShoppingListId();
-      if (shoppingList.ShoppingListId == currentListId) {
-        var cat = gsnStore.getCategories()[item.CategoryId];
-        bricktag.addDept(cat.CategoryName);
-        // service.actionParam = {evtname: event.name, dept: cat.CategoryName, pdesc: item.Description, pcode: item.Id, brand: item.BrandName};
-        service.doRefresh();
-      }
-    }
-    
-    $rootScope.$on('gsnevent:shoppinglistitem-updating', shoppingListItemChange);
-    $rootScope.$on('gsnevent:shoppinglistitem-removing', shoppingListItemChange);
-    $rootScope.$on('gsnevent:shoppinglist-loaded', function (event, shoppingList, item) {
-      var list = gsnProfile.getShoppingList();
-      if (list) {
-        // load all the ad depts
-        var items = gsnProfile.getShoppingList().allItems();
-        var categories = gsnStore.getCategories();
-
-        angular.forEach(items, function (item, idx) {
-          if (gsnApi.isNull(item.CategoryId, null) === null) return;
-
-          if (categories[item.CategoryId]) {
-            var newKw = categories[item.CategoryId].CategoryName;
-            bricktag.addDept(newKw);
-          }
-        });
-
-        // service.actionParam = {evtname: event.name, evtcategory: gsnProfile.getShoppingListId() };
-      }
-    });
-
-    $rootScope.$on('$locationChangeSuccess', function (event, next) {
-      var currentPath = angular.lowercase(gsnApi.isNull($location.path(), ''));
-      gsnProfile.getProfile().then(function(p){
-        var isLoggedIn = gsnApi.isLoggedIn();
-
-        bricktag.setDefault({ 
-          page: currentPath, 
-          storeid: gsnApi.getSelectedStoreId(), 
-          consumerid: gsnProfile.getProfileId(), 
-          isanon: !isLoggedIn,
-          loyaltyid: p.response.ExternalId
-        });
-      });
-      service.forceRefresh = true;
-      service.doRefresh();
-    });
-
-    $rootScope.$on('gsnevent:loadads', function (event, next) {
-      service.actionParam = {evtname: event.name};
-      service.doRefresh();
-    });
-
-    $rootScope.$on('gsnevent:digitalcircular-pagechanging', function (event, data) {
-      // service.actionParam = {evtname: event.name, evtcategory: data.circularIndex, pdesc: data.pageIndex};
-      service.doRefresh();
-    });
-
-    init();
-
-    return service;
-
-    // initialization
-    function init() {
-      if (service.isIE) {
-        bricktag.minSecondBetweenRefresh = 15;
-      }
-    }
-
-    // refresh method
-    function doRefresh() {
-      ($rootScope.gvm || {}).adsCollapsed = false;
-      bricktag.refresh(service.actionParam, service.forceRefresh);
-      service.forceRefresh = false;
-    }
-  }
-})(angular, window.Gsn);
-
-
 // for handling everything globally
 (function(angular, undefined) {
     'use strict';
     var serviceId = 'gsnGlobal';
-    angular.module('gsn.core').service(serviceId, ['$window', '$location', '$timeout', '$route', 'gsnApi', 'gsnProfile', 'gsnStore', '$rootScope', 'Facebook', '$analytics', 'gsnYoutech', 'gsnDfp', 'gsnAdvertising', '$anchorScroll', gsnGlobal]);
+    angular.module('gsn.core').service(serviceId, ['$window', '$location', '$timeout', '$route', 'gsnApi', 'gsnProfile', 'gsnStore', '$rootScope', 'Facebook', '$analytics', 'gsnYoutech', 'gsnAdvertising', '$anchorScroll', gsnGlobal]);
 
-    function gsnGlobal($window, $location, $timeout, $route, gsnApi, gsnProfile, gsnStore, $rootScope, Facebook, $analytics, gsnYoutech, gsnDfp, gsnAdvertising, $anchorScroll) {
+    function gsnGlobal($window, $location, $timeout, $route, gsnApi, gsnProfile, gsnStore, $rootScope, Facebook, $analytics, gsnYoutech, gsnAdvertising, $anchorScroll) {
         var returnObj = {
             init: init,
             hasInit: false
@@ -2629,6 +2253,15 @@
                         $anchorScroll();
                     }, 1000);
                 }
+                var url = $window.location.href;
+                url = url.replace("sfs=true", "")
+                  .replace("siteid=" + gsnApi.getChainId(), "")
+                  .replace(/cb\=\d+/gi, "")
+                  .replace(/(\&amp\;)+/gi, "&")
+                  .replace(/(\&\&)+/gi, "&")
+                  .replace(/\&+$/gi, "")
+                  .replace(/\?+$/gi, "");
+                angular.element('head > [itemprop="url"]').attr("content", url);
             });
             // events handling
             $scope.$on('$locationChangeStart', function(evt, nxt, current) {
@@ -2869,27 +2502,6 @@
             }
             $scope.$on('gsnevent:gsnmodal-hide', gsnModalTracking);
             $scope.$on('gsnevent:gsnmodal-show', gsnModalTracking);
-/*
-            function doTrakless() {
-                if (gsnApi.isNull($window._tk, null) === null) {
-                    $timeout(doTrakless, 50);
-                    return;
-                }
-                for (var k in $window._tk.trackers) {
-                    $window._tk.trackers[k].on('track', function(item) {
-                        // populate with page url, storeid, consumerid, is anonymous
-                        if (!item.dt) {
-                            item.dt = $scope.currentPath;
-                        }
-                        item.stid = gsnApi.getSelectedStoreId();
-                        item.anon = gsnApi.isLoggedIn();
-                        var profile = $scope.gvm.profile || {};
-                        if (profile.Id) item.uid = profile.Id;
-                        if (profile.ExternalId) item.loyid = profile.ExternalId;
-                    });
-                }
-            }
-*/
             //#endregion
         } // init
     }
@@ -3583,24 +3195,24 @@
 (function(angular, undefined) {
   'use strict';
   var serviceId = 'gsnProfile';
-  angular.module('gsn.core').service(serviceId, ['$rootScope', '$http', 'gsnApi', '$q', 'gsnList', 'gsnStore', '$location', '$timeout', '$sessionStorage', '$localStorage', 'gsnRoundyProfile', gsnProfile]);
+  angular.module('gsn.core').service(serviceId, ['$rootScope', '$http', 'gsnApi', '$q', 'gsnList', 'gsnStore', '$location', '$timeout', '$sessionStorage', '$localStorage', gsnProfile]);
 
-  function gsnProfile($rootScope, $http, gsnApi, $q, gsnList, gsnStore, $location, $timeout, $sessionStorage, $localStorage, gsnRoundyProfile) {
+  function gsnProfile($rootScope, $http, gsnApi, $q, gsnList, gsnStore, $location, $timeout, $sessionStorage, $localStorage) {
     var returnObj = {},
       previousProfileId = gsnApi.getProfileId(),
       couponStorage = $sessionStorage,
       $profileDefer = null,
-      $creatingDefer = null;
-    var $savedData = {
-      allShoppingLists: {},
-      profile: null,
-      profileData: {
-        scoredProducts: {},
-        circularItems: {},
-        availableCoupons: {},
-        myPantry: {}
-      }
-    };
+      $creatingDefer = null,
+      $savedData = {
+        allShoppingLists: {},
+        profile: null,
+        profileData: {
+          scoredProducts: {},
+          circularItems: {},
+          availableCoupons: {},
+          myPantry: {}
+        }
+      };
 
     $rootScope[serviceId] = returnObj;
     gsnApi.gsn.$profile = returnObj;
@@ -3654,6 +3266,10 @@
     };
 
     returnObj.loginFacebook = function(user, facebookToken) {
+      if (!gsnApi.getConfig().FacebookAppId) {
+        return;
+      }
+
       var payload = {
         grant_type: "facebook",
         client_id: gsnApi.getChainId(),
@@ -3800,26 +3416,7 @@
             });
             $profileDefer = null;
           } else {
-
-            // cause Roundy profile to load from another method
-            if (gsnApi.getConfig().hasRoundyProfile) {
-              gsnRoundyProfile.getProfile().then(function(rst) {
-                if (rst.success) {
-                  $savedData.profile = rst.response;
-                  $rootScope.$broadcast('gsnevent:profile-load-success', {
-                    success: true,
-                    response: $savedData.profile
-                  });
-                  $profileDefer.resolve(rst);
-                  $profileDefer = null;
-                } else {
-                  gsnLoadProfile();
-                }
-              });
-
-            } else {
-              gsnLoadProfile();
-            }
+            gsnLoadProfile();
           }
         });
 
@@ -4371,335 +3968,6 @@
     //#endregion
 
     return returnObj;
-  }
-})(angular);
-
-(function(angular, undefined) {
-  'use strict';
-  var serviceId = 'gsnRoundyProfile';
-  angular.module('gsn.core').service(serviceId, ['gsnApi', '$http', '$q', '$rootScope', '$timeout', '$analytics', gsnRoundyProfile]);
-
-  function gsnRoundyProfile(gsnApi, $http, $q, $rootScope, $timeout, $analytics) {
-
-    var returnObj = {};
-
-    returnObj.profile = {};
-    returnObj.getProfileDefer = null;
-
-    function init() {
-      returnObj.profile = {
-        Email: null,
-        PrimaryStoreId: null,
-        FirstName: null,
-        LastName: null,
-        Phone: null,
-        AddressLine1: null,
-        AddressLine2: null,
-        City: null,
-        State: null,
-        PostalCode: null,
-        FreshPerksCard: null,
-        ReceiveEmail: false,
-        Id: null,
-        IsECard: false
-      };
-    }
-
-    init();
-
-    returnObj.saveProfile = function(profile) {
-      var deferred = $q.defer();
-      gsnApi.getAccessToken().then(function() {
-        var url = gsnApi.getRoundyProfileUrl() + '/SaveProfile/' + gsnApi.getChainId();
-
-        if (profile.PostalCode) {
-          profile.PostalCode = profile.PostalCode.substr(0, 5);
-        }
-        $http.post(url, profile, {
-          headers: gsnApi.getApiHeaders()
-        }).success(function(response) {
-          deferred.resolve({
-            success: true,
-            response: response
-          });
-
-          $rootScope.$broadcast('gsnevent:updateprofile-successful', response);
-          $analytics.eventTrack('profile-update', {
-            category: 'profile',
-            label: response.ReceiveEmail
-          });
-        }).error(function(response) {
-          errorBroadcast(response, deferred);
-        });
-      });
-      return deferred.promise;
-    };
-
-    returnObj.validateLoyaltyCard = function(loyaltyCardNumber) {
-      var deferred = $q.defer();
-      gsnApi.getAccessToken().then(function() {
-        var url = gsnApi.getRoundyProfileUrl() + '/ValidateLoyaltyCard/' + gsnApi.getChainId() + '/' + gsnApi.getProfileId() + '?loyaltyCardNumber=' + loyaltyCardNumber;
-        $http.get(url, {
-          headers: gsnApi.getApiHeaders()
-        }).success(function(response) {
-          deferred.resolve({
-            success: true,
-            response: response
-          });
-        }).error(function(response) {
-          errorBroadcast(response, deferred);
-        });
-      });
-      return deferred.promise;
-    };
-
-    returnObj.removeLoyaltyCard = function(profileId) {
-      var deferred = $q.defer();
-      gsnApi.getAccessToken().then(function() {
-        var url = gsnApi.getRoundyProfileUrl() + '/RemoveLoyaltyCard/' + gsnApi.getChainId() + '/' + gsnApi.getProfileId();
-        $http.get(url, {
-          headers: gsnApi.getApiHeaders()
-        }).success(function(response) {
-          deferred.resolve({
-            success: true,
-            response: response
-          });
-        }).error(function(response) {
-          errorBroadcast(response, deferred);
-        });
-      });
-      return deferred.promise;
-    };
-
-    returnObj.getProfile = function(force) {
-      var returnDefer;
-      if (returnObj.profile.FirstName && !force) {
-        returnDefer = $q.defer();
-        $timeout(function() {
-          returnDefer.resolve({
-            success: true,
-            response: returnObj.profile
-          });
-        }, 500);
-      } else if (returnObj.getProfileDefer) {
-        returnDefer = returnObj.getProfileDefer;
-      } else {
-        returnObj.getProfileDefer = $q.defer();
-        returnDefer = returnObj.getProfileDefer;
-        gsnApi.getAccessToken().then(function() {
-          var url = gsnApi.getRoundyProfileUrl() + '/GetProfile/' + gsnApi.getChainId() + '/' + gsnApi.getProfileId();
-          $http.get(url, {
-            headers: gsnApi.getApiHeaders()
-          }).success(function(response) {
-            returnObj.profile = response;
-            if (response.ExternalId)
-              returnObj.profile.FreshPerksCard = response.ExternalId;
-            if (response.PostalCode)
-              while (returnObj.profile.PostalCode.length < 5) {
-                returnObj.profile.PostalCode += '0';
-            }
-            returnDefer.resolve({
-              success: true,
-              response: response
-            });
-            returnObj.getProfileDefer = null;
-          }).error(function(response) {
-            errorBroadcast(response, returnDefer);
-          });
-        });
-      }
-      return returnDefer.promise;
-    };
-
-    returnObj.mergeAccounts = function(newCardNumber, updateProfile) {
-      var deferred = $q.defer();
-      gsnApi.getAccessToken().then(function() {
-        var url = gsnApi.getRoundyProfileUrl() + '/MergeAccounts/' + gsnApi.getChainId() + '/' + gsnApi.getProfileId() + '?newCardNumber=' + newCardNumber + '&updateProfile=' + updateProfile;
-        $http.post(url, {}, {
-          headers: gsnApi.getApiHeaders()
-        }).success(function(response) {
-          deferred.resolve({
-            success: true,
-            response: response
-          });
-        }).error(function(response) {
-          errorBroadcast(response, deferred);
-        });
-      });
-      return deferred.promise;
-    };
-
-    returnObj.removePhone = function() {
-      var deferred = $q.defer();
-      gsnApi.getAccessToken().then(function() {
-        var url = gsnApi.getRoundyProfileUrl() + '/SavePhoneNumber/' + gsnApi.getChainId() + '/' + gsnApi.getProfileId() + '?phoneNumber=' + '';
-        $http.post(url, {}, {
-          headers: gsnApi.getApiHeaders()
-        }).success(function(response) {
-          returnObj.profile.Phone = null;
-          deferred.resolve({
-            success: true,
-            response: response
-          });
-        }).error(function(response) {
-          errorBroadcast(response, deferred);
-        });
-      });
-      return deferred.promise;
-    };
-
-    returnObj.savePhonNumber = function(phoneNumber) {
-      var deferred = $q.defer();
-      gsnApi.getAccessToken().then(function() {
-        var url = gsnApi.getRoundyProfileUrl() + '/SavePhoneNumber/' + gsnApi.getChainId() + '/' + gsnApi.getProfileId() + '?phoneNumber=' + phoneNumber;
-        $http.post(url, {}, {
-          headers: gsnApi.getApiHeaders()
-        }).success(function(response) {
-          deferred.resolve({
-            success: true,
-            response: response
-          });
-        }).error(function(response) {
-          errorBroadcast(response, deferred);
-        });
-      });
-      return deferred.promise;
-    };
-
-    returnObj.isValidPhone = function(phoneNumber) {
-      var deferred = $q.defer();
-      gsnApi.getAccessToken().then(function() {
-        var url = gsnApi.getRoundyProfileUrl() + '/IsValidPhone/' + gsnApi.getChainId() + '/' + returnObj.profile.FreshPerksCard + '?phone=' + phoneNumber;
-        $http.get(url, {
-          headers: gsnApi.getApiHeaders()
-        }).success(function(response) {
-          deferred.resolve({
-            success: true,
-            response: response
-          });
-        }).error(function(response) {
-          errorBroadcast(response, deferred);
-        });
-      });
-      return deferred.promise;
-    };
-
-    returnObj.profileByCardNumber = function(cardNumber) {
-      var deferred = $q.defer();
-      gsnApi.getAccessToken().then(function() {
-        var url = gsnApi.getRoundyProfileUrl() + '/ProfileBy/' + gsnApi.getChainId() + '/' + cardNumber;
-        $http.get(url, {
-          headers: gsnApi.getApiHeaders()
-        }).success(function(response) {
-          if (typeof response == 'object' && response.FirstName) {
-            deferred.resolve({
-              success: true,
-              response: response
-            });
-          } else {
-            errorBroadcast(response, deferred);
-          }
-        }).error(function(response) {
-          errorBroadcast(response, deferred);
-        });
-      });
-      return deferred.promise;
-    };
-
-    returnObj.registerLoyaltyCard = function(profile) {
-      var deferred = $q.defer();
-      gsnApi.getAccessToken().then(function() {
-        var url = gsnApi.getRoundyProfileUrl() + '/RegisterLoyaltyCard/' + gsnApi.getChainId() + '/' + gsnApi.getProfileId();
-        if (profile.PostalCode) {
-          profile.PostalCode = profile.PostalCode.substr(0, 5);
-        }
-        $http.post(url, profile, {
-          headers: gsnApi.getApiHeaders()
-        }).success(function(response) {
-          deferred.resolve({
-            success: true,
-            response: response
-          });
-        }).error(function(response) {
-          errorBroadcast(response, deferred);
-        });
-      });
-      return deferred.promise;
-    };
-
-    returnObj.registerELoyaltyCard = function(profile) {
-      var deferred = $q.defer();
-      gsnApi.getAccessToken().then(function() {
-        var url = gsnApi.getRoundyProfileUrl() + '/RegisterELoyaltyCard/' + gsnApi.getChainId() + '/' + gsnApi.getProfileId();
-        if (profile.PostalCode) {
-          profile.PostalCode = profile.PostalCode.substr(0, 5);
-        }
-        $http.post(url, profile, {
-          headers: gsnApi.getApiHeaders()
-        }).success(function(response) {
-          deferred.resolve({
-            success: true,
-            response: response
-          });
-        }).error(function(response) {
-          errorBroadcast(response, deferred);
-        });
-      });
-      return deferred.promise;
-    };
-
-    returnObj.associateLoyaltyCardToProfile = function(cardNumber) {
-      var deferred = $q.defer();
-      gsnApi.getAccessToken().then(function() {
-        var url = gsnApi.getRoundyProfileUrl() + '/AssociateLoyaltyCardToProfile/' + gsnApi.getChainId() + '/' + gsnApi.getProfileId() + '?loyaltyCardNumber=' + cardNumber;
-        $http.get(url, {
-          headers: gsnApi.getApiHeaders()
-        }).success(function(response) {
-          deferred.resolve({
-            success: true,
-            response: response
-          });
-        }).error(function(response) {
-          errorBroadcast(response, deferred);
-        });
-      });
-      return deferred.promise;
-    };
-
-    returnObj.addOffer = function(offerId) {
-      var deferred = $q.defer();
-      gsnApi.getAccessToken().then(function() {
-        var url = gsnApi.getRoundyProfileUrl() + '/AddOffer/' + gsnApi.getProfileId() + '/' + offerId;
-        $http.post(url, {}, {
-          headers: gsnApi.getApiHeaders()
-        }).success(function(response) {
-          deferred.resolve({
-            success: true,
-            response: response
-          });
-        }).error(function(response) {
-          errorBroadcast(response, deferred);
-        });
-      });
-      return deferred.promise;
-    };
-
-    $rootScope.$on('gsnevent:logout', function() {
-      init();
-    });
-
-    return returnObj;
-
-    function errorBroadcast(response, deferred) {
-      deferred.resolve({
-        success: false,
-        response: response
-      });
-      $rootScope.$broadcast('gsnevent:roundy-error', {
-        success: false,
-        response: response
-      });
-    }
   }
 })(angular);
 
@@ -5311,6 +4579,12 @@
       if (!circularData) return;
       if (!circularData.CircularTypes) return;
 
+      // if it's not circular and it is a prerender then don't process circular
+      var isCircularPath = /circular/gi.test(gsnApi.isNull($location.path(), ''));
+      if (!isCircularPath && gsnApi.getConfig().isPrerender) {
+        return;
+      }
+
       betterStorage.circularLastUpdate = new Date().getTime();
       _lc.storeId = gsnApi.getSelectedStoreId();
       processingQueue.length = 0;
@@ -5532,7 +4806,6 @@
             hasValidCard: hasValidCard,
             addCouponTocard: addCouponToCard,
             removeCouponFromCard: removeCouponFromCard,
-            isOldRoundyCard: isOldRoundyCard,
             isAvailable: isAvailable,
             isOnCard: isOnCard,
             hasRedeemed: hasRedeemed,
@@ -5585,20 +4858,12 @@
             return (gsnApi.isNull($saveData.currentProfile.ExternalId, '').length > 0);
         }
 
-        function isOldRoundyCard() {
-            return hasCard() && (gsnApi.isNaN(parseFloat($saveData.currentProfile.ExternalId), 0) < 48203769258);
-        }
-
         function hasValidCard() {
             return hasCard() && $saveData.isValidResponse;
         }
 
         function isValidCoupon(couponId) {
             var isValid = (isAvailable(couponId) || isOnCard(couponId));
-            if (isValid) {
-                // hack for Roundy's Black Friday coupons
-                isValid = ",1397829,1390056,1390053,1390050,1390047,1390044,1390041,".indexOf("," + couponId + ",") < 0;
-            }
             return isValid;
         }
 
@@ -5727,6 +4992,7 @@
         //#endregion
     }
 })(angular);
+
 (function(angular, undefined) {
   'use strict';
 
@@ -6196,7 +5462,6 @@
       gsnStore.getStores().then(function (rsp) {
         $scope.stores = rsp.response;
 
-        // prebuild list base on roundy spec (ﾉωﾉ)
         // make sure that it is order by state, then by name
         $scope.storesById = gsnApi.mapObject($scope.stores, 'StoreId');
       });
@@ -7290,7 +6555,6 @@
 
   /**
    * allow width to be flexible
-   * initially created for Roundy coupons bottom panel
    */
   myModule.directive('gsnFlexibleWidth', ['debounce', '$window', function (debounce, $window) {
     var directive = {
@@ -7313,6 +6577,7 @@
     }
   }]);
 })(angular);
+
 (function (angular, undefined) {
   'use strict';
   var myModule = angular.module('gsn.core');
@@ -7903,56 +7168,6 @@
   'use strict';
   var myModule = angular.module('gsn.core');
 
-  myModule.directive('gsnPathPixel', ['$sce', 'gsnApi', '$interpolate', function ($sce, gsnApi, $interpolate) {
-    // Usage: add pixel tracking on a page/path basis
-    // 
-    // Creates: 2013-12-12 TomN
-    // 
-    var directive = {
-      restrict: 'EA',
-      scope: true,
-      link: link
-    };
-    return directive;
-
-    function link(scope, element, attrs) {
-      var currentPath = '';
-      scope.$on('$routeChangeSuccess', function (evt, next, current) {
-        var matchPath = angular.lowercase(gsnApi.isNull(attrs.path, ''));
-
-        if (matchPath.length <= 0 || gsnApi.isNull(scope.currentPath, '').indexOf(matchPath) >= 0) {
-          if (currentPath == scope.currentPath) {
-            return;
-          }
-
-          // push this to non-ui thread
-          setTimeout(function() {
-            element.html('');
-            currentPath = scope.currentPath;
-            scope.ProfileId = gsnApi.getProfileId();
-            scope.CACHEBUSTER = new Date().getTime();
-
-            // profileid is required
-            if (scope.ProfileId <= 0) {
-              if (attrs.gsnPathPixel.indexOf('ProfileId') > 0) return;
-            }
-
-            scope.StoreId = gsnApi.getSelectedStoreId();
-            scope.ChainId = gsnApi.getChainId();
-            var url = $sce.trustAsResourceUrl($interpolate(attrs.gsnPathPixel.replace(/\[+/gi, '{{').replace(/\]+/gi, '}}'))(scope));
-            var img = new Image(1,1);
-            img.src = url;
-          }, 500);
-        }
-      });
-    }
-  }]);
-
-})(angular);
-(function (angular, undefined) {
-  'use strict';
-  var myModule = angular.module('gsn.core');
-
   myModule.directive("gsnPopover", ['$window', '$interpolate', '$timeout', 'debounce', function ($window, $interpolate, $timeout, debounce) {
     // Usage:   provide mouse hover capability
     //
@@ -8179,8 +7394,8 @@
 (function (angular, undefined) {
 
   angular.module('gsn.core')
-    .directive('gsnShoppingList', ['gsnApi', '$timeout', 'gsnProfile', '$routeParams', '$rootScope', 'gsnStore', '$location', 'gsnCouponPrinter', '$filter',
-      function (gsnApi, $timeout, gsnProfile, $routeParams, $rootScope, gsnStore, $location, gsnCouponPrinter, $filter) {
+    .directive('gsnShoppingList', ['gsnApi', '$timeout', 'gsnProfile', '$routeParams', '$rootScope', 'gsnStore', '$location', '$filter',
+      function (gsnApi, $timeout, gsnProfile, $routeParams, $rootScope, gsnStore, $location, $filter) {
         // Usage:  use to manipulate a shopping list on the UI
         //
         // Creates: 2014-01-13 TomN
@@ -8595,7 +7810,6 @@
                 if ($scope.canPrint) {
                   $scope.printer.print = null;
                   $scope.printer.total = $scope.manufacturerCoupons.length;
-                  gsnCouponPrinter.print($scope.manufacturerCoupons);
                 }
               }
             }
@@ -8686,9 +7900,9 @@
 
   myModule.directive('gsnSpinner', ['$window', '$timeout', 'gsnApi', function ($window, $timeout, gsnApi) {
     // Usage:   Display spinner
-    // 
+    //
     // Creates: 2014-01-06
-    // 
+    //
     /*var opts = {
           lines: 13, // The number of lines to draw
           length: 20, // The length of each line
@@ -8725,15 +7939,15 @@
           scope.loadingScript = true;
 
           // dynamically load google
-          var src = '//cdnjs.cloudflare.com/ajax/libs/spin.js/1.3.2/spin.min.js';
+          var src = '//cdnjs.cloudflare.com/ajax/libs/spin.js/2.3.2/spin.min.js';
 
           gsnApi.loadScripts([src], activate);
           return;
         }
-        
+
         var options = scope.$eval(attrs.gsnSpinner);
         options.stopDelay = options.stopDelay || 200;
-        
+
         function stopSpinner() {
           if (scope.gsnSpinner) {
             scope.gsnSpinner.stop();
@@ -8768,6 +7982,7 @@
     }
   }]);
 })(angular);
+
 (function (angular, undefined) {
   'use strict';
   var myModule = angular.module('gsn.core');
@@ -9185,7 +8400,7 @@
   }]);
 
 })(angular);
-(function(angular, undefined) {
+(function(angular, $, undefined) {
   'use strict';
   var myModule = angular.module('gsn.core');
 
@@ -9227,7 +8442,7 @@
             };
             scope[modifierName] = currentModifier;
 
-            var $element = angular.element(options.selector);
+            var $element = angular.element('head > ' + options.selector);
             if ($element.length <= 0 && typeof (options.html) == 'string') {
               $element = angular.element(options.html);
               var pNode = angular.element('head')[0];
@@ -9270,36 +8485,26 @@
     name: 'gsnTitle',
     selector: 'title',
     get: function(e) {
-      return e.text();
+      return e.text() || e.attr("content");
     },
     set: function(e, v) {
+      $('meta[name="title"').attr("content", v);
       return e.text(v);
     }
   });
 
-  // viewpoint
+  // page title
   ngModifyElementDirective({
-    name: 'gsnMetaViewport',
-    selector: 'meta[name="viewport"]',
+    name: 'gsnMetaType',
+    selector: 'meta[itemprop="type"]',
     get: function(e) {
-      return e.attr('content');
+      return e.attr("content");
     },
     set: function(e, v) {
-      return e.attr('content', v);
+      return e.attr(content, v || "article");
     }
   });
 
-  // author
-  ngModifyElementDirective({
-    name: 'gsnMetaAuthor',
-    selector: 'meta[name="author"]',
-    get: function(e) {
-      return e.attr('content');
-    },
-    set: function(e, v) {
-      return e.attr('content', v);
-    }
-  });
 
   // description
   ngModifyElementDirective({
@@ -9313,39 +8518,28 @@
     }
   });
 
-  // keywords
-  ngModifyElementDirective({
-    name: 'gsnMetaKeywords',
-    selector: 'meta[name="keywords"]',
-    get: function(e) {
-      return e.attr('content');
-    },
-    set: function(e, v) {
-      return e.attr('content', v);
-    }
-  });
-
-
-  // keywords
+  // image
   ngModifyElementDirective({
     name: 'gsnMetaImage',
-    selector: 'meta[name="image"]',
+    selector: 'meta[itemprop="image"]',
     get: function(e) {
       return e.attr('content');
     },
     set: function(e, v) {
-      return e.attr('content', v);
-    }
-  });
+      $('.og-image-data').remove();
+      if (v) {
+        var myImage = new Image();
+        myImage.onload = function() {
+          var data = '<meta class="og-image-data" property="og:image:width" content="' + myImage.naturalWidth + '" />';
+          data += '<meta class="og-image-data" property="og:image:height" content="' + myImage.naturalHeight + '" />';
+          $(e).after(data);
+        }
+        myImage.src = v;
 
-  // keywords
-  ngModifyElementDirective({
-    name: 'gsnMetaName',
-    selector: 'meta[name="name"]',
-    get: function(e) {
-      return e.attr('content');
-    },
-    set: function(e, v) {
+        if (v.indexOf('//') === 0) {
+          v = 'https:' + v;
+        }
+      }
       return e.attr('content', v);
     }
   });
@@ -9362,73 +8556,7 @@
       return e.attr('content', v);
     }
   });
-
-  // Facebook OpenGraph integration
-  //  og:title - The title of your object as it should appear within the graph, e.g., "The Rock".
-  ngModifyElementDirective({
-    name: 'gsnOgTitle',
-    selector: 'meta[property="og:title"]',
-    html: '<meta property="og:title" content="" />',
-    get: function(e) {
-      return e.attr('content');
-    },
-    set: function(e, v) {
-      return e.attr('content', v);
-    }
-  });
-
-  // og:type - The type of your object, e.g., "movie". See the complete list of supported types.
-  ngModifyElementDirective({
-    name: 'gsnOgType',
-    selector: 'meta[property="og:type"]',
-    html: '<meta property="og:type" content="" />',
-    get: function(e) {
-      return e.attr('content');
-    },
-    set: function(e, v) {
-      return e.attr('content', v);
-    }
-  });
-
-  // og:image - An image URL which should represent your object within the graph. The image must be at least 50px by 50px and have a maximum aspect ratio of 3:1.
-  ngModifyElementDirective({
-    name: 'gsnOgImage',
-    selector: 'meta[id="default-og-image"]',
-    html: '<meta property="og:image" content="" id="default-og-image"/>',
-    get: function(e) {
-      return e.attr('content');
-    },
-    set: function(e, v) {
-      return e.attr('content', v);
-    }
-  });
-
-  // og:url - The canonical URL of your object that will be used as its permanent ID in the graph.
-  ngModifyElementDirective({
-    name: 'gsnOgUrl',
-    selector: 'meta[property="og:url"]',
-    html: '<meta property="og:url" content="" />',
-    get: function(e) {
-      return e.attr('content');
-    },
-    set: function(e, v) {
-      return e.attr('content', v);
-    }
-  });
-
-  // og:description - the description.
-  ngModifyElementDirective({
-    name: 'gsnOgDescription',
-    selector: 'meta[property="og:description"]',
-    html: '<meta property="og:description" content="" />',
-    get: function(e) {
-      return e.attr('content');
-    },
-    set: function(e, v) {
-      return e.attr('content', v);
-    }
-  });
-})(angular);
+})(angular, jQuery);
 
 (function (angular, undefined) {
   'use strict';

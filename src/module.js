@@ -26,11 +26,13 @@
   ])
     .run(['$rootScope', 'gsnGlobal', 'gsnApi', '$window', function($rootScope, gsnGlobal, gsnApi, $window) {
       var head = angular.element('head');
-      var myHtml = '<!--[if lt IE 10]>\n' +
+      var myHtml = '<!--begin:exclude-->\n<!--[if lt IE 10]>\n' +
         '<script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7/html5shiv.min.js"></script>' +
         '<script src="https://cdnjs.cloudflare.com/ajax/libs/es5-shim/2.2.0/es5-shim.min.js"></script>' +
         '<script src="https://cdnjs.cloudflare.com/ajax/libs/json2/20130526/json2.min.js"></script>' +
         '\n<![endif]-->';
+      myHtml += '\n<link href="//cdn.brickinc.net/asset/common/styles/print.css" rel="stylesheet" type="text/css" media="print">';
+      myHtml += '\n<!--end:exclude-->\n'
       head.append(myHtml);
 
       $rootScope.siteMenu = gsnApi.getConfig().SiteMenu;
@@ -133,10 +135,6 @@
       return gsn.config.YoutechCouponUrl;
     };
 
-    returnObj.getRoundyProfileUrl = function() {
-      return gsn.config.RoundyProfileUrl;
-    };
-
     returnObj.getProductServiceUrl = function() {
       return gsn.config.ProductServiceUrl;
     };
@@ -186,10 +184,6 @@
 
     returnObj.getEmailRegEx = function() {
       return gsn.config.EmailRegex;
-    };
-
-    returnObj.getDfpNetworkId = function() {
-      return gsn.config.DfpNetworkId;
     };
 
     returnObj.getServiceUnavailableMessage = function() {

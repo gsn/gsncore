@@ -1,4 +1,4 @@
-﻿(function (angular, undefined) {
+(function (angular, undefined) {
   'use strict';
 
   var myDirectiveName = 'ctrlRecovery';
@@ -24,17 +24,17 @@
     $scope.profile = { PrimaryStoreId: gsnApi.getSelectedStoreId(), ReceiveEmail: true };
 
     $scope.hasSubmitted = false;    // true when user has click the submit button
-    $scope.isValidSubmit = false;    // true when result of submit is valid    
+    $scope.isValidSubmit = false;    // true when result of submit is valid
     $scope.isSubmitting = false;    // true if we're waiting for result from server
 
-    //#region Internal Methods        
+    //#region Internal Methods
     function doRecoveryPassword() {
-      /// <summary>submit handler for recover password</summary> 
+      /// <summary>submit handler for recover password</summary>
       var payload = $scope.profile;
       if ($scope.myRecoveryForm.$valid) {
         payload.CaptchaChallenge = $scope.captcha.challenge;
         payload.CaptchaResponse = $scope.captcha.response;
-        payload.ReturnUrl = gsn.config.hasRoundyProfile ? $scope.getFullPath('/myaccount') : $scope.getFullPath('/profile');
+        payload.ReturnUrl = $scope.getFullPath('/profile');
         payload.Email = $scope.profile.Email;
         $scope.hasSubmitted = true;
         $scope.isSubmitting = true;
@@ -46,10 +46,10 @@
     }
 
     function doRecoveryUsername() {
-      /// <summary>submit handler for recover username</summary>    
+      /// <summary>submit handler for recover username</summary>
       var payload = $scope.profile;
       if ($scope.myRecoveryForm.$valid) {
-        payload.ReturnUrl = gsn.config.hasRoundyProfile ? $scope.getFullPath('/myaccount') : $scope.getFullPath('/profile');
+        payload.ReturnUrl = $scope.getFullPath('/profile');
         payload.Email = $scope.profile.Email;
         $scope.hasSubmitted = true;
         $scope.isSubmitting = true;
@@ -61,7 +61,7 @@
     }
 
     function doUnsubscribeEmail() {
-      /// <summary>submit handler for unsbuscribe to email</summary> 
+      /// <summary>submit handler for unsbuscribe to email</summary>
       var profile = $scope.profile;
       if ($scope.myRecoveryForm.$valid) {
         $scope.hasSubmitted = true;

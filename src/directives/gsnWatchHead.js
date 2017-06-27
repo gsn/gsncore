@@ -1,4 +1,4 @@
-(function(angular, undefined) {
+(function(angular, $, undefined) {
   'use strict';
   var myModule = angular.module('gsn.core');
 
@@ -40,7 +40,7 @@
             };
             scope[modifierName] = currentModifier;
 
-            var $element = angular.element(options.selector);
+            var $element = angular.element('head > ' + options.selector);
             if ($element.length <= 0 && typeof (options.html) == 'string') {
               $element = angular.element(options.html);
               var pNode = angular.element('head')[0];
@@ -83,36 +83,26 @@
     name: 'gsnTitle',
     selector: 'title',
     get: function(e) {
-      return e.text();
+      return e.text() || e.attr("content");
     },
     set: function(e, v) {
+      $('meta[name="title"').attr("content", v);
       return e.text(v);
     }
   });
 
-  // viewpoint
+  // page title
   ngModifyElementDirective({
-    name: 'gsnMetaViewport',
-    selector: 'meta[name="viewport"]',
+    name: 'gsnMetaType',
+    selector: 'meta[itemprop="type"]',
     get: function(e) {
-      return e.attr('content');
+      return e.attr("content");
     },
     set: function(e, v) {
-      return e.attr('content', v);
+      return e.attr(content, v || "article");
     }
   });
 
-  // author
-  ngModifyElementDirective({
-    name: 'gsnMetaAuthor',
-    selector: 'meta[name="author"]',
-    get: function(e) {
-      return e.attr('content');
-    },
-    set: function(e, v) {
-      return e.attr('content', v);
-    }
-  });
 
   // description
   ngModifyElementDirective({
@@ -126,39 +116,28 @@
     }
   });
 
-  // keywords
-  ngModifyElementDirective({
-    name: 'gsnMetaKeywords',
-    selector: 'meta[name="keywords"]',
-    get: function(e) {
-      return e.attr('content');
-    },
-    set: function(e, v) {
-      return e.attr('content', v);
-    }
-  });
-
-
-  // keywords
+  // image
   ngModifyElementDirective({
     name: 'gsnMetaImage',
-    selector: 'meta[name="image"]',
+    selector: 'meta[itemprop="image"]',
     get: function(e) {
       return e.attr('content');
     },
     set: function(e, v) {
-      return e.attr('content', v);
-    }
-  });
+      $('.og-image-data').remove();
+      if (v) {
+        var myImage = new Image();
+        myImage.onload = function() {
+          var data = '<meta class="og-image-data" property="og:image:width" content="' + myImage.naturalWidth + '" />';
+          data += '<meta class="og-image-data" property="og:image:height" content="' + myImage.naturalHeight + '" />';
+          $(e).after(data);
+        }
+        myImage.src = v;
 
-  // keywords
-  ngModifyElementDirective({
-    name: 'gsnMetaName',
-    selector: 'meta[name="name"]',
-    get: function(e) {
-      return e.attr('content');
-    },
-    set: function(e, v) {
+        if (v.indexOf('//') === 0) {
+          v = 'https:' + v;
+        }
+      }
       return e.attr('content', v);
     }
   });
@@ -175,70 +154,4 @@
       return e.attr('content', v);
     }
   });
-
-  // Facebook OpenGraph integration
-  //  og:title - The title of your object as it should appear within the graph, e.g., "The Rock".
-  ngModifyElementDirective({
-    name: 'gsnOgTitle',
-    selector: 'meta[property="og:title"]',
-    html: '<meta property="og:title" content="" />',
-    get: function(e) {
-      return e.attr('content');
-    },
-    set: function(e, v) {
-      return e.attr('content', v);
-    }
-  });
-
-  // og:type - The type of your object, e.g., "movie". See the complete list of supported types.
-  ngModifyElementDirective({
-    name: 'gsnOgType',
-    selector: 'meta[property="og:type"]',
-    html: '<meta property="og:type" content="" />',
-    get: function(e) {
-      return e.attr('content');
-    },
-    set: function(e, v) {
-      return e.attr('content', v);
-    }
-  });
-
-  // og:image - An image URL which should represent your object within the graph. The image must be at least 50px by 50px and have a maximum aspect ratio of 3:1.
-  ngModifyElementDirective({
-    name: 'gsnOgImage',
-    selector: 'meta[id="default-og-image"]',
-    html: '<meta property="og:image" content="" id="default-og-image"/>',
-    get: function(e) {
-      return e.attr('content');
-    },
-    set: function(e, v) {
-      return e.attr('content', v);
-    }
-  });
-
-  // og:url - The canonical URL of your object that will be used as its permanent ID in the graph.
-  ngModifyElementDirective({
-    name: 'gsnOgUrl',
-    selector: 'meta[property="og:url"]',
-    html: '<meta property="og:url" content="" />',
-    get: function(e) {
-      return e.attr('content');
-    },
-    set: function(e, v) {
-      return e.attr('content', v);
-    }
-  });
-
-  // og:description - the description.
-  ngModifyElementDirective({
-    name: 'gsnOgDescription',
-    selector: 'meta[property="og:description"]',
-    html: '<meta property="og:description" content="" />',
-    get: function(e) {
-      return e.attr('content');
-    },
-    set: function(e, v) {
-      return e.attr('content', v);
-    }
-  });
-})(angular);
+})(angular, jQuery);
