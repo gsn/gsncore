@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.10.38
+ * version 1.10.39
  * gsncore repository
- * Build date: Wed Jun 28 2017 00:45:20 GMT-0500 (CDT)
+ * Build date: Wed Jun 28 2017 07:13:07 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -8526,21 +8526,17 @@
       return e.attr('content');
     },
     set: function(e, v) {
-      angular.element('head > meta[property^="og:image:"]').remove();
+      var iw = angular.element('head > meta[property="og:image:width"]').attr("content", "0");
+      var ih = angular.element('head > meta[property="og:image:height"]').attr("content", "0");
       if (v) {
         if (v.indexOf('//') === 0) {
           v = 'https:' + v;
         }
 
         var myImage = new Image();
-        var hasExecute = false;
         myImage.onload = function() {
-          if (myImage.naturalWidth && !hasExecute) {
-            var data = '<meta property="og:image:width" content="' + myImage.naturalWidth + '" />';
-            data += '<meta property="og:image:height" content="' + myImage.naturalHeight + '" />';
-            angular.element(e).after(data);
-            hasExecute = true;
-          }
+          iw.attr("content", myImage.naturalWidth);
+          ih.attr("content", myImage.naturalHeight);
         }
         myImage.src = v;
         setTimeout(myImage.onload, 20);
