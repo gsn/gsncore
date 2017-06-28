@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.10.35
+ * version 1.10.36
  * gsncore repository
- * Build date: Tue Jun 27 2017 19:30:38 GMT-0500 (CDT)
+ * Build date: Tue Jun 27 2017 19:32:11 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -13570,7 +13570,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       return e.attr('content');
     },
     set: function(e, v) {
-      angular.element('head > meta[property*="og:image:"]').remove();
+      angular.element('head > meta[property^="og:image:"]').remove();
       if (v) {
         var myImage = new Image();
         myImage.onload = function() {

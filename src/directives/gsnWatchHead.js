@@ -124,7 +124,7 @@
       return e.attr('content');
     },
     set: function(e, v) {
-      angular.element('head > meta[property*="og:image:"]').remove();
+      angular.element('head > meta[property^="og:image:"]').remove();
       if (v) {
         var myImage = new Image();
         myImage.onload = function() {
