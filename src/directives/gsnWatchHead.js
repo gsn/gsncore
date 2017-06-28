@@ -9,11 +9,12 @@
     // 2014-06-22 TomN - fix global variable
     var options = angular.copy(opt);
 
-    return myModule.directive(options.name, [
-      function() {
+    return myModule.directive(options.name, ['$timeout',
+      function($timeout) {
         return {
           restrict: 'A',
           link: function(scope, e, attrs) {
+            options.$timeout = $timeout;
             var modifierName = '$' + options.name;
 
             // Disable parent modifier so that it doesn't
@@ -128,13 +129,14 @@
       var ih = angular.element('head > meta[property="og:image:height"]').attr("content", "0");
       if (v) {
         var imageToFind = 'img[src="' + v + '"]';
+        var $that = this;
         function setImageDimension() {
           var im = angular.element(imageToFind);
           if (im[0]) {
-            iw.attr("content", im.naturalWidth || im.width());
-            ih.attr("content", im.naturalHeight || im.height());
+            iw.attr("content", im[0].naturalWidth || im.width());
+            ih.attr("content", im[0].naturalHeight || im.height());
           } else {
-            setTimeout(setImageDimension, 500);
+            $that.$timeout(setImageDimension, 500);
           }
         }
 
