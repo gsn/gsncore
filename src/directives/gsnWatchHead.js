@@ -131,11 +131,13 @@
         }
 
         var myImage = new Image();
+        var hasExecute = false;
         myImage.onload = function() {
-          if (myImage.naturalWidth) {
+          if (myImage.naturalWidth && !hasExecute) {
             var data = '<meta property="og:image:width" content="' + myImage.naturalWidth + '" />';
             data += '<meta property="og:image:height" content="' + myImage.naturalHeight + '" />';
             angular.element(e).after(data);
+            hasExecute = true;
           }
         }
         myImage.src = v;
