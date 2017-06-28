@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.10.38
+ * version 1.10.42
  * gsncore repository
- * Build date: Wed Jun 28 2017 00:45:20 GMT-0500 (CDT)
+ * Build date: Wed Jun 28 2017 08:07:20 GMT-0500 (CDT)
  */
 ;(function() {
   'use strict';
@@ -726,15 +726,16 @@
     }
   ])
     .run(['$rootScope', 'gsnGlobal', 'gsnApi', '$window', function($rootScope, gsnGlobal, gsnApi, $window) {
-      var head = angular.element('head');
-      var myHtml = '<!--begin:exclude-->\n<!--[if lt IE 10]>\n' +
-        '<script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7/html5shiv.min.js"></script>' +
-        '<script src="https://cdnjs.cloudflare.com/ajax/libs/es5-shim/2.2.0/es5-shim.min.js"></script>' +
-        '<script src="https://cdnjs.cloudflare.com/ajax/libs/json2/20130526/json2.min.js"></script>' +
-        '\n<![endif]-->';
-      myHtml += '\n<link href="//cdn.brickinc.net/asset/common/styles/print.css" rel="stylesheet" type="text/css" media="print">';
-      myHtml += '\n<!--end:exclude-->\n'
-      head.append(myHtml);
+      if (gsn.browser.isIE) {
+        var head = angular.element('head');
+        var myHtml = '<!--[if lt IE 10]>\n' +
+          '<script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7/html5shiv.min.js"></script>' +
+          '<script src="https://cdnjs.cloudflare.com/ajax/libs/es5-shim/2.2.0/es5-shim.min.js"></script>' +
+          '<script src="https://cdnjs.cloudflare.com/ajax/libs/json2/20130526/json2.min.js"></script>' +
+          '\n<![endif]-->';
+        myHtml += '\n<link href="//cdn.brickinc.net/asset/common/styles/print.css" rel="stylesheet" type="text/css" media="print">';
+        head.append(myHtml);
+      }
 
       $rootScope.siteMenu = gsnApi.getConfig().SiteMenu;
       $rootScope.win = $window;
@@ -13455,11 +13456,12 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     // 2014-06-22 TomN - fix global variable
     var options = angular.copy(opt);
 
-    return myModule.directive(options.name, [
-      function() {
+    return myModule.directive(options.name, ['$timeout',
+      function($timeout) {
         return {
           restrict: 'A',
           link: function(scope, e, attrs) {
+            options.$timeout = $timeout;
             var modifierName = '$' + options.name;
 
             // Disable parent modifier so that it doesn't
@@ -13570,24 +13572,26 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       return e.attr('content');
     },
     set: function(e, v) {
-      angular.element('head > meta[property^="og:image:"]').remove();
+      var iw = angular.element('head > meta[property="og:image:width"]').attr("content", "0");
+      var ih = angular.element('head > meta[property="og:image:height"]').attr("content", "0");
       if (v) {
+        var imageToFind = 'img[src="' + v + '"]';
+        var $that = this;
+        function setImageDimension() {
+          var im = angular.element(imageToFind);
+          if (im[0]) {
+            iw.attr("content", im[0].naturalWidth || im.width());
+            ih.attr("content", im[0].naturalHeight || im.height());
+          } else {
+            $that.$timeout(setImageDimension, 500);
+          }
+        }
+
         if (v.indexOf('//') === 0) {
           v = 'https:' + v;
         }
 
-        var myImage = new Image();
-        var hasExecute = false;
-        myImage.onload = function() {
-          if (myImage.naturalWidth && !hasExecute) {
-            var data = '<meta property="og:image:width" content="' + myImage.naturalWidth + '" />';
-            data += '<meta property="og:image:height" content="' + myImage.naturalHeight + '" />';
-            angular.element(e).after(data);
-            hasExecute = true;
-          }
-        }
-        myImage.src = v;
-        setTimeout(myImage.onload, 20);
+        setImageDimension();
       }
       return e.attr('content', v);
     }

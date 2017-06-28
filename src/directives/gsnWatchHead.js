@@ -9,11 +9,12 @@
     // 2014-06-22 TomN - fix global variable
     var options = angular.copy(opt);
 
-    return myModule.directive(options.name, [
-      function() {
+    return myModule.directive(options.name, ['$timeout',
+      function($timeout) {
         return {
           restrict: 'A',
           link: function(scope, e, attrs) {
+            options.$timeout = $timeout;
             var modifierName = '$' + options.name;
 
             // Disable parent modifier so that it doesn't
@@ -124,24 +125,26 @@
       return e.attr('content');
     },
     set: function(e, v) {
-      angular.element('head > meta[property^="og:image:"]').remove();
+      var iw = angular.element('head > meta[property="og:image:width"]').attr("content", "0");
+      var ih = angular.element('head > meta[property="og:image:height"]').attr("content", "0");
       if (v) {
+        var imageToFind = 'img[src="' + v + '"]';
+        var $that = this;
+        function setImageDimension() {
+          var im = angular.element(imageToFind);
+          if (im[0]) {
+            iw.attr("content", im[0].naturalWidth || im.width());
+            ih.attr("content", im[0].naturalHeight || im.height());
+          } else {
+            $that.$timeout(setImageDimension, 500);
+          }
+        }
+
         if (v.indexOf('//') === 0) {
           v = 'https:' + v;
         }
 
-        var myImage = new Image();
-        var hasExecute = false;
-        myImage.onload = function() {
-          if (myImage.naturalWidth && !hasExecute) {
-            var data = '<meta property="og:image:width" content="' + myImage.naturalWidth + '" />';
-            data += '<meta property="og:image:height" content="' + myImage.naturalHeight + '" />';
-            angular.element(e).after(data);
-            hasExecute = true;
-          }
-        }
-        myImage.src = v;
-        setTimeout(myImage.onload, 20);
+        setImageDimension();
       }
       return e.attr('content', v);
     }
