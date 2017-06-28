@@ -127,17 +127,15 @@
       var iw = angular.element('head > meta[property="og:image:width"]').attr("content", "0");
       var ih = angular.element('head > meta[property="og:image:height"]').attr("content", "0");
       if (v) {
+        setTimeout(function() {
+          var im = angular.element(angular.element('img[src="' + v + '"]')[0]);
+          iw.attr("content", im.width());
+          ih.attr("content", im.height());
+        }, 500);
+
         if (v.indexOf('//') === 0) {
           v = 'https:' + v;
         }
-
-        var myImage = new Image();
-        myImage.onload = function() {
-          iw.attr("content", myImage.naturalWidth);
-          ih.attr("content", myImage.naturalHeight);
-        }
-        myImage.src = v;
-        setTimeout(myImage.onload, 20);
       }
       return e.attr('content', v);
     }
