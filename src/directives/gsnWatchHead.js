@@ -126,17 +126,22 @@
     set: function(e, v) {
       angular.element('head > meta[property^="og:image:"]').remove();
       if (v) {
-        var myImage = new Image();
-        myImage.onload = function() {
-          var data = '<meta property="og:image:width" content="' + myImage.naturalWidth + '" />';
-          data += '<meta property="og:image:height" content="' + myImage.naturalHeight + '" />';
-          angular.element(e).after(data);
-        }
-        myImage.src = v;
-
         if (v.indexOf('//') === 0) {
           v = 'https:' + v;
         }
+
+        var myImage = new Image();
+        var hasExecute = false;
+        myImage.onload = function() {
+          if (myImage.naturalWidth && !hasExecute) {
+            var data = '<meta property="og:image:width" content="' + myImage.naturalWidth + '" />';
+            data += '<meta property="og:image:height" content="' + myImage.naturalHeight + '" />';
+            angular.element(e).after(data);
+            hasExecute = true;
+          }
+        }
+        myImage.src = v;
+        setTimeout(myImage.onload, 20);
       }
       return e.attr('content', v);
     }
