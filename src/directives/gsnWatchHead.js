@@ -124,12 +124,12 @@
       return e.attr('content');
     },
     set: function(e, v) {
-      angular.element('.og-image-data').remove();
+      angular.element('head > meta[property^="og:image:"]').remove();
       if (v) {
         var myImage = new Image();
         myImage.onload = function() {
-          var data = '<meta class="og-image-data" property="og:image:width" content="' + myImage.naturalWidth + '" />';
-          data += '<meta class="og-image-data" property="og:image:height" content="' + myImage.naturalHeight + '" />';
+          var data = '<meta property="og:image:width" content="' + myImage.naturalWidth + '" />';
+          data += '<meta property="og:image:height" content="' + myImage.naturalHeight + '" />';
           angular.element(e).after(data);
         }
         myImage.src = v;
