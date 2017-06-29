@@ -1,12 +1,12 @@
-﻿(function (angular, undefined) {
+( function ( angular, undefined ) {
   'use strict';
-  var myModule = angular.module('gsn.core');
+  var myModule = angular.module( 'gsn.core' );
 
-  myModule.directive('gsnAutoFillSync', ['$timeout', function ($timeout) {
+  myModule.directive( 'gsnAutoFillSync', [ '$timeout', function ( $timeout ) {
     // Usage: Fix syncing issue with autofill form
-    // 
+    //
     // Creates: 2014-08-28 TomN
-    // 
+    //
     var directive = {
       restrict: 'A',
       require: 'ngModel',
@@ -14,10 +14,10 @@
     };
     return directive;
 
-    function link(scope, elm, attrs, ngModel) {
-      scope.$on("autofill:update", function() {
-          ngModel.$setViewValue(elm.val());
-      });
+    function link( scope, elm, attrs, ngModel ) {
+      scope.$on( 'autofill:update', function () {
+        ngModel.$setViewValue( elm.val() );
+      } );
     }
-  }]);
-})(angular);
+  } ] );
+} )( angular );

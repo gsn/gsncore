@@ -1,61 +1,61 @@
-﻿(function (angular, undefined) {
+( function ( angular, undefined ) {
   'use strict';
-  var myModule = angular.module('gsn.core');
+  var myModule = angular.module( 'gsn.core' );
 
-  myModule.directive('gsnLogin', ['gsnApi', '$route', '$routeParams', '$location', 'gsnProfile', function (gsnApi, $route, $routeParams, $location, gsnProfile) {
+  myModule.directive( 'gsnLogin', [ 'gsnApi', '$route', '$routeParams', '$location', 'gsnProfile', function ( gsnApi, $route, $routeParams, $location, gsnProfile ) {
     // Usage: login capability
-    // 
+    //
     // Creates: 2013-12-12 TomN
-    // 
+    //
     var directive = {
       restrict: 'EA',
-      controller: ['$scope', '$element', '$attrs', controller]
+      controller: [ '$scope', '$element', '$attrs', controller ]
     };
     return directive;
 
-    function controller($scope, $element, $attrs) {
+    function controller( $scope, $element, $attrs ) {
       $scope.activate = activate;
       $scope.profile = {};
       $scope.fromUrl = null;
 
-      $scope.hasSubmitted = false;    // true when user has click the submit button
-      $scope.isValidSubmit = true;    // true when result of submit is valid
-      $scope.isSubmitting = false;    // true if we're waiting for result from server
+      $scope.hasSubmitted = false; // true when user has click the submit button
+      $scope.isValidSubmit = true; // true when result of submit is valid
+      $scope.isSubmitting = false; // true if we're waiting for result from server
 
       function activate() {
-        $scope.fromUrl = decodeURIComponent(gsnApi.isNull($routeParams.fromUrl, ''));
+        $scope.fromUrl = decodeURIComponent( gsnApi.isNull( $routeParams.fromUrl, '' ) );
       }
 
-      $scope.$on('gsnevent:login-success', function (evt, result) {
-        if ($scope.currentPath == '/signin') {
-          if ($scope.fromUrl) {
-            $location.url($scope.fromUrl);
-          } else if ($scope.isLoggedIn) {
-            $location.url('/');
+      $scope.$on( 'gsnevent:login-success', function ( evt, result ) {
+        if ( $scope.currentPath === '/signin' ) {
+          if ( $scope.fromUrl ) {
+            $location.url( $scope.fromUrl );
+          } else if ( $scope.isLoggedIn ) {
+            $location.url( '/' );
           }
         } else {
           // reload the page to accept the login
           $route.reload();
         }
 
-        $scope.$emit('gsnevent:closemodal');
-      });
+        $scope.$emit( 'gsnevent:closemodal' );
+      } );
 
-      $scope.$on('gsnevent:login-failed', function (evt, result) {
+      $scope.$on( 'gsnevent:login-failed', function ( evt, result ) {
         $scope.isValidSubmit = false;
         $scope.isSubmitting = false;
-      });
-      
+      } );
+
       $scope.login = function () {
         $scope.isSubmitting = true;
         $scope.hasSubmitted = true;
-        gsnProfile.login($element.find('#usernameField').val(), $element.find('#passwordField').val());
+        gsnProfile.login( $element.find( '#usernameField' ).val(), $element.find( '#passwordField' ).val() );
       };
       $scope.activate();
 
-      //#region Internal Methods        
+      //#region Internal Methods
       //#endregion
     }
-  }]);
+  } ] );
 
-})(angular);
+} )( angular );

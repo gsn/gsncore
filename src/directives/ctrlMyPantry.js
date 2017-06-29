@@ -1,11 +1,11 @@
-﻿(function(angular, undefined) {
+( function ( angular, undefined ) {
   'use strict';
 
   var myDirectiveName = 'ctrlMyPantry';
 
-  angular.module('gsn.core')
-    .controller(myDirectiveName, ['$scope', 'gsnProfile', 'gsnApi', myController])
-    .directive(myDirectiveName, myDirective);
+  angular.module( 'gsn.core' )
+    .controller( myDirectiveName, [ '$scope', 'gsnProfile', 'gsnApi', myController ] )
+    .directive( myDirectiveName, myDirective );
 
   function myDirective() {
     var directive = {
@@ -17,7 +17,7 @@
     return directive;
   }
 
-  function myController($scope, gsnProfile, gsnApi) {
+  function myController( $scope, gsnProfile, gsnApi ) {
     $scope.activate = activate;
     $scope.vm = {
       products: [],
@@ -26,30 +26,30 @@
     };
 
     function activate() {
-      gsnProfile.getMyPantry2().then(function(result) {
-        if (result.success) {
+      gsnProfile.getMyPantry2().then( function ( result ) {
+        if ( result.success ) {
           $scope.vm.products = result.response;
-          $scope.vm.productsByCategory = gsnApi.groupBy(result.response, 'DepartmentName');
+          $scope.vm.productsByCategory = gsnApi.groupBy( result.response, 'DepartmentName' );
         }
-      });
+      } );
     }
 
 
-    $scope.selectFilter = function(filterGroup, filterItem) {
+    $scope.selectFilter = function ( filterGroup, filterItem ) {
       var hasAllItems = true;
-      angular.forEach(filterGroup, function(item) {
-        if (item.selected) {
+      angular.forEach( filterGroup, function ( item ) {
+        if ( item.selected ) {
           hasAllItems = false;
         }
-      });
+      } );
 
       $scope.vm.hasAllItems = hasAllItems;
     };
 
     $scope.activate();
-    //#region Internal Methods        
+    //#region Internal Methods
 
-  //#endregion
+    //#endregion
   }
 
-})(angular);
+} )( angular );

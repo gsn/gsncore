@@ -1,9 +1,9 @@
-(function(angular, undefined) {
+( function ( angular, undefined ) {
   'use strict';
   var serviceId = 'gsnProfile';
-  angular.module('gsn.core').service(serviceId, ['$rootScope', '$http', 'gsnApi', '$q', 'gsnList', 'gsnStore', '$location', '$timeout', '$sessionStorage', '$localStorage', gsnProfile]);
+  angular.module( 'gsn.core' ).service( serviceId, [ '$rootScope', '$http', 'gsnApi', '$q', 'gsnList', 'gsnStore', '$location', '$timeout', '$sessionStorage', '$localStorage', gsnProfile ] );
 
-  function gsnProfile($rootScope, $http, gsnApi, $q, gsnList, gsnStore, $location, $timeout, $sessionStorage, $localStorage) {
+  function gsnProfile( $rootScope, $http, gsnApi, $q, gsnList, gsnStore, $location, $timeout, $sessionStorage, $localStorage ) {
     var returnObj = {},
       previousProfileId = gsnApi.getProfileId(),
       couponStorage = $sessionStorage,
@@ -20,80 +20,80 @@
         }
       };
 
-    $rootScope[serviceId] = returnObj;
+    $rootScope[ serviceId ] = returnObj;
     gsnApi.gsn.$profile = returnObj;
     returnObj.getShoppingListId = gsnApi.getShoppingListId;
 
     returnObj.getProfileId = gsnApi.getProfileId;
 
-    returnObj.createNewShoppingList = function() {
+    returnObj.createNewShoppingList = function () {
       /// <summary>Create a new shopping list.</summary>
 
-      if ($creatingDefer) return $creatingDefer.promise;
+      if ( $creatingDefer ) return $creatingDefer.promise;
 
       $creatingDefer = $q.defer();
 
-      gsnApi.getAccessToken().then(function() {
+      gsnApi.getAccessToken().then( function () {
         var url = gsnApi.getShoppingListApiUrl() + '/Create/' + gsnApi.getProfileId();
-        $http.post(url, {}, {
+        $http.post( url, {}, {
           headers: gsnApi.getApiHeaders()
-        }).success(function(response) {
+        } ).success( function ( response ) {
           var result = response;
-          $savedData.allShoppingLists[result.Id] = gsnList(result.Id, result);
-          gsnApi.setShoppingListId(result.Id);
-          $rootScope.$broadcast('gsnevent:shoppinglist-created', $savedData.allShoppingLists[result.Id]);
-          $creatingDefer.resolve({
+          $savedData.allShoppingLists[ result.Id ] = gsnList( result.Id, result );
+          gsnApi.setShoppingListId( result.Id );
+          $rootScope.$broadcast( 'gsnevent:shoppinglist-created', $savedData.allShoppingLists[ result.Id ] );
+          $creatingDefer.resolve( {
             success: true,
-            response: $savedData.allShoppingLists[result.Id]
-          });
+            response: $savedData.allShoppingLists[ result.Id ]
+          } );
           $creatingDefer = null;
-        }).error(function(response) {
-          $creatingDefer.resolve({
+        } ).error( function ( response ) {
+          $creatingDefer.resolve( {
             success: false,
             response: response
-          });
+          } );
           $creatingDefer = null;
-        });
-      });
+        } );
+      } );
 
       return $creatingDefer.promise;
     };
 
-    returnObj.login = function(user, pass) {
+    returnObj.login = function ( user, pass ) {
       var payload = {
-        grant_type: "password",
+        grant_type: 'password',
         client_id: gsnApi.getChainId(),
         access_type: 'offline',
         username: user,
         password: pass
       };
 
-      gsnApi.doAuthenticate(payload);
+      gsnApi.doAuthenticate( payload );
     };
 
-    returnObj.loginFacebook = function(user, facebookToken) {
-      if (!gsnApi.getConfig().FacebookAppId) {
+    returnObj.loginFacebook = function ( user, facebookToken ) {
+      if ( !gsnApi.getConfig().FacebookAppId ) {
         return;
       }
 
       var payload = {
-        grant_type: "facebook",
+        grant_type: 'facebook',
         client_id: gsnApi.getChainId(),
         access_type: 'offline',
         username: user,
         password: facebookToken
       };
 
-      gsnApi.doAuthenticate(payload);
+      gsnApi.doAuthenticate( payload );
     };
 
     // when initialize
     // if no profile id, it should create a shopping list to get a new profile id and set to current
-    returnObj.initialize = function() {
+    returnObj.initialize = function () {
       // get profile
-      var profileId = parseInt(gsnApi.isNull(returnObj.getProfileId(), 0));
-      if (profileId > 0) {
-        returnObj.getProfile(true);
+      var profileId = parseInt( gsnApi.isNull( returnObj.getProfileId(), 0 ) );
+      if ( profileId > 0 ) {
+        returnObj.getProfile( true );
       }
 
       gsnStore.initialize();
@@ -101,7 +101,7 @@
 
     // when user log out
     // it should reset shopping list
-    returnObj.logOut = function() {
+    returnObj.logOut = function () {
       gsnApi.logOut();
       couponStorage.clipped = [];
       couponStorage.printed = [];
@@ -109,84 +109,84 @@
     };
 
     // proxy method to add item to current shopping list
-    returnObj.addItem = function(item) {
+    returnObj.addItem = function ( item ) {
       var shoppingList = returnObj.getShoppingList();
-      if (shoppingList) {
-        if (gsnApi.isNull(item.ItemTypeId, -1) < 0) {
+      if ( shoppingList ) {
+        if ( gsnApi.isNull( item.ItemTypeId, -1 ) < 0 ) {
           item.ItemTypeId = 6; // Misc or Own Item type
         }
 
-        shoppingList.addItem(item);
+        shoppingList.addItem( item );
       }
     };
 
     // proxy method to add items to current shopping list
-    returnObj.addItems = function(item) {
+    returnObj.addItems = function ( item ) {
       var shoppingList = returnObj.getShoppingList();
 
       // TODO: throw error for no current shopping list?
-      return shoppingList.addItems(item);
+      return shoppingList.addItems( item );
     };
 
-    returnObj.isOnList = function(item) {
+    returnObj.isOnList = function ( item ) {
       var shoppingList = returnObj.getShoppingList();
-      if (shoppingList) {
-        var slItem = shoppingList.getItem(item.ItemId, item.ItemTypeId);
-        return gsnApi.isNull(slItem, null) !== null;
+      if ( shoppingList ) {
+        var slItem = shoppingList.getItem( item.ItemId, item.ItemTypeId );
+        return gsnApi.isNull( slItem, null ) !== null;
       }
 
       return false;
     };
 
     // proxy method to remove item of current shopping list
-    returnObj.removeItem = function(item) {
+    returnObj.removeItem = function ( item ) {
       var shoppingList = returnObj.getShoppingList();
-      if (shoppingList) {
-        shoppingList.removeItem(item);
+      if ( shoppingList ) {
+        shoppingList.removeItem( item );
       }
     };
 
     // delete shopping list provided id
-    returnObj.deleteShoppingList = function(list) {
+    returnObj.deleteShoppingList = function ( list ) {
       list.deleteList();
-      $savedData.allShoppingLists[list.ShoppingListId] = null;
+      $savedData.allShoppingLists[ list.ShoppingListId ] = null;
     };
 
     // get shopping list provided id
-    returnObj.getShoppingList = function(shoppingListId) {
-      if (gsnApi.isNull(shoppingListId, null) === null)
+    returnObj.getShoppingList = function ( shoppingListId ) {
+      if ( gsnApi.isNull( shoppingListId, null ) === null )
         shoppingListId = returnObj.getShoppingListId();
 
-      var result = $savedData.allShoppingLists[shoppingListId];
+      var result = $savedData.allShoppingLists[ shoppingListId ];
       return result;
     };
 
     // get all shopping lists
-    returnObj.getShoppingLists = function() {
+    returnObj.getShoppingLists = function () {
       var result = [];
-      angular.forEach($savedData.allShoppingLists, function(v, k) {
-        result.push(v);
-      });
+      angular.forEach( $savedData.allShoppingLists, function ( v, k ) {
+        result.push( v );
+      } );
 
-      gsnApi.sortOn(result, 'ShoppingListId');
+      gsnApi.sortOn( result, 'ShoppingListId' );
       result.reverse();
       return result;
     };
 
     // get count of current shopping list
-    returnObj.getShoppingListCount = function() {
+    returnObj.getShoppingListCount = function () {
       var list = returnObj.getShoppingList();
       return list ? list.getCount() : 0;
     };
 
     // get the profile object
-    returnObj.getProfile = function(callApi) {
-      if ($profileDefer) return $profileDefer.promise;
+    returnObj.getProfile = function ( callApi ) {
+      if ( $profileDefer ) return $profileDefer.promise;
 
       $profileDefer = $q.defer();
-      if (gsnApi.isNull($savedData.profile, null) === null || callApi) {
+      if ( gsnApi.isNull( $savedData.profile, null ) === null || callApi ) {
         // at this point, we already got the id so proceed to reset other data
-        $timeout(function() {
+        $timeout( function () {
           // reset other data
           $savedData = {
             allShoppingLists: {},
@@ -199,190 +199,190 @@
             }
           };
           returnObj.refreshShoppingLists();
-        }, 5);
+        }, 5 );
 
 
-        gsnApi.getAccessToken().then(function() {
+        gsnApi.getAccessToken().then( function () {
 
           // don't need to load profile if anonymous
-          if (gsnApi.isAnonymous()) {
+          if ( gsnApi.isAnonymous() ) {
             $savedData.profile = {
-              "Id": returnObj.getProfileId(),
-              "SiteId": gsnApi.getChainId(),
-              "PrimaryStoreId": gsnApi.getSelectedStoreId()
+              Id: returnObj.getProfileId(),
+              SiteId: gsnApi.getChainId(),
+              PrimaryStoreId: gsnApi.getSelectedStoreId()
             };
 
-            $rootScope.$broadcast('gsnevent:profile-load-success', {
+            $rootScope.$broadcast( 'gsnevent:profile-load-success', {
               success: true,
               response: $savedData.profile
-            });
-            $profileDefer.resolve({
+            } );
+            $profileDefer.resolve( {
               success: true,
               response: $savedData.profile
-            });
+            } );
             $profileDefer = null;
           } else {
             gsnLoadProfile();
           }
-        });
+        } );
 
       } else {
-        $timeout(function() {
-          $profileDefer.resolve({
+        $timeout( function () {
+          $profileDefer.resolve( {
             success: true,
             response: $savedData.profile
-          });
+          } );
           $profileDefer = null;
-        }, 10);
+        }, 10 );
       }
 
       return $profileDefer.promise;
     };
 
     function gsnLoadProfile() {
-      var url = gsnApi.getProfileApiUrl() + "/By/" + returnObj.getProfileId();
-      $http.get(url, {
+      var url = gsnApi.getProfileApiUrl() + '/By/' + returnObj.getProfileId();
+      $http.get( url, {
         headers: gsnApi.getApiHeaders()
-      }).success(function(response) {
+      } ).success( function ( response ) {
         $savedData.profile = response;
-        $rootScope.$broadcast('gsnevent:profile-load-success', {
+        $rootScope.$broadcast( 'gsnevent:profile-load-success', {
           success: true,
           response: $savedData.profile
-        });
-        $profileDefer.resolve({
+        } );
+        $profileDefer.resolve( {
           success: true,
           response: $savedData.profile
-        });
+        } );
         $profileDefer = null;
-      }).error(function(response) {
-        $rootScope.$broadcast('gsnevent:profile-load-failed', {
+      } ).error( function ( response ) {
+        $rootScope.$broadcast( 'gsnevent:profile-load-failed', {
           success: false,
           response: response
-        });
-        $profileDefer.resolve({
+        } );
+        $profileDefer.resolve( {
           success: false,
           response: response
-        });
+        } );
         $profileDefer = null;
-      });
+      } );
     }
 
     // when user register
     // it should convert anonymous profile to perm
-    returnObj.registerProfile = function(p) {
-      return registerOrUpdateProfile(p, false);
+    returnObj.registerProfile = function ( p ) {
+      return registerOrUpdateProfile( p, false );
     };
 
-    returnObj.changePassword = function(userName, currentPassword, newPassword) {
+    returnObj.changePassword = function ( userName, currentPassword, newPassword ) {
       var deferred = $q.defer();
 
-      gsnApi.getAccessToken().then(function() {
-        var url = gsnApi.getProfileApiUrl() + "/ChangePassword";
-        $http.post(url, {
+      gsnApi.getAccessToken().then( function () {
+        var url = gsnApi.getProfileApiUrl() + '/ChangePassword';
+        $http.post( url, {
           UserName: userName,
           Password: currentPassword,
           NewPassword: newPassword
         }, {
           headers: gsnApi.getApiHeaders()
-        }).success(function(response) {
-          deferred.resolve({
-            success: (response == 'true'),
+        } ).success( function ( response ) {
+          deferred.resolve( {
+            success: ( response === 'true' ),
             response: response
-          });
-        }).error(function(response) {
-          deferred.resolve({
+          } );
+        } ).error( function ( response ) {
+          deferred.resolve( {
             success: false,
             response: response
-          });
-        });
-      });
+          } );
+        } );
+      } );
 
       return deferred.promise;
     };
 
     // when user recover password
     // it should call api and return server result
-    returnObj.recoverPassword = function(payload) {
+    returnObj.recoverPassword = function ( payload ) {
       var deferred = $q.defer();
 
-      gsnApi.getAccessToken().then(function() {
+      gsnApi.getAccessToken().then( function () {
         var url = gsnApi.getProfileApiUrl() + '/RecoverPassword';
-        $http.post(url, payload, {
+        $http.post( url, payload, {
           headers: gsnApi.getApiHeaders()
-        }).success(function(response) {
-          deferred.resolve({
-            success: (response == 'true'),
+        } ).success( function ( response ) {
+          deferred.resolve( {
+            success: ( response === 'true' ),
             response: response
-          });
-        }).error(function(response) {
-          deferred.resolve({
+          } );
+        } ).error( function ( response ) {
+          deferred.resolve( {
             success: false,
             response: response
-          });
-        });
-      });
+          } );
+        } );
+      } );
 
       return deferred.promise;
     };
 
-    returnObj.recoverUsername = function(payload) {
+    returnObj.recoverUsername = function ( payload ) {
       var deferred = $q.defer();
 
-      gsnApi.getAccessToken().then(function() {
+      gsnApi.getAccessToken().then( function () {
         var url = gsnApi.getProfileApiUrl() + '/RecoverUsername';
-        $http.post(url, payload, {
+        $http.post( url, payload, {
           headers: gsnApi.getApiHeaders()
-        }).success(function(response) {
-          deferred.resolve({
-            success: (response == 'true'),
+        } ).success( function ( response ) {
+          deferred.resolve( {
+            success: ( response === 'true' ),
             response: response
-          });
-        }).error(function(response) {
-          deferred.resolve({
+          } );
+        } ).error( function ( response ) {
+          deferred.resolve( {
             success: false,
             response: response
-          });
-        });
-      });
+          } );
+        } );
+      } );
 
       return deferred.promise;
     };
 
-    returnObj.unsubscribeEmail = function(email) {
+    returnObj.unsubscribeEmail = function ( email ) {
       var deferred = $q.defer();
 
-      gsnApi.getAccessToken().then(function() {
-        var url = gsnApi.getProfileApiUrl() + '/Unsubscribe/?email=' + encodeURIComponent(email);
-        $http.post(url, {
+      gsnApi.getAccessToken().then( function () {
+        var url = gsnApi.getProfileApiUrl() + '/Unsubscribe/?email=' + encodeURIComponent( email );
+        $http.post( url, {
           email: email
         }, {
           headers: gsnApi.getApiHeaders()
-        }).success(function(response) {
-          deferred.resolve({
+        } ).success( function ( response ) {
+          deferred.resolve( {
             success: true,
             response: response
-          });
-        }).error(function(response) {
-          deferred.resolve({
+          } );
+        } ).error( function ( response ) {
+          deferred.resolve( {
             success: false,
             response: response
-          });
-        });
-      });
+          } );
+        } );
+      } );
 
       return deferred.promise;
     };
 
     // when user update profile
     // it should restore user old password if none is provided
-    returnObj.updateProfile = function(p) {
-      return registerOrUpdateProfile(p, true);
+    returnObj.updateProfile = function ( p ) {
+      return registerOrUpdateProfile( p, true );
     };
 
     // when user is a registered user
     // allow for shopping lists refresh
-    returnObj.refreshShoppingLists = function() {
-      if (returnObj.refreshingDeferred) return returnObj.refreshingDeferred.promise;
+    returnObj.refreshShoppingLists = function () {
+      if ( returnObj.refreshingDeferred ) return returnObj.refreshingDeferred.promise;
 
       // determine if logged in
       // sync list
@@ -390,24 +390,24 @@
       returnObj.refreshingDeferred = deferred;
       $savedData.allShoppingLists = {};
 
-      gsnApi.getAccessToken().then(function() {
+      gsnApi.getAccessToken().then( function () {
         var url = gsnApi.getShoppingListApiUrl() + '/List/' + gsnApi.getProfileId();
-        $http.get(url, {
+        $http.get( url, {
           headers: gsnApi.getApiHeaders()
-        }).success(function(response) {
-          if (response.length > 0) {
-            for (var i = 0; i < response.length; i++) {
-              var list = response[i];
+        } ).success( function ( response ) {
+          if ( response.length > 0 ) {
+            for ( var i = 0; i < response.length; i++ ) {
+              var list = response[ i ];
               list.ShoppingListId = list.Id;
-              var shoppingList = gsnList(list.ShoppingListId, list);
-              $savedData.allShoppingLists[list.ShoppingListId] = shoppingList;
+              var shoppingList = gsnList( list.ShoppingListId, list );
+              $savedData.allShoppingLists[ list.ShoppingListId ] = shoppingList;
 
               // grab the first shopping list and make it current list id
-              if (i === 0) {
+              if ( i === 0 ) {
                 // ajax load first shopping list
                 shoppingList.updateShoppingList();
 
-                gsnApi.setShoppingListId(list.ShoppingListId);
+                gsnApi.setShoppingListId( list.ShoppingListId );
               }
             }
           } else {
@@ -416,265 +416,265 @@
 
           returnObj.refreshingDeferred = null;
 
-          $rootScope.$broadcast('gsnevent:shoppinglists-loaded', {
+          $rootScope.$broadcast( 'gsnevent:shoppinglists-loaded', {
             success: true,
             response: response
-          });
-          deferred.resolve({
+          } );
+          deferred.resolve( {
             success: true,
             response: response
-          });
-        }).error(function(response) {
+          } );
+        } ).error( function ( response ) {
 
           returnObj.refreshingDeferred = null;
-          deferred.resolve({
+          deferred.resolve( {
             success: false,
             response: response
-          });
-        });
-      });
+          } );
+        } );
+      } );
 
       return deferred.promise;
     };
 
-    returnObj.getMyCircularItems = function() {
+    returnObj.getMyCircularItems = function () {
       var url = gsnApi.getProfileApiUrl() + '/GetCircularItems/' + gsnApi.getProfileId();
-      return gsnApi.http($savedData.profileData.circularItems, url);
+      return gsnApi.http( $savedData.profileData.circularItems, url );
     };
 
-    returnObj.getMyPantry = function(departmentId, categoryId) {
-      var url = gsnApi.getProfileApiUrl() + '/GetPantry/' + gsnApi.getProfileId() + '?' + 'departmentId=' + gsnApi.isNull(departmentId, '') + '&categoryId=' + gsnApi.isNull(categoryId, '');
-      return gsnApi.http($savedData.profileData.myPantry, url);
+    returnObj.getMyPantry = function ( departmentId, categoryId ) {
+      var url = gsnApi.getProfileApiUrl() + '/GetPantry/' + gsnApi.getProfileId() + '?' + 'departmentId=' + gsnApi.isNull( departmentId, '' ) + '&categoryId=' + gsnApi.isNull( categoryId, '' );
+      return gsnApi.http( $savedData.profileData.myPantry, url );
     };
 
-    returnObj.getMyPantry2 = function() {
+    returnObj.getMyPantry2 = function () {
       var url = gsnApi.getProfileApiUrl() + '/GetPantry2/' + gsnApi.getChainId() + '/' + gsnApi.getProfileId() + '/' + gsnApi.getSelectedStoreId();
-      return gsnApi.http($savedData.profileData.myPantry, url);
+      return gsnApi.http( $savedData.profileData.myPantry, url );
     };
 
-    returnObj.getMyProducts = function() {
+    returnObj.getMyProducts = function () {
       var url = gsnApi.getProfileApiUrl() + '/GetScoredProducts/' + gsnApi.getProfileId();
-      return gsnApi.http($savedData.profileData.scoredProducts, url);
+      return gsnApi.http( $savedData.profileData.scoredProducts, url );
     };
 
-    returnObj.getMyRecipes = function() {
+    returnObj.getMyRecipes = function () {
       var url = gsnApi.getProfileApiUrl() + '/GetSavedRecipes/' + gsnApi.getProfileId();
-      return gsnApi.http({}, url);
+      return gsnApi.http( {}, url );
     };
 
-    returnObj.rateRecipe = function(recipeId, rating) {
+    returnObj.rateRecipe = function ( recipeId, rating ) {
       var url = gsnApi.getProfileApiUrl() + '/RateRecipe/' + recipeId + '/' + gsnApi.getProfileId() + '/' + rating;
-      return gsnApi.http({}, url, {});
+      return gsnApi.http( {}, url, {} );
     };
 
-    returnObj.getMyRecipe = function(recipeId) {
+    returnObj.getMyRecipe = function ( recipeId ) {
       var url = gsnApi.getProfileApiUrl() + '/GetSavedRecipe/' + gsnApi.getProfileId() + '/' + recipeId;
-      return gsnApi.http({}, url);
+      return gsnApi.http( {}, url );
     };
 
-    returnObj.saveRecipe = function(recipeId, comment) {
-      var url = gsnApi.getProfileApiUrl() + '/SaveRecipe/' + recipeId + '/' + gsnApi.getProfileId() + '?comment=' + encodeURIComponent(comment);
-      return gsnApi.http({}, url, {});
+    returnObj.saveRecipe = function ( recipeId, comment ) {
+      var url = gsnApi.getProfileApiUrl() + '/SaveRecipe/' + recipeId + '/' + gsnApi.getProfileId() + '?comment=' + encodeURIComponent( comment );
+      return gsnApi.http( {}, url, {} );
     };
 
-    returnObj.saveProduct = function(productId, comment) {
-      var url = gsnApi.getProfileApiUrl() + '/SaveProduct/' + productId + '/' + gsnApi.getProfileId() + '?comment=' + encodeURIComponent(comment);
-      return gsnApi.http({}, url, {});
+    returnObj.saveProduct = function ( productId, comment ) {
+      var url = gsnApi.getProfileApiUrl() + '/SaveProduct/' + productId + '/' + gsnApi.getProfileId() + '?comment=' + encodeURIComponent( comment );
+      return gsnApi.http( {}, url, {} );
     };
 
-    returnObj.selectStore = function(storeId) {
+    returnObj.selectStore = function ( storeId ) {
       var url = gsnApi.getProfileApiUrl() + '/SelectStore/' + gsnApi.getProfileId() + '/' + storeId;
-      return gsnApi.http({}, url, {});
+      return gsnApi.http( {}, url, {} );
     };
 
-    returnObj.getCampaign = function() {
+    returnObj.getCampaign = function () {
       var url = gsnApi.getProfileApiUrl() + '/GetCampaign/' + gsnApi.getProfileId();
-      return gsnApi.http({}, url);
+      return gsnApi.http( {}, url );
     };
 
-    returnObj.resetCampaign = function() {
+    returnObj.resetCampaign = function () {
       $sessionStorage.GsnCampaign = 0;
     };
 
-    returnObj.sendContactUs = function(payload) {
+    returnObj.sendContactUs = function ( payload ) {
       var deferred = $q.defer();
 
-      gsnApi.getAccessToken().then(function() {
-        var url = gsnApi.getProfileApiUrl() + "/SendContactUs";
+      gsnApi.getAccessToken().then( function () {
+        var url = gsnApi.getProfileApiUrl() + '/SendContactUs';
 
-        $http.post(url, payload, {
+        $http.post( url, payload, {
           headers: gsnApi.getApiHeaders()
-        }).success(function(response) {
-          deferred.resolve({
+        } ).success( function ( response ) {
+          deferred.resolve( {
             success: true,
             response: response
-          });
-        }).error(function(response) {
-          deferred.resolve({
+          } );
+        } ).error( function ( response ) {
+          deferred.resolve( {
             success: false,
             response: response
-          });
-        });
-      });
+          } );
+        } );
+      } );
 
       return deferred.promise;
     };
 
-    returnObj.sendEmail = function(payload) {
+    returnObj.sendEmail = function ( payload ) {
       var deferred = $q.defer();
 
-      gsnApi.getAccessToken().then(function() {
-        var url = gsnApi.getProfileApiUrl() + "/SendEmail";
+      gsnApi.getAccessToken().then( function () {
+        var url = gsnApi.getProfileApiUrl() + '/SendEmail';
 
-        $http.post(url, payload, {
+        $http.post( url, payload, {
           headers: gsnApi.getApiHeaders()
-        }).success(function(response) {
-          deferred.resolve({
+        } ).success( function ( response ) {
+          deferred.resolve( {
             success: true,
             response: response
-          });
-        }).error(function(response) {
-          deferred.resolve({
+          } );
+        } ).error( function ( response ) {
+          deferred.resolve( {
             success: false,
             response: response
-          });
-        });
-      });
+          } );
+        } );
+      } );
 
       return deferred.promise;
     };
 
-    returnObj.sendEmploymentEmail = function(payload, selectedStoreId) {
+    returnObj.sendEmploymentEmail = function ( payload, selectedStoreId ) {
       var deferred = $q.defer();
 
-      gsnApi.getAccessToken().then(function() {
-        var url = gsnApi.getProfileApiUrl() + "/SendEmployment/" + selectedStoreId;
+      gsnApi.getAccessToken().then( function () {
+        var url = gsnApi.getProfileApiUrl() + '/SendEmployment/' + selectedStoreId;
 
-        $http.post(url, payload, {
+        $http.post( url, payload, {
           headers: gsnApi.getApiHeaders(),
-        }).success(function(response) {
-          deferred.resolve({
+        } ).success( function ( response ) {
+          deferred.resolve( {
             success: true,
             response: response
-          });
-        }).error(function(response) {
-          deferred.resolve({
+          } );
+        } ).error( function ( response ) {
+          deferred.resolve( {
             success: false,
             response: response
-          });
-        });
-      });
+          } );
+        } );
+      } );
 
       return deferred.promise;
     };
 
-    returnObj.clipCoupon = function(productCode) {
-      if (!couponStorage.clipped)
+    returnObj.clipCoupon = function ( productCode ) {
+      if ( !couponStorage.clipped )
         couponStorage.clipped = [];
-      if (couponStorage.clipped.indexOf(productCode) < 0)
-        couponStorage.clipped.push(productCode);
+      if ( couponStorage.clipped.indexOf( productCode ) < 0 )
+        couponStorage.clipped.push( productCode );
     };
 
-    returnObj.unclipCoupon = function(productCode) {
-      var index = couponStorage.clipped.indexOf(productCode);
-      couponStorage.clipped.splice(index, 1);
+    returnObj.unclipCoupon = function ( productCode ) {
+      var index = couponStorage.clipped.indexOf( productCode );
+      couponStorage.clipped.splice( index, 1 );
     };
 
-    returnObj.getClippedCoupons = function() {
+    returnObj.getClippedCoupons = function () {
       return couponStorage.clipped;
     };
 
-    returnObj.savePreclippedCoupon = function(item) {
+    returnObj.savePreclippedCoupon = function ( item ) {
       couponStorage.preClipped = item;
     };
 
-    returnObj.getPreclippedCoupon = function() {
+    returnObj.getPreclippedCoupon = function () {
       return couponStorage.preClipped;
     };
 
-    returnObj.addPrinted = function(productCode) {
-      if (!couponStorage.printed)
+    returnObj.addPrinted = function ( productCode ) {
+      if ( !couponStorage.printed )
         couponStorage.printed = [];
-      if (couponStorage.printed.indexOf(productCode) < 0)
-        couponStorage.printed.push(productCode);
+      if ( couponStorage.printed.indexOf( productCode ) < 0 )
+        couponStorage.printed.push( productCode );
     };
 
-    returnObj.getPrintedCoupons = function() {
+    returnObj.getPrintedCoupons = function () {
       return couponStorage.printed;
     };
 
     //#region Events Handling
-    $rootScope.$on('gsnevent:shoppinglist-item-response', function(event, args) {
-      var response = args[1],
-        existingItem = args[2],
-        mySavedData = args[3];
+    $rootScope.$on( 'gsnevent:shoppinglist-item-response', function ( event, args ) {
+      var response = args[ 1 ],
+        existingItem = args[ 2 ],
+        mySavedData = args[ 3 ];
 
       // only process server response if logged in
-      if (gsnApi.isLoggedIn()) {
+      if ( gsnApi.isLoggedIn() ) {
 
-        if (existingItem.ItemId != response.ItemId) {
-          mySavedData.items[existingItem.ItemId] = null;
+        if ( existingItem.ItemId !== response.ItemId ) {
+          mySavedData.items[ existingItem.ItemId ] = null;
           existingItem.ItemId = response.ItemId;
         }
 
         // retain order
-        if (existingItem.zPriceMultiple) {
+        if ( existingItem.zPriceMultiple ) {
           response.PriceMultiple = existingItem.zPriceMultiple;
         }
 
         response.Order = existingItem.Order;
-        mySavedData.items[existingItem.ItemId] = response.d;
+        mySavedData.items[ existingItem.ItemId ] = response.d;
       }
-    });
+    } );
 
-    $rootScope.$on('gsnevent:profile-setid', function(event, profileId) {
+    $rootScope.$on( 'gsnevent:profile-setid', function ( event, profileId ) {
       // attempt to load profile
-      if (previousProfileId != profileId) {
+      if ( previousProfileId !== profileId ) {
         previousProfileId = profileId;
-        returnObj.getProfile(true);
+        returnObj.getProfile( true );
         returnObj.resetCampaign();
       }
-    });
+    } );
 
-    $rootScope.$on('gsnevent:profile-load-success', function(event, result) {
+    $rootScope.$on( 'gsnevent:profile-load-success', function ( event, result ) {
       // attempt to set store id
-      if (gsnApi.isNull(result.response.PrimaryStoreId, 0) > 0) {
-        gsnApi.setSelectedStoreId(result.response.PrimaryStoreId);
+      if ( gsnApi.isNull( result.response.PrimaryStoreId, 0 ) > 0 ) {
+        gsnApi.setSelectedStoreId( result.response.PrimaryStoreId );
       }
-    });
+    } );
 
-    $rootScope.$on('gsnevent:store-setid', function(event, values) {
-      if (values.newValue != values.oldValue) {
+    $rootScope.$on( 'gsnevent:store-setid', function ( event, values ) {
+      if ( values.newValue !== values.oldValue ) {
         // must check for null because it could be that user just
         // logged in and he/she would no longer have the anonymous shopping list
         var currentList = returnObj.getShoppingList();
-        if (currentList) {
+        if ( currentList ) {
           currentList.updateShoppingList();
         }
       }
-    });
+    } );
 
     //#endregion
 
     //#region helper methods
-    function registerOrUpdateProfile(profile, isUpdate) {
+    function registerOrUpdateProfile( profile, isUpdate ) {
       /// <summary>Helper method for registering or update profile</summary>
 
       var deferred = $q.defer();
 
       // clean up model before proceeding
       // there should not be any space in email or username
-      var email = gsnApi.isNull(profile.Email, '').replace(/\s+/gi, '');
-      var username = gsnApi.isNull(profile.UserName, '').replace(/\s+/gi, '');
-      if (username.length <= 0) {
+      var email = gsnApi.isNull( profile.Email, '' ).replace( /\s+/gi, '' );
+      var username = gsnApi.isNull( profile.UserName, '' ).replace( /\s+/gi, '' );
+      if ( username.length <= 0 ) {
         username = email;
       }
 
       // set empty to prevent update
-      if (email.length <= 0) {
+      if ( email.length <= 0 ) {
         email = null;
       }
-      if (username.length <= 0) {
+      if ( username.length <= 0 ) {
         username = null;
       }
 
@@ -682,14 +682,14 @@
       var payload = {
         Email: email,
         UserName: username,
-        Password: gsnApi.isNull(profile.Password, ''),
-        ReceiveEmail: gsnApi.isNull(profile.ReceiveEmail, false),
-        ReceivePostalMail: gsnApi.isNull(profile.ReceivePostalMail, false),
-        ReceiveSms: gsnApi.isNull(profile.ReceiveSms, true),
-        Phone: gsnApi.isNull(profile.Phone, '').replace(/[^0-9]+/gi, ''),
-        PrimaryStoreId: gsnApi.isNull(profile.PrimaryStoreId, gsnApi.getSelectedStoreId()),
-        FirstName: gsnApi.isNull(profile.FirstName, '').replace(/[`]+/gi, '\''),
-        LastName: gsnApi.isNull(profile.LastName, '').replace(/[`]+/gi, '\''),
+        Password: gsnApi.isNull( profile.Password, '' ),
+        ReceiveEmail: gsnApi.isNull( profile.ReceiveEmail, false ),
+        ReceivePostalMail: gsnApi.isNull( profile.ReceivePostalMail, false ),
+        ReceiveSms: gsnApi.isNull( profile.ReceiveSms, true ),
+        Phone: gsnApi.isNull( profile.Phone, '' ).replace( /[^0-9]+/gi, '' ),
+        PrimaryStoreId: gsnApi.isNull( profile.PrimaryStoreId, gsnApi.getSelectedStoreId() ),
+        FirstName: gsnApi.isNull( profile.FirstName, '' ).replace( /[`]+/gi, '\'' ),
+        LastName: gsnApi.isNull( profile.LastName, '' ).replace( /[`]+/gi, '\'' ),
         ExternalId: profile.ExternalId,
         WelcomeSubject: profile.WelcomeSubject,
         WelcomeMessage: profile.WelcomeMessage,
@@ -699,75 +699,75 @@
       };
 
       // set empty to prevent update
-      if (payload.Password === '') {
+      if ( payload.Password === '' ) {
         payload.Password = null;
       }
-      if (payload.LastName === '') {
+      if ( payload.LastName === '' ) {
         payload.LastName = null;
       }
-      if (payload.FirstName === '') {
+      if ( payload.FirstName === '' ) {
         payload.FirstName = null;
       }
-      if (gsnApi.isNull(payload.PrimaryStoreId, 0) <= 0) {
+      if ( gsnApi.isNull( payload.PrimaryStoreId, 0 ) <= 0 ) {
         payload.PrimaryStoreId = null;
       }
-      if (gsnApi.isNull(profile.ExternalId, '').length <= 0) {
+      if ( gsnApi.isNull( profile.ExternalId, '' ).length <= 0 ) {
         profile.ExternalId = null;
       }
-      if (gsnApi.isNull(profile.FacebookUserId, '').length <= 0) {
+      if ( gsnApi.isNull( profile.FacebookUserId, '' ).length <= 0 ) {
         profile.FacebookUserId = null;
       }
 
-      if (payload.UserName.length < 3) {
-        deferred.resolve({
+      if ( payload.UserName.length < 3 ) {
+        deferred.resolve( {
           success: false,
           response: 'Email/UserName must be at least 3 characters.'
-        });
+        } );
         return deferred.promise;
       }
 
-      if (!isUpdate && (gsnApi.isNull(profile.FacebookToken, '').length <= 0)) {
-        if (gsnApi.isNull(payload.Password, '').length < 6) {
-          deferred.resolve({
+      if ( !isUpdate && ( gsnApi.isNull( profile.FacebookToken, '' ).length <= 0 ) ) {
+        if ( gsnApi.isNull( payload.Password, '' ).length < 6 ) {
+          deferred.resolve( {
             success: false,
             response: 'Password must be at least 6 characters.'
-          });
+          } );
           return deferred.promise;
         }
       }
 
-      if (!gsnApi.getEmailRegEx().test(payload.Email)) {
-        deferred.resolve({
+      if ( !gsnApi.getEmailRegEx().test( payload.Email ) ) {
+        deferred.resolve( {
           success: false,
           response: 'Email is invalid.'
-        });
+        } );
         return deferred.promise;
       }
 
-      gsnApi.getAccessToken().then(function() {
-        var url = gsnApi.getProfileApiUrl() + (isUpdate ? "/Update" : "/Register");
-        if (gsnApi.isNull(profile.FacebookToken, '').length > 1) {
+      gsnApi.getAccessToken().then( function () {
+        var url = gsnApi.getProfileApiUrl() + ( isUpdate ? '/Update' : '/Register' );
+        if ( gsnApi.isNull( profile.FacebookToken, '' ).length > 1 ) {
           url += 'Facebook';
           payload.Password = profile.FacebookToken;
         }
 
-        $http.post(url, payload, {
+        $http.post( url, payload, {
           headers: gsnApi.getApiHeaders()
-        }).success(function(response) {
+        } ).success( function ( response ) {
           // set current profile to response
           $savedData.profile = response;
-          deferred.resolve({
+          deferred.resolve( {
             success: true,
             response: response
-          });
-        }).error(function(response) {
+          } );
+        } ).error( function ( response ) {
 
-          deferred.resolve({
+          deferred.resolve( {
             success: false,
             response: response
-          });
-        });
-      });
+          } );
+        } );
+      } );
 
       return deferred.promise;
     }
@@ -775,4 +775,4 @@
 
     return returnObj;
   }
-})(angular);
+} )( angular );

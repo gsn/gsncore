@@ -1,11 +1,11 @@
-﻿(function (angular, undefined) {
+( function ( angular, undefined ) {
   'use strict';
 
   var myDirectiveName = 'ctrlMySpecials';
 
-  angular.module('gsn.core')
-    .controller(myDirectiveName, ['$scope', 'gsnStore', 'gsnProfile', 'gsnApi', '$timeout', myController])
-    .directive(myDirectiveName, myDirective);
+  angular.module( 'gsn.core' )
+    .controller( myDirectiveName, [ '$scope', 'gsnStore', 'gsnProfile', 'gsnApi', '$timeout', myController ] )
+    .directive( myDirectiveName, myDirective );
 
 
   function myDirective() {
@@ -16,9 +16,9 @@
     };
 
     return directive;
-  }      
+  }
 
-  function myController($scope, gsnStore, gsnProfile, gsnApi, $timeout) {
+  function myController( $scope, gsnStore, gsnProfile, gsnApi, $timeout ) {
     $scope.activate = activate;
     $scope.vm = {
       specials: [],
@@ -27,33 +27,32 @@
     };
 
     function activate() {
-      if (gsnStore.hasCompleteCircular()) {
-        gsnProfile.getMyCircularItems().then(function (result) {
-          if (result.success) {
+      if ( gsnStore.hasCompleteCircular() ) {
+        gsnProfile.getMyCircularItems().then( function ( result ) {
+          if ( result.success ) {
             $scope.vm.specials = result.response;
           }
-        });
+        } );
 
-        gsnProfile.getMyProducts().then(function (result) {
-          if (result.success) {
+        gsnProfile.getMyProducts().then( function ( result ) {
+          if ( result.success ) {
             $scope.vm.products = result.response;
-            $scope.vm.productsByCategory = gsnApi.groupBy(result.response, 'DepartmentName');
+            $scope.vm.productsByCategory = gsnApi.groupBy( result.response, 'DepartmentName' );
           }
-        });
+        } );
       }
     }
 
-
-    $scope.$on('gsnevent:circular-loaded', function (event, data) {
-      if (data.success) {
-        $timeout(activate, 500);
+    $scope.$on( 'gsnevent:circular-loaded', function ( event, data ) {
+      if ( data.success ) {
+        $timeout( activate, 500 );
       }
-    });
+    } );
 
     $scope.activate();
 
-    //#region Internal Methods   
+    //#region Internal Methods
     //#endregion
   }
 
-})(angular);
+} )( angular );

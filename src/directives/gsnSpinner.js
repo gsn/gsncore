@@ -1,8 +1,8 @@
-(function (angular, undefined) {
+( function ( angular, undefined ) {
   'use strict';
-  var myModule = angular.module('gsn.core');
+  var myModule = angular.module( 'gsn.core' );
 
-  myModule.directive('gsnSpinner', ['$window', '$timeout', 'gsnApi', function ($window, $timeout, gsnApi) {
+  myModule.directive( 'gsnSpinner', [ '$window', '$timeout', 'gsnApi', function ( $window, $timeout, gsnApi ) {
     // Usage:   Display spinner
     //
     // Creates: 2014-01-06
@@ -34,55 +34,55 @@
     };
     return directive;
 
-    function link(scope, element, attrs) {
+    function link( scope, element, attrs ) {
       function activate() {
-        if (typeof(Spinner) === 'undefined') {
-          $timeout(activate, 200);
+        if ( typeof ( Spinner ) === 'undefined' ) {
+          $timeout( activate, 200 );
 
-          if (scope.loadingScript) return;
+          if ( scope.loadingScript ) return;
           scope.loadingScript = true;
 
           // dynamically load google
           var src = '//cdnjs.cloudflare.com/ajax/libs/spin.js/2.3.2/spin.min.js';
 
-          gsnApi.loadScripts([src], activate);
+          gsnApi.loadScripts( [ src ], activate );
           return;
         }
 
-        var options = scope.$eval(attrs.gsnSpinner);
+        var options = scope.$eval( attrs.gsnSpinner );
         options.stopDelay = options.stopDelay || 200;
 
         function stopSpinner() {
-          if (scope.gsnSpinner) {
+          if ( scope.gsnSpinner ) {
             scope.gsnSpinner.stop();
             scope.gsnSpinner = null;
           }
         }
 
-        scope.$watch(attrs.showIf, function (newValue) {
+        scope.$watch( attrs.showIf, function ( newValue ) {
           stopSpinner();
-          if (newValue) {
-            scope.gsnSpinner = new $window.Spinner(options);
-            scope.gsnSpinner.spin(element[0]);
+          if ( newValue ) {
+            scope.gsnSpinner = new $window.Spinner( options );
+            scope.gsnSpinner.spin( element[ 0 ] );
 
-            if (options.timeout) {
-              $timeout(function () {
-                var val = scope[attrs.showIf];
-                if (typeof (val) == 'boolean') {
+            if ( options.timeout ) {
+              $timeout( function () {
+                var val = scope[ attrs.showIf ];
+                if ( typeof ( val ) === 'boolean' ) {
                   // this should cause it to stop spinner
-                  scope[attrs.showIf] = false;
+                  scope[ attrs.showIf ] = false;
                 } else {
-                  $timeout(stopSpinner, options.stopDelay);
+                  $timeout( stopSpinner, options.stopDelay );
                 }
-              }, options.timeout);
+              }, options.timeout );
             }
           }
-        }, true);
+        }, true );
 
-        scope.$on('$destroy', function () {
-          $timeout(stopSpinner, options.stopDelay);
-        });
+        scope.$on( '$destroy', function () {
+          $timeout( stopSpinner, options.stopDelay );
+        } );
       }
     }
-  }]);
-})(angular);
+  } ] );
+} )( angular );
