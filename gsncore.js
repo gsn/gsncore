@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.10.45
+ * version 1.10.46
  * gsncore repository
- * Build date: Thu Jun 29 2017 12:09:17 GMT-0500 (CDT)
+ * Build date: Thu Jun 29 2017 14:17:33 GMT-0500 (CDT)
  */
 ( function () {
   'use strict';
@@ -13748,7 +13748,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       return e.text();
     },
     set: function ( e, v ) {
-      angular.element( 'head > meta[name="title"]' ).attr( 'content', v );
+      angular.element( 'head > meta[itemprop="title"]' ).attr( 'content', v );
       return e.text( v );
     }
   } );
@@ -13788,6 +13788,8 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     set: function ( e, v ) {
       var iw = angular.element( 'head > meta[property="og:image:width"]' ).attr( 'content', '0' );
       var ih = angular.element( 'head > meta[property="og:image:height"]' ).attr( 'content', '0' );
+      var img = new Image();
+      img.src = v;
       if ( v ) {
         var imageToFind = 'img[src="' + v + '"]';
         var $that = this;
@@ -13795,18 +13797,23 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         var setImageDimension = function () {
           var im = angular.element( imageToFind );
           if ( im[ 0 ] ) {
-            iw.attr( 'content', im[ 0 ].naturalWidth || im.width() );
-            ih.attr( 'content', im[ 0 ].naturalHeight || im.height() );
-          } else {
-            $that.$timeout( setImageDimension, 500 );
+            var w = img.naturalWidth || im[ 0 ].naturalWidth || im.width();
+            var h = img.naturalHeight || im[ 0 ].naturalHeight || im.height();
+            if (h) {
+              iw.attr( 'content', w );
+              ih.attr( 'content', h );
+              return;
+            }
           }
+
+          $that.$timeout( setImageDimension, 200 );
         };
 
         if ( v.indexOf( '//' ) === 0 ) {
           v = 'https:' + v;
         }
 
-        setImageDimension();
+        $that.$timeout(setImageDimension, 200);
       }
       return e.attr( 'content', v );
     }
