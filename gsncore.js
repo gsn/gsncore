@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.10.44
+ * version 1.10.45
  * gsncore repository
- * Build date: Thu Jun 29 2017 09:09:07 GMT-0500 (CDT)
+ * Build date: Thu Jun 29 2017 12:09:17 GMT-0500 (CDT)
  */
 ( function () {
   'use strict';
@@ -9953,8 +9953,8 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       if ( $scope.id === 'featured' ) {
         gsnStore.getFeaturedVideo().then( function ( result ) {
           if ( result.success ) {
-            result.response.Thumbnail = gsnApi.isNull( result.response.Thumbnail, {} ).replace( 'http://', '//' );
-            result.response.Url = gsnApi.isNull( result.response.Url, {} ).replace( 'http://', '//' );
+            result.response.Thumbnail = gsnApi.isNull( result.response.Thumbnail, {} ).replace( 'http://', 'https://' );
+            result.response.Url = gsnApi.isNull( result.response.Url, {} ).replace( 'http://', 'https://' );
             $scope.vm.video = result.response;
           }
         } );
@@ -9962,8 +9962,8 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     }
 
     function playVideo() {
-      $scope.vm.video.Thumbnail = gsnApi.isNull( $scope.vm.video.Thumbnail, {} ).replace( 'http://', '//' );
-      $scope.vm.video.Url = gsnApi.isNull( $scope.vm.video.Url, {} ).replace( 'http://', '//' );
+      $scope.vm.video.Thumbnail = gsnApi.isNull( $scope.vm.video.Thumbnail, {} ).replace( 'http://', 'https://' );
+      $scope.vm.video.Url = gsnApi.isNull( $scope.vm.video.Url, {} ).replace( 'http://', 'https://' );
       $timeout( function () {
         flowplayer( 'RecipeVideoPlayer', 'https://cdn.brickinc.net/script/lib/flowplayer-3.2.18.swf', {
           clip: {
