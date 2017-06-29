@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.10.46
+ * version 1.10.47
  * gsncore repository
- * Build date: Thu Jun 29 2017 14:17:33 GMT-0500 (CDT)
+ * Build date: Thu Jun 29 2017 14:21:49 GMT-0500 (CDT)
  */
 ( function () {
   'use strict';
@@ -8653,7 +8653,7 @@
   // description
   ngModifyElementDirective( {
     name: 'gsnMetaDescription',
-    selector: 'meta[name="description"]',
+    selector: 'meta[itemprop="description"]',
     get: function ( e ) {
       return e.attr( 'content' );
     },
@@ -8680,9 +8680,11 @@
 
         var setImageDimension = function () {
           var im = angular.element( imageToFind );
-          if ( im[ 0 ] ) {
-            var w = img.naturalWidth || im[ 0 ].naturalWidth || im.width();
-            var h = img.naturalHeight || im[ 0 ].naturalHeight || im.height();
+          var w = img.naturalWidth;
+          var h = img.naturalHeight;
+          if ( h || im[ 0 ] ) {
+            w = w || im[ 0 ].naturalWidth || im.width();
+            h = h || im[ 0 ].naturalHeight || im.height();
             if (h) {
               iw.attr( 'content', w );
               ih.attr( 'content', h );
