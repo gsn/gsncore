@@ -85,7 +85,7 @@
 
           // Make a copy
           $scope.profile = gsnApi.isNull( angular.copy( p.response ), {} );
-          if ( ( $scope.profile !== null ) && ( gsnApi.isNull( $scope.profile.ExternalId, null ) !== null ) ) {
+          if ( gsnApi.isNull( $scope.profile.ExternalId, null ) !== null ) {
 
             // Get the stores for the card.
             gsnStore.getStores().then( function ( rsp ) {

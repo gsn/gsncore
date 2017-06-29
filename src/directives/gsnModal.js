@@ -45,7 +45,7 @@
       }
 
       scope.closeModal = function ( shouldReload ) {
-        if ( timeoutOfOpen !== null )
+        if ( timeoutOfOpen )
           $timeout.cancel( timeoutOfOpen );
         if ( shouldReload !== undefined && shouldReload )
           window.top.location.reload();
@@ -55,8 +55,8 @@
       scope.openModal = function ( e ) {
         $rootScope.$broadcast( 'gsnevent:gsnmodal-show', element, track );
         startTime = new Date();
-        if ( e !== null ) {
-          if ( e.preventDefault !== null ) {
+        if ( e ) {
+          if ( e.preventDefault ) {
             e.preventDefault();
           }
         }

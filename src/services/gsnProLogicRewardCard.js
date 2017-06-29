@@ -11,7 +11,7 @@
     returnObj.isValid = false;
 
     returnObj.getLoyaltyCard = function ( profile, callback ) {
-      if ( returnObj.rewardCard !== null ) {
+      if ( returnObj.rewardCard ) {
         $timeout( function () {
           callback( returnObj.rewardCard, returnObj.isValid );
         }, 500 );

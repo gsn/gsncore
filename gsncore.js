@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.10.43
+ * version 1.10.44
  * gsncore repository
- * Build date: Thu Jun 29 2017 08:43:05 GMT-0500 (CDT)
+ * Build date: Thu Jun 29 2017 09:09:07 GMT-0500 (CDT)
  */
 ( function () {
   'use strict';
@@ -5204,7 +5204,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     returnObj.isValid = false;
 
     returnObj.getLoyaltyCard = function ( profile, callback ) {
-      if ( returnObj.rewardCard !== null ) {
+      if ( returnObj.rewardCard ) {
         $timeout( function () {
           callback( returnObj.rewardCard, returnObj.isValid );
         }, 500 );
@@ -9117,7 +9117,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
 
           // Make a copy
           $scope.profile = gsnApi.isNull( angular.copy( p.response ), {} );
-          if ( ( $scope.profile !== null ) && ( gsnApi.isNull( $scope.profile.ExternalId, null ) !== null ) ) {
+          if ( gsnApi.isNull( $scope.profile.ExternalId, null ) !== null ) {
 
             // Get the stores for the card.
             gsnStore.getStores().then( function ( rsp ) {
@@ -12102,7 +12102,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       }
 
       scope.closeModal = function ( shouldReload ) {
-        if ( timeoutOfOpen !== null )
+        if ( timeoutOfOpen )
           $timeout.cancel( timeoutOfOpen );
         if ( shouldReload !== undefined && shouldReload )
           window.top.location.reload();
@@ -12112,8 +12112,8 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       scope.openModal = function ( e ) {
         $rootScope.$broadcast( 'gsnevent:gsnmodal-show', element, track );
         startTime = new Date();
-        if ( e !== null ) {
-          if ( e.preventDefault !== null ) {
+        if ( e ) {
+          if ( e.preventDefault ) {
             e.preventDefault();
           }
         }
