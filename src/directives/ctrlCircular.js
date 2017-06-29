@@ -38,7 +38,12 @@
       filterBy: $location.search().q,
       filter: {},
       pageIdx: 0,
-      circIdx: 0
+      circIdx: 0,
+      circular: {
+        CircularTypeName: 'Weekly Ads',
+        Pages: [],
+        IsDummyCircular: true
+      }
     };
 
     function activate() {

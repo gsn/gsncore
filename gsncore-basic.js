@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.10.42
+ * version 1.10.43
  * gsncore repository
- * Build date: Thu Jun 29 2017 02:00:43 GMT-0500 (CDT)
+ * Build date: Thu Jun 29 2017 08:43:05 GMT-0500 (CDT)
  */
 ( function () {
   'use strict';
@@ -5257,7 +5257,12 @@
       filterBy: $location.search().q,
       filter: {},
       pageIdx: 0,
-      circIdx: 0
+      circIdx: 0,
+      circular: {
+        CircularTypeName: 'Weekly Ads',
+        Pages: [],
+        IsDummyCircular: true
+      }
     };
 
     function activate() {
