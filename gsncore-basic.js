@@ -2,7 +2,7 @@
  * gsncore
  * version 1.10.54
  * gsncore repository
- * Build date: Fri Jun 30 2017 18:08:16 GMT-0500 (CDT)
+ * Build date: Fri Jun 30 2017 18:29:27 GMT-0500 (CDT)
  */
 ( function () {
   'use strict';
@@ -433,6 +433,8 @@
   };
 
   gsn.initAnalytics = function ( $analyticsProvider ) {
+    if ( gsn.config.isPrerender ) return;
+
     // GA already supports buffered invocations so we don't need
     // to wrap these inside angulartics.waitForVendorApi
     if ( $analyticsProvider.settings ) {

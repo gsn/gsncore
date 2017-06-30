@@ -427,6 +427,8 @@
   };
 
   gsn.initAnalytics = function ( $analyticsProvider ) {
+    if ( gsn.config.isPrerender ) return;
+
     // GA already supports buffered invocations so we don't need
     // to wrap these inside angulartics.waitForVendorApi
     if ( $analyticsProvider.settings ) {
