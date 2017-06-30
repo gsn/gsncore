@@ -131,13 +131,13 @@
       if ( v ) {
         var imageToFind = 'img[src="' + v + '"]';
         if ( v.indexOf( '//' ) === 0 ) {
-          v = 'https:' + v;
+          v = 'http:' + v;
         }
 
         var iw = angular.element( 'head > meta[property="og:image:width"]' ).attr( 'content', '300' );
         var ih = angular.element( 'head > meta[property="og:image:height"]' ).attr( 'content', '300' );
         var img = new Image();
-        img.src = v;
+        img.src = originalV;
         if ( v ) {
           var $that = this;
 
@@ -150,6 +150,8 @@
               // console.log( im[ 0 ] );
               console.log( w );
               console.log( h );
+              console.log( img.width );
+              console.log( img.height );
               console.log( im[ 0 ].naturalWidth );
               console.log( im[ 0 ].naturalHeight );
               w = w || im[ 0 ].naturalWidth || angular.element( im[ 0 ] ).width();
