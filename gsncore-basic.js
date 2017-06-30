@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.10.49
+ * version 1.10.50
  * gsncore repository
- * Build date: Fri Jun 30 2017 10:00:28 GMT-0500 (CDT)
+ * Build date: Fri Jun 30 2017 16:21:00 GMT-0500 (CDT)
  */
 ( function () {
   'use strict';
@@ -8669,9 +8669,8 @@
 
             var $element = angular.element( 'head > ' + options.selector );
             if ( $element.length <= 0 && typeof ( options.html ) === 'string' ) {
-              $element = angular.element( options.html );
-              var pNode = angular.element( 'head' )[ 0 ];
-              pNode.insertBefore( $element[ 0 ], angular.element( 'title' )[ 0 ] );
+              angular.element( 'head > title' ).before( options.html );
+              $element = angular.element( 'head > ' + options.selector );
             }
 
             // Keep track of the original value, so that it
@@ -8715,7 +8714,7 @@
     },
     set: function ( e, v ) {
       angular.element( 'title' ).text( v );
-      return e.attr( 'content', v  );
+      return e.attr( 'content', v );
     }
   } );
 
@@ -8755,7 +8754,7 @@
       return e.attr( 'content' );
     },
     set: function ( e, v ) {
-      if (v) {
+      if ( v ) {
         var imageToFind = 'img[src="' + v + '"]';
         if ( v.indexOf( '//' ) === 0 ) {
           v = 'https:' + v;
@@ -8775,7 +8774,7 @@
             if ( h || im[ 0 ] ) {
               w = w || im[ 0 ].naturalWidth || im.width();
               h = h || im[ 0 ].naturalHeight || im.height();
-              if (w) {
+              if ( w ) {
                 iw.attr( 'content', w );
                 ih.attr( 'content', h );
                 return;
@@ -8785,7 +8784,7 @@
             $that.$timeout( setImageDimension, 200 );
           };
 
-          $that.$timeout(setImageDimension, 200);
+          $that.$timeout( setImageDimension, 200 );
         }
       }
 

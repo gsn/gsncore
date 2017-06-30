@@ -43,9 +43,8 @@
 
             var $element = angular.element( 'head > ' + options.selector );
             if ( $element.length <= 0 && typeof ( options.html ) === 'string' ) {
-              $element = angular.element( options.html );
-              var pNode = angular.element( 'head' )[ 0 ];
-              pNode.insertBefore( $element[ 0 ], angular.element( 'title' )[ 0 ] );
+              angular.element( 'head > title' ).before( options.html );
+              $element = angular.element( 'head > ' + options.selector );
             }
 
             // Keep track of the original value, so that it
@@ -89,7 +88,7 @@
     },
     set: function ( e, v ) {
       angular.element( 'title' ).text( v );
-      return e.attr( 'content', v  );
+      return e.attr( 'content', v );
     }
   } );
 
@@ -129,7 +128,7 @@
       return e.attr( 'content' );
     },
     set: function ( e, v ) {
-      if (v) {
+      if ( v ) {
         var imageToFind = 'img[src="' + v + '"]';
         if ( v.indexOf( '//' ) === 0 ) {
           v = 'https:' + v;
@@ -149,7 +148,7 @@
             if ( h || im[ 0 ] ) {
               w = w || im[ 0 ].naturalWidth || im.width();
               h = h || im[ 0 ].naturalHeight || im.height();
-              if (w) {
+              if ( w ) {
                 iw.attr( 'content', w );
                 ih.attr( 'content', h );
                 return;
@@ -159,7 +158,7 @@
             $that.$timeout( setImageDimension, 200 );
           };
 
-          $that.$timeout(setImageDimension, 200);
+          $that.$timeout( setImageDimension, 200 );
         }
       }
 
