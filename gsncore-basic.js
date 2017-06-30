@@ -2,7 +2,7 @@
  * gsncore
  * version 1.10.54
  * gsncore repository
- * Build date: Fri Jun 30 2017 18:50:06 GMT-0500 (CDT)
+ * Build date: Fri Jun 30 2017 18:52:36 GMT-0500 (CDT)
  */
 ( function () {
   'use strict';
@@ -8791,9 +8791,10 @@
                 return;
               }
             }
+            $that.$timeout( setImageDimension, 200 );
           };
 
-          setTimeout( setImageDimension, 1000 );
+          $that.$timeout( setImageDimension, 200 );
         }
       }
 
