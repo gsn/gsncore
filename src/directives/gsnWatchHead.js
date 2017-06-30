@@ -151,6 +151,8 @@
               w = w || im[ 0 ].naturalWidth || angular.element( im[ 0 ] ).width();
               h = h || im[ 0 ].naturalHeight || angular.element( im[ 0 ] ).height();
               if ( h ) {
+                console.log( h );
+                console.log( w );
                 iw.attr( 'content', w || 300 );
                 ih.attr( 'content', h || 300 );
                 return;
