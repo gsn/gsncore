@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.10.48
+ * version 1.10.49
  * gsncore repository
- * Build date: Thu Jun 29 2017 19:39:39 GMT-0500 (CDT)
+ * Build date: Fri Jun 30 2017 10:00:28 GMT-0500 (CDT)
  */
 ( function () {
   'use strict';
@@ -13824,13 +13824,14 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
   // page title
   ngModifyElementDirective( {
     name: 'gsnTitle',
-    selector: 'title',
+    selector: 'meta[itemprop="title"]',
+    html: '<meta itemprop="title" property="og:title"/>',
     get: function ( e ) {
-      return e.text();
+      return e.attr( 'content' );
     },
     set: function ( e, v ) {
-      angular.element( 'head > meta[itemprop="title"]' ).attr( 'content', v );
-      return e.text( v );
+      angular.element( 'title' ).text( v );
+      return e.attr( 'content', v  );
     }
   } );
 
@@ -13838,6 +13839,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
   ngModifyElementDirective( {
     name: 'gsnMetaType',
     selector: 'meta[itemprop="type"]',
+    html: '<meta content="article" itemprop="type" property="og:type"/>',
     get: function ( e ) {
       return e.attr( 'content' );
     },
@@ -13851,6 +13853,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
   ngModifyElementDirective( {
     name: 'gsnMetaDescription',
     selector: 'meta[itemprop="description"]',
+    html: '<meta itemprop="description" name="description" property="og:description"/>',
     get: function ( e ) {
       return e.attr( 'content' );
     },
@@ -13863,41 +13866,45 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
   ngModifyElementDirective( {
     name: 'gsnMetaImage',
     selector: 'meta[itemprop="image"]',
+    html: '<meta itemprop="image" property="og:image"/><meta content="0" property="og:image:width"/><meta content="0" property="og:image:height"/>',
     get: function ( e ) {
       return e.attr( 'content' );
     },
     set: function ( e, v ) {
-      var iw = angular.element( 'head > meta[property="og:image:width"]' ).attr( 'content', '0' );
-      var ih = angular.element( 'head > meta[property="og:image:height"]' ).attr( 'content', '0' );
-      var img = new Image();
-      img.src = v;
-      if ( v ) {
+      if (v) {
         var imageToFind = 'img[src="' + v + '"]';
-        var $that = this;
-
-        var setImageDimension = function () {
-          var im = angular.element( imageToFind );
-          var w = img.naturalWidth;
-          var h = img.naturalHeight;
-          if ( h || im[ 0 ] ) {
-            w = w || im[ 0 ].naturalWidth || im.width();
-            h = h || im[ 0 ].naturalHeight || im.height();
-            if (h) {
-              iw.attr( 'content', w );
-              ih.attr( 'content', h );
-              return;
-            }
-          }
-
-          $that.$timeout( setImageDimension, 200 );
-        };
-
         if ( v.indexOf( '//' ) === 0 ) {
           v = 'https:' + v;
         }
 
-        $that.$timeout(setImageDimension, 200);
+        var iw = angular.element( 'head > meta[property="og:image:width"]' ).attr( 'content', '0' );
+        var ih = angular.element( 'head > meta[property="og:image:height"]' ).attr( 'content', '0' );
+        var img = new Image();
+        img.src = v;
+        if ( v ) {
+          var $that = this;
+
+          var setImageDimension = function () {
+            var im = angular.element( imageToFind );
+            var w = img.naturalWidth;
+            var h = img.naturalHeight;
+            if ( h || im[ 0 ] ) {
+              w = w || im[ 0 ].naturalWidth || im.width();
+              h = h || im[ 0 ].naturalHeight || im.height();
+              if (w) {
+                iw.attr( 'content', w );
+                ih.attr( 'content', h );
+                return;
+              }
+            }
+
+            $that.$timeout( setImageDimension, 200 );
+          };
+
+          $that.$timeout(setImageDimension, 200);
+        }
       }
+
       return e.attr( 'content', v );
     }
   } );
@@ -13906,7 +13913,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
   ngModifyElementDirective( {
     name: 'gsnMetaGoogleSiteVerification',
     selector: 'meta[name="google-site-verification"]',
-    html: '<meta name="google-site-verification" content="" />',
+    html: '<meta name="google-site-verification" />',
     get: function ( e ) {
       return e.attr( 'content' );
     },
