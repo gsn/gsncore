@@ -496,12 +496,6 @@
       if ( !circularData ) return;
       if ( !circularData.CircularTypes ) return;
 
-      // if it's not circular and it is a prerender then don't process circular
-      var isCircularPath = /circular/gi.test( gsnApi.isNull( $location.path(), '' ) );
-      if ( !isCircularPath && gsnApi.getConfig().isPrerender ) {
-        return;
-      }
-
       betterStorage.circularLastUpdate = new Date().getTime();
       _lc.storeId = gsnApi.getSelectedStoreId();
       processingQueue.length = 0;

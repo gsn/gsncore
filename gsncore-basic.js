@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.10.51
+ * version 1.10.52
  * gsncore repository
- * Build date: Fri Jun 30 2017 16:45:00 GMT-0500 (CDT)
+ * Build date: Fri Jun 30 2017 17:16:50 GMT-0500 (CDT)
  */
 ( function () {
   'use strict';
@@ -4722,12 +4722,6 @@
       if ( !circularData ) return;
       if ( !circularData.CircularTypes ) return;
 
-      // if it's not circular and it is a prerender then don't process circular
-      var isCircularPath = /circular/gi.test( gsnApi.isNull( $location.path(), '' ) );
-      if ( !isCircularPath && gsnApi.getConfig().isPrerender ) {
-        return;
-      }
-
       betterStorage.circularLastUpdate = new Date().getTime();
       _lc.storeId = gsnApi.getSelectedStoreId();
       processingQueue.length = 0;
@@ -8760,8 +8754,8 @@
           v = 'https:' + v;
         }
 
-        var iw = angular.element( 'head > meta[property="og:image:width"]' ).attr( 'content', '0' );
-        var ih = angular.element( 'head > meta[property="og:image:height"]' ).attr( 'content', '0' );
+        var iw = angular.element( 'head > meta[property="og:image:width"]' ).attr( 'content', '300' );
+        var ih = angular.element( 'head > meta[property="og:image:height"]' ).attr( 'content', '300' );
         var img = new Image();
         img.src = v;
         if ( v ) {
