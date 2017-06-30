@@ -2,7 +2,7 @@
  * gsncore
  * version 1.10.53
  * gsncore repository
- * Build date: Fri Jun 30 2017 17:44:05 GMT-0500 (CDT)
+ * Build date: Fri Jun 30 2017 17:51:04 GMT-0500 (CDT)
  */
 ( function () {
   'use strict';
@@ -8319,15 +8319,21 @@
 
       var loadImage = function ( src, cb ) {
         var img = new Image();
-        img.src = src;
         var error = null;
+        var completed = false;
         img.onload = function () {
+          if ( completed ) return;
+          completed = true;
           cb( null, img );
         };
         img.onerror = function () {
+          if ( completed ) return;
+          completed = true;
           cb( 'ERROR LOADING IMAGE ' + src, null );
         };
+        img.src = src;
 
+        $timeout( img.onload, 200 );
       };
 
       function doLoadImage() {
@@ -8770,10 +8776,14 @@
             var w = img.naturalWidth;
             var h = img.naturalHeight;
             if ( h || im[ 0 ] ) {
-              console.log( imageToFind );
-              console.log( im[ 0 ] );
-              w = w || im[ 0 ].naturalWidth || im.width();
-              h = h || im[ 0 ].naturalHeight || im.height();
+              // console.log( imageToFind );
+              // console.log( im[ 0 ] );
+              console.log( w );
+              console.log( h );
+              console.log( im[ 0 ].naturalWidth );
+              console.log( im[ 0 ].naturalHeight );
+              w = w || im[ 0 ].naturalWidth || angular.element( im[ 0 ] ).width();
+              h = h || im[ 0 ].naturalHeight || angular.element( im[ 0 ] ).height();
               iw.attr( 'content', w || 300 );
               ih.attr( 'content', h || 300 );
               return;

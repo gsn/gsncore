@@ -18,15 +18,21 @@
 
       var loadImage = function ( src, cb ) {
         var img = new Image();
-        img.src = src;
         var error = null;
+        var completed = false;
         img.onload = function () {
+          if ( completed ) return;
+          completed = true;
           cb( null, img );
         };
         img.onerror = function () {
+          if ( completed ) return;
+          completed = true;
           cb( 'ERROR LOADING IMAGE ' + src, null );
         };
+        img.src = src;
 
+        $timeout( img.onload, 200 );
       };
 
       function doLoadImage() {
