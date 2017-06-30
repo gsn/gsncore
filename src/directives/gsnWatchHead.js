@@ -154,11 +154,9 @@
                 return;
               }
             }
-
-            $that.$timeout( setImageDimension, 200 );
           };
 
-          $that.$timeout( setImageDimension, 200 );
+          setTimeout( setImageDimension, 1000 );
         }
       }
 
