@@ -142,10 +142,14 @@
           var setImageDimension = function () {
             var im = angular.element( imageToFind );
             if ( im[ 0 ] ) {
-              // console.log( imageToFind );
-              // console.log( im[ 0 ] );
-              var w = im[ 0 ].naturalWidth || angular.element( im[ 0 ] ).width();
+              console.log( imageToFind );
+              console.log( im[ 0 ] );
               var h = im[ 0 ].naturalHeight || angular.element( im[ 0 ] ).height();
+              var w = im[ 0 ].naturalWidth || angular.element( im[ 0 ] ).width();
+              console.log( h );
+              console.log( w );
+              console.log( im.height() );
+              console.log( im.width() );
               if ( h ) {
                 console.log( h );
                 console.log( w );

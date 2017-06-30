@@ -2,7 +2,7 @@
  * gsncore
  * version 1.10.54
  * gsncore repository
- * Build date: Fri Jun 30 2017 18:46:29 GMT-0500 (CDT)
+ * Build date: Fri Jun 30 2017 18:50:06 GMT-0500 (CDT)
  */
 ( function () {
   'use strict';
@@ -8775,10 +8775,14 @@
           var setImageDimension = function () {
             var im = angular.element( imageToFind );
             if ( im[ 0 ] ) {
-              // console.log( imageToFind );
-              // console.log( im[ 0 ] );
-              var w = im[ 0 ].naturalWidth || angular.element( im[ 0 ] ).width();
+              console.log( imageToFind );
+              console.log( im[ 0 ] );
               var h = im[ 0 ].naturalHeight || angular.element( im[ 0 ] ).height();
+              var w = im[ 0 ].naturalWidth || angular.element( im[ 0 ] ).width();
+              console.log( h );
+              console.log( w );
+              console.log( im.height() );
+              console.log( im.width() );
               if ( h ) {
                 console.log( h );
                 console.log( w );
