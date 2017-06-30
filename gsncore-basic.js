@@ -2,7 +2,7 @@
  * gsncore
  * version 1.10.54
  * gsncore repository
- * Build date: Fri Jun 30 2017 18:29:27 GMT-0500 (CDT)
+ * Build date: Fri Jun 30 2017 18:34:22 GMT-0500 (CDT)
  */
 ( function () {
   'use strict';
@@ -2025,8 +2025,9 @@
     };
     var bricktag = $window.bricktag;
 
-    if ( !bricktag )
-      return service;
+    if ( !bricktag ) return service;
+
+    if ( gsnApi.getConfig().isPrerender ) return;
 
     bricktag.on( 'clickRecipe', function ( data ) {
       $timeout( function () {

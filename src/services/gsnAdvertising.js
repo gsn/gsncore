@@ -12,8 +12,9 @@
     };
     var bricktag = $window.bricktag;
 
-    if ( !bricktag )
-      return service;
+    if ( !bricktag ) return service;
+
+    if ( gsnApi.getConfig().isPrerender ) return;
 
     bricktag.on( 'clickRecipe', function ( data ) {
       $timeout( function () {
