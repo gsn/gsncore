@@ -137,7 +137,7 @@
         var iw = angular.element( 'head > meta[property="og:image:width"]' ).attr( 'content', '300' );
         var ih = angular.element( 'head > meta[property="og:image:height"]' ).attr( 'content', '300' );
         var img = new Image();
-        img.src = originalV;
+        img.src = v;
         if ( v ) {
           var $that = this;
 
