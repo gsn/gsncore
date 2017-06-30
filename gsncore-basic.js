@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.10.52
+ * version 1.10.53
  * gsncore repository
- * Build date: Fri Jun 30 2017 17:16:50 GMT-0500 (CDT)
+ * Build date: Fri Jun 30 2017 17:44:05 GMT-0500 (CDT)
  */
 ( function () {
   'use strict';
@@ -5339,6 +5339,7 @@
         IsDummyCircular: true
       }
     };
+    $scope.win.prerenderReady = false;
 
     function activate() {
       if ( $scope.vm.digitalCirc ) {
@@ -5386,6 +5387,9 @@
         $scope.vm.digitalCirc = data;
         $scope.vm.circIdx = myCircIdx;
         $scope.vm.pageIdx = myPageIdx;
+        $timeout( function () {
+          $scope.win.prerenderReady = true;
+        }, 200 );
       }
     }
 
@@ -8766,6 +8770,8 @@
             var w = img.naturalWidth;
             var h = img.naturalHeight;
             if ( h || im[ 0 ] ) {
+              console.log( imageToFind );
+              console.log( im[ 0 ] );
               w = w || im[ 0 ].naturalWidth || im.width();
               h = h || im[ 0 ].naturalHeight || im.height();
               iw.attr( 'content', w || 300 );

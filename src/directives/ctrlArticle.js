@@ -18,6 +18,8 @@
   }
 
   function myController( $scope, gsnStore, gsnApi, $location ) {
+    $scope.win.prerenderReady = false;
+
     var pathId = angular.lowercase( $location.path() ).replace( /\D*/, '' );
     $scope.myId = ( $location.search().id || pathId || 'featured' );
 
@@ -41,6 +43,10 @@
           result.response.ImageUrl = gsnApi.isNull( result.response.ImageUrl, {} ).replace( 'http://', '//' );
           $scope.article = result.response;
         }
+
+        $timeout( function () {
+          $scope.win.prerenderReady = true;
+        }, 200 );
       } );
     }
 

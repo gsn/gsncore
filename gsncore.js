@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.10.52
+ * version 1.10.53
  * gsncore repository
- * Build date: Fri Jun 30 2017 17:16:50 GMT-0500 (CDT)
+ * Build date: Fri Jun 30 2017 17:44:05 GMT-0500 (CDT)
  */
 ( function () {
   'use strict';
@@ -7419,6 +7419,8 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
   }
 
   function myController( $scope, gsnStore, gsnApi, $location ) {
+    $scope.win.prerenderReady = false;
+
     var pathId = angular.lowercase( $location.path() ).replace( /\D*/, '' );
     $scope.myId = ( $location.search().id || pathId || 'featured' );
 
@@ -7442,6 +7444,10 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
           result.response.ImageUrl = gsnApi.isNull( result.response.ImageUrl, {} ).replace( 'http://', '//' );
           $scope.article = result.response;
         }
+
+        $timeout( function () {
+          $scope.win.prerenderReady = true;
+        }, 200 );
       } );
     }
 
@@ -7616,6 +7622,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         IsDummyCircular: true
       }
     };
+    $scope.win.prerenderReady = false;
 
     function activate() {
       if ( $scope.vm.digitalCirc ) {
@@ -7663,6 +7670,9 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         $scope.vm.digitalCirc = data;
         $scope.vm.circIdx = myCircIdx;
         $scope.vm.pageIdx = myPageIdx;
+        $timeout( function () {
+          $scope.win.prerenderReady = true;
+        }, 200 );
       }
     }
 
@@ -9706,6 +9716,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     var pathRecipeId = angular.lowercase( $location.path() ).replace( /\D*/, '' );
     $scope.recipeId = ( $location.search().id || pathRecipeId || 'featured' );
     $scope.recipeQuantity = null;
+    $scope.win.prerenderReady = false;
 
     function activate() {
       if ( $scope.recipeId === 'featured' || $scope.recipeId === '' ) {
@@ -9751,6 +9762,10 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
             }, 1000 );
           }
         }
+
+        $timeout( function () {
+          $scope.win.prerenderReady = true;
+        }, 200 );
       } );
 
       myFunction.then( function ( result ) {
@@ -13882,6 +13897,8 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
             var w = img.naturalWidth;
             var h = img.naturalHeight;
             if ( h || im[ 0 ] ) {
+              console.log( imageToFind );
+              console.log( im[ 0 ] );
               w = w || im[ 0 ].naturalWidth || im.width();
               h = h || im[ 0 ].naturalHeight || im.height();
               iw.attr( 'content', w || 300 );

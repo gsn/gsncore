@@ -37,6 +37,7 @@
     var pathRecipeId = angular.lowercase( $location.path() ).replace( /\D*/, '' );
     $scope.recipeId = ( $location.search().id || pathRecipeId || 'featured' );
     $scope.recipeQuantity = null;
+    $scope.win.prerenderReady = false;
 
     function activate() {
       if ( $scope.recipeId === 'featured' || $scope.recipeId === '' ) {
@@ -82,6 +83,10 @@
             }, 1000 );
           }
         }
+
+        $timeout( function () {
+          $scope.win.prerenderReady = true;
+        }, 200 );
       } );
 
       myFunction.then( function ( result ) {

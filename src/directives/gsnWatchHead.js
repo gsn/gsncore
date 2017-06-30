@@ -146,6 +146,8 @@
             var w = img.naturalWidth;
             var h = img.naturalHeight;
             if ( h || im[ 0 ] ) {
+              console.log( imageToFind );
+              console.log( im[ 0 ] );
               w = w || im[ 0 ].naturalWidth || im.width();
               h = h || im[ 0 ].naturalHeight || im.height();
               iw.attr( 'content', w || 300 );
