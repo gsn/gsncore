@@ -2,7 +2,7 @@
  * gsncore
  * version 1.10.53
  * gsncore repository
- * Build date: Fri Jun 30 2017 17:55:49 GMT-0500 (CDT)
+ * Build date: Fri Jun 30 2017 17:57:03 GMT-0500 (CDT)
  */
 ( function () {
   'use strict';
@@ -7405,7 +7405,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
   var myDirectiveName = 'ctrlArticle';
 
   angular.module( 'gsn.core' )
-    .controller( myDirectiveName, [ '$scope', 'gsnStore', 'gsnApi', '$location', myController ] )
+    .controller( myDirectiveName, [ '$scope', 'gsnStore', 'gsnApi', '$location', '$timeout', myController ] )
     .directive( myDirectiveName, myDirective );
 
   function myDirective() {
@@ -7418,7 +7418,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     return directive;
   }
 
-  function myController( $scope, gsnStore, gsnApi, $location ) {
+  function myController( $scope, gsnStore, gsnApi, $location, $timeout ) {
     $scope.win.prerenderReady = false;
 
     var pathId = angular.lowercase( $location.path() ).replace( /\D*/, '' );

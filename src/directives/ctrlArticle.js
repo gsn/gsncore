@@ -4,7 +4,7 @@
   var myDirectiveName = 'ctrlArticle';
 
   angular.module( 'gsn.core' )
-    .controller( myDirectiveName, [ '$scope', 'gsnStore', 'gsnApi', '$location', myController ] )
+    .controller( myDirectiveName, [ '$scope', 'gsnStore', 'gsnApi', '$location', '$timeout', myController ] )
     .directive( myDirectiveName, myDirective );
 
   function myDirective() {
@@ -17,7 +17,7 @@
     return directive;
   }
 
-  function myController( $scope, gsnStore, gsnApi, $location ) {
+  function myController( $scope, gsnStore, gsnApi, $location, $timeout ) {
     $scope.win.prerenderReady = false;
 
     var pathId = angular.lowercase( $location.path() ).replace( /\D*/, '' );

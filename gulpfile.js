@@ -15,7 +15,7 @@ var banner = [
 var allSources = [ 'src/gsn.js', 'src/module.js', 'src/gsn-ui-map.js', 'src/angular-recaptcha.js', 'vendor/*.js', 'src/services/*.js', 'src/filters/*.js', 'src/directives/*.js' ];
 
 gulp.task( 'lint', function () {
-  return gulp.src( './src/*.js' )
+  return gulp.src( './src/**/*.js' )
     .pipe( $.jshint() )
     .pipe( $.jshint.reporter( 'default' ) );
 } );
