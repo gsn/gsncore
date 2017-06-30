@@ -45,7 +45,6 @@
         IsDummyCircular: true
       }
     };
-    $scope.win.prerenderReady = false;
 
     function activate() {
       if ( $scope.vm.digitalCirc ) {
@@ -93,9 +92,6 @@
         $scope.vm.digitalCirc = data;
         $scope.vm.circIdx = myCircIdx;
         $scope.vm.pageIdx = myPageIdx;
-        $timeout( function () {
-          $scope.win.prerenderReady = true;
-        }, 200 );
       }
     }
 

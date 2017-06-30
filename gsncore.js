@@ -2,7 +2,7 @@
  * gsncore
  * version 1.10.54
  * gsncore repository
- * Build date: Fri Jun 30 2017 18:52:36 GMT-0500 (CDT)
+ * Build date: Fri Jun 30 2017 18:53:51 GMT-0500 (CDT)
  */
 ( function () {
   'use strict';
@@ -7625,7 +7625,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         IsDummyCircular: true
       }
     };
-    $scope.win.prerenderReady = false;
 
     function activate() {
       if ( $scope.vm.digitalCirc ) {
@@ -7673,9 +7672,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         $scope.vm.digitalCirc = data;
         $scope.vm.circIdx = myCircIdx;
         $scope.vm.pageIdx = myPageIdx;
-        $timeout( function () {
-          $scope.win.prerenderReady = true;
-        }, 200 );
       }
     }
 
