@@ -134,8 +134,8 @@
           v = 'https:' + v;
         }
 
-        var iw = angular.element( 'head > meta[property="og:image:width"]' ).attr( 'content', '0' );
-        var ih = angular.element( 'head > meta[property="og:image:height"]' ).attr( 'content', '0' );
+        var iw = angular.element( 'head > meta[property="og:image:width"]' ).attr( 'content', '300' );
+        var ih = angular.element( 'head > meta[property="og:image:height"]' ).attr( 'content', '300' );
         var img = new Image();
         img.src = v;
         if ( v ) {
@@ -148,11 +148,9 @@
             if ( h || im[ 0 ] ) {
               w = w || im[ 0 ].naturalWidth || im.width();
               h = h || im[ 0 ].naturalHeight || im.height();
-              if ( h ) {
-                iw.attr( 'content', w );
-                ih.attr( 'content', h );
-                return;
-              }
+              iw.attr( 'content', w || 300 );
+              ih.attr( 'content', h || 300 );
+              return;
             }
 
             $that.$timeout( setImageDimension, 200 );

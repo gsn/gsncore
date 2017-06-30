@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.10.50
+ * version 1.10.51
  * gsncore repository
- * Build date: Fri Jun 30 2017 16:21:00 GMT-0500 (CDT)
+ * Build date: Fri Jun 30 2017 16:45:00 GMT-0500 (CDT)
  */
 ( function () {
   'use strict';
@@ -8749,7 +8749,7 @@
   ngModifyElementDirective( {
     name: 'gsnMetaImage',
     selector: 'meta[itemprop="image"]',
-    html: '<meta itemprop="image" property="og:image"/><meta content="0" property="og:image:width"/><meta content="0" property="og:image:height"/>',
+    html: '<meta itemprop="image" property="og:image"/><meta content="300" property="og:image:width"/><meta content="300" property="og:image:height"/>',
     get: function ( e ) {
       return e.attr( 'content' );
     },
@@ -8774,11 +8774,9 @@
             if ( h || im[ 0 ] ) {
               w = w || im[ 0 ].naturalWidth || im.width();
               h = h || im[ 0 ].naturalHeight || im.height();
-              if ( w ) {
-                iw.attr( 'content', w );
-                ih.attr( 'content', h );
-                return;
-              }
+              iw.attr( 'content', w || 300 );
+              ih.attr( 'content', h || 300 );
+              return;
             }
 
             $that.$timeout( setImageDimension, 200 );
