@@ -123,7 +123,7 @@
   ngModifyElementDirective( {
     name: 'gsnMetaImage',
     selector: 'meta[itemprop="image"]',
-    html: '<meta itemprop="image" property="og:image"/><meta content="0" property="og:image:width"/><meta content="0" property="og:image:height"/>',
+    html: '<meta itemprop="image" property="og:image"/><meta content="300" property="og:image:width"/><meta content="300" property="og:image:height"/>',
     get: function ( e ) {
       return e.attr( 'content' );
     },
@@ -148,7 +148,7 @@
             if ( h || im[ 0 ] ) {
               w = w || im[ 0 ].naturalWidth || im.width();
               h = h || im[ 0 ].naturalHeight || im.height();
-              if ( w ) {
+              if ( h ) {
                 iw.attr( 'content', w );
                 ih.attr( 'content', h );
                 return;
