@@ -549,7 +549,7 @@
           var im = img[ 0 ] || img;
           var w = im.naturalWidth || im.width || img.width();
           var h = im.naturalHeight || im.height || img.height();
-          img.addClass( 'hidden-meta' );
+          img.remove();
           hasSize = true;
           cb( {
             w: w,

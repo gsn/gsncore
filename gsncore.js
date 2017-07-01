@@ -2,7 +2,7 @@
  * gsncore
  * version 1.10.55
  * gsncore repository
- * Build date: Fri Jun 30 2017 22:23:29 GMT-0500 (CDT)
+ * Build date: Fri Jun 30 2017 23:08:24 GMT-0500 (CDT)
  */
 ( function () {
   'use strict';
@@ -1250,7 +1250,7 @@
           var im = img[ 0 ] || img;
           var w = im.naturalWidth || im.width || img.width();
           var h = im.naturalHeight || im.height || img.height();
-          img.addClass( 'hidden-meta' );
+          img.remove();
           hasSize = true;
           cb( {
             w: w,
@@ -13917,58 +13917,16 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
           v = 'https:' + v;
         }
 
-        var loadCount = 0;
         var $that = this;
         var iw = angular.element( 'head > meta[property="og:image:width"]' ).attr( 'content', '300' );
         var ih = angular.element( 'head > meta[property="og:image:height"]' ).attr( 'content', '300' );
-        if ( v ) {
-          var setImageDimension = function ( rst ) {
-            loadCount = 5;
-            iw.attr( 'content', rst.w || 300 );
-            ih.attr( 'content', rst.h || 300 );
-          };
 
-          $that.gsnApi.loadImage( v, setImageDimension );
+        var setImageDimension = function ( rst ) {
+          iw.attr( 'content', rst.w || 300 );
+          ih.attr( 'content', rst.h || 300 );
+        };
 
-          var doubleLoader = function () {
-            if ( loadCount < 5 ) {
-              loadCount++;
-              var img = angular.element( 'img[src="' + v + '"]' );
-              if ( img[ 0 ] ) {
-                img.css( 'width', 'auto' );
-                img.css( 'height', 'auto' );
-                var rst = {
-                  w: img[ 0 ].width || img.width(),
-                  h: img[ 0 ].height || img.height()
-                };
-
-                console.log( img.attr( 'src' ) );
-                console.log( img[ 0 ].width );
-                console.log( img[ 0 ].naturalWidth );
-
-                /*if ( rst.h <= 0 ) {
-                  img = img.parent();
-                  rst = {
-                    w: img.width(),
-                    h: img.height()
-                  };
-                }*/
-                if ( rst.h > 0 ) {
-                  if ( console && console.log ) {
-                    console.log( 'image load' );
-                    console.log( rst.w );
-                    console.log( rst.h );
-                  }
-                  setImageDimension( rst );
-                  return;
-                }
-              }
-            }
-
-            $that.$timeout( doubleLoader, 500 );
-          };
-          $that.$timeout( doubleLoader, 1000 );
-        }
+        $that.gsnApi.loadImage( v, setImageDimension );
       }
 
       return e.attr( 'content', v );
