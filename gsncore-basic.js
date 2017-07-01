@@ -2,7 +2,7 @@
  * gsncore
  * version 1.10.55
  * gsncore repository
- * Build date: Fri Jun 30 2017 19:28:26 GMT-0500 (CDT)
+ * Build date: Fri Jun 30 2017 19:29:49 GMT-0500 (CDT)
  */
 ( function () {
   'use strict';
@@ -8374,7 +8374,7 @@
         }
         element.html( '' );
 
-        gsnApi.loadImage( attrs.src, function ( err, img ) {
+        gsnApi.loadImage( attrs.src, function ( img ) {
           width = img.w;
           height = img.h;
 

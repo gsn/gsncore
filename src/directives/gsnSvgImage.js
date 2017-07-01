@@ -24,7 +24,7 @@
         }
         element.html( '' );
 
-        gsnApi.loadImage( attrs.src, function ( err, img ) {
+        gsnApi.loadImage( attrs.src, function ( img ) {
           width = img.w;
           height = img.h;
 
