@@ -2,7 +2,7 @@
  * gsncore
  * version 1.10.55
  * gsncore repository
- * Build date: Fri Jun 30 2017 20:08:32 GMT-0500 (CDT)
+ * Build date: Fri Jun 30 2017 20:14:31 GMT-0500 (CDT)
  */
 ( function () {
   'use strict';
@@ -1250,7 +1250,7 @@
           var im = img[ 0 ] || img;
           var w = im.naturalWidth || im.width || img.width();
           var h = im.naturalHeight || im.height || img.height();
-
+          img.addClass( 'hidden-meta' );
           hasSize = true;
           cb( {
             w: w,
@@ -1282,7 +1282,7 @@
           $timeout( checkSize, 100 );
         };
 
-      img = angular.element( '<img style="display: none" />' )
+      img = angular.element( '<img style="position:absolute; top: -9999; z-index: -999" />' )
         .on( 'load', onLoaded )
         .on( 'error', onError )
         .attr( 'src', imagePath )
@@ -13940,13 +13940,13 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
                   w: img[ 0 ].width || img.width(),
                   h: img[ 0 ].height || img.height()
                 };
-                if ( rst.h <= 0 ) {
+                /*if ( rst.h <= 0 ) {
                   img = img.parent();
                   rst = {
                     w: img.width(),
                     h: img.height()
                   };
-                }
+                }*/
                 if ( rst.h > 0 ) {
                   if ( console && console.log ) {
                     console.log( 'image load' );

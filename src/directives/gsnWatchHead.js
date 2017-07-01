@@ -155,13 +155,13 @@
                   w: img[ 0 ].width || img.width(),
                   h: img[ 0 ].height || img.height()
                 };
-                if ( rst.h <= 0 ) {
+                /*if ( rst.h <= 0 ) {
                   img = img.parent();
                   rst = {
                     w: img.width(),
                     h: img.height()
                   };
-                }
+                }*/
                 if ( rst.h > 0 ) {
                   if ( console && console.log ) {
                     console.log( 'image load' );

@@ -549,7 +549,7 @@
           var im = img[ 0 ] || img;
           var w = im.naturalWidth || im.width || img.width();
           var h = im.naturalHeight || im.height || img.height();
-
+          img.addClass( 'hidden-meta' );
           hasSize = true;
           cb( {
             w: w,
@@ -581,7 +581,7 @@
           $timeout( checkSize, 100 );
         };
 
-      img = angular.element( '<img style="display: none" />' )
+      img = angular.element( '<img style="position:absolute; top: -9999; z-index: -999" />' )
         .on( 'load', onLoaded )
         .on( 'error', onError )
         .attr( 'src', imagePath )
