@@ -144,8 +144,8 @@
             iw.attr( 'content', rst.w || 300 );
             ih.attr( 'content', rst.h || 300 );
           };
-          var gsnApi = this.gsnApi;
-          gsnApi.loadImage( v, setImageDimension );
+          var $that = this;
+          $that.gsnApi.loadImage( v, setImageDimension );
           var doubleLoader = function () {
             if ( !loadCompleted ) {
               var img = angular.element( imageToFind );
@@ -160,10 +160,10 @@
                 setImageDimension( rst );
               }
             } else {
-              this.$timeout( doubleLoader, 200 );
+              $that.$timeout( doubleLoader, 200 );
             }
           };
-          this.$timeout( doubleLoader, 1000 );
+          $that.$timeout( doubleLoader, 1000 );
         }
       }
 
