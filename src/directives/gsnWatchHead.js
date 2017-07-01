@@ -144,8 +144,10 @@
             iw.attr( 'content', rst.w || 300 );
             ih.attr( 'content', rst.h || 300 );
           };
-
-          this.gsnApi.loadImage( v, setImageDimension );
+          var gsnApi = this.gsnApi;
+          this.$timeout( function () {
+            gsnApi.loadImage( v, setImageDimension );
+          }, 200 );
         }
       }
 

@@ -566,7 +566,6 @@
 
           var im = img[ 0 ] || img;
           var w = im.naturalWidth || im.width || img.width();
-          var h = im.naturalHeight || im.height || img.height();
 
           if ( ( im.naturalWidth || 0 ) > 0 ) {
             onHasSize();
