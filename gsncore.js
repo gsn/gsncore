@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.10.54
+ * version 1.10.55
  * gsncore repository
- * Build date: Fri Jun 30 2017 18:53:51 GMT-0500 (CDT)
+ * Build date: Fri Jun 30 2017 19:01:53 GMT-0500 (CDT)
  */
 ( function () {
   'use strict';
@@ -13894,29 +13894,24 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         var ih = angular.element( 'head > meta[property="og:image:height"]' ).attr( 'content', '300' );
         if ( v ) {
           var $that = this;
+          var img = new Image();
 
           var setImageDimension = function () {
-            var im = angular.element( imageToFind );
-            if ( im[ 0 ] ) {
-              console.log( imageToFind );
-              console.log( im[ 0 ] );
-              var h = im[ 0 ].naturalHeight || angular.element( im[ 0 ] ).height();
-              var w = im[ 0 ].naturalWidth || angular.element( im[ 0 ] ).width();
-              console.log( h );
-              console.log( w );
-              console.log( im.height() );
-              console.log( im.width() );
-              if ( h ) {
-                console.log( h );
-                console.log( w );
-                iw.attr( 'content', w || 300 );
-                ih.attr( 'content', h || 300 );
-                return;
-              }
+            var h = img.naturalHeight;
+            var w = img.naturalWidth;
+
+            console.log( h );
+            console.log( w );
+            if ( h ) {
+              iw.attr( 'content', w || 300 );
+              ih.attr( 'content', h || 300 );
+              return;
             }
+
             $that.$timeout( setImageDimension, 200 );
           };
-
+          img.onload = setImageDimension;
+          img.src = v;
           $that.$timeout( setImageDimension, 200 );
         }
       }
