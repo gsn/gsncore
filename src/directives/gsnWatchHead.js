@@ -152,13 +152,17 @@
               loadCount++;
               var img = angular.element( 'img[src="' + v + '"]' );
               if ( img[ 0 ] ) {
+                img.css( 'width', 'auto' );
+                img.css( 'height', 'auto' );
                 var rst = {
                   w: img[ 0 ].width || img.width(),
                   h: img[ 0 ].height || img.height()
                 };
 
                 console.log( img.attr( 'src' ) );
-                console.log( JSON.stringify( img[ 0 ] ) );
+                console.log( img[ 0 ].width );
+                console.log( img[ 0 ].naturalWidth );
+
                 /*if ( rst.h <= 0 ) {
                   img = img.parent();
                   rst = {

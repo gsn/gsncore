@@ -563,17 +563,15 @@
           onHasSize();
         },
         checkSize = function () {
+          if ( img.complete ) {
+            onHasSize();
+            return;
+          }
 
           var im = img[ 0 ] || img;
           var w = im.naturalWidth || im.width || img.width();
 
-          if ( ( im.naturalWidth || 0 ) > 0 ) {
-            onHasSize();
-            return;
-          }
-          // some browsers will return height of an empty image about 20-40px
-          // just to be sure we check for 50
-          else if ( w > 50 ) {
+          if ( w > 50 ) {
             onHasSize();
             return;
           }

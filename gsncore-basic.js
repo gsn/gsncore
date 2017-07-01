@@ -2,7 +2,7 @@
  * gsncore
  * version 1.10.55
  * gsncore repository
- * Build date: Fri Jun 30 2017 22:10:06 GMT-0500 (CDT)
+ * Build date: Fri Jun 30 2017 22:23:29 GMT-0500 (CDT)
  */
 ( function () {
   'use strict';
@@ -1264,17 +1264,15 @@
           onHasSize();
         },
         checkSize = function () {
+          if ( img.complete ) {
+            onHasSize();
+            return;
+          }
 
           var im = img[ 0 ] || img;
           var w = im.naturalWidth || im.width || img.width();
 
-          if ( ( im.naturalWidth || 0 ) > 0 ) {
-            onHasSize();
-            return;
-          }
-          // some browsers will return height of an empty image about 20-40px
-          // just to be sure we check for 50
-          else if ( w > 50 ) {
+          if ( w > 50 ) {
             onHasSize();
             return;
           }
@@ -8810,13 +8808,17 @@
               loadCount++;
               var img = angular.element( 'img[src="' + v + '"]' );
               if ( img[ 0 ] ) {
+                img.css( 'width', 'auto' );
+                img.css( 'height', 'auto' );
                 var rst = {
                   w: img[ 0 ].width || img.width(),
                   h: img[ 0 ].height || img.height()
                 };
 
                 console.log( img.attr( 'src' ) );
-                console.log( JSON.stringify( img[ 0 ] ) );
+                console.log( img[ 0 ].width );
+                console.log( img[ 0 ].naturalWidth );
+
                 /*if ( rst.h <= 0 ) {
                   img = img.parent();
                   rst = {
