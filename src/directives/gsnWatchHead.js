@@ -156,13 +156,16 @@
                   w: img[ 0 ].width || img.width(),
                   h: img[ 0 ].height || img.height()
                 };
-                if ( rst.h <= 0 ) {
+
+                console.log( img.attr( 'src' ) );
+                console.log( JSON.stringify( img[ 0 ] ) );
+                /*if ( rst.h <= 0 ) {
                   img = img.parent();
                   rst = {
                     w: img.width(),
                     h: img.height()
                   };
-                }
+                }*/
                 if ( rst.h > 0 ) {
                   if ( console && console.log ) {
                     console.log( 'image load' );
@@ -175,7 +178,7 @@
               }
             }
 
-            $that.$timeout( doubleLoader, 200 );
+            $that.$timeout( doubleLoader, 500 );
           };
           $that.$timeout( doubleLoader, 1000 );
         }

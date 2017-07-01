@@ -2,7 +2,7 @@
  * gsncore
  * version 1.10.55
  * gsncore repository
- * Build date: Fri Jun 30 2017 22:04:49 GMT-0500 (CDT)
+ * Build date: Fri Jun 30 2017 22:10:07 GMT-0500 (CDT)
  */
 ( function () {
   'use strict';
@@ -13941,13 +13941,16 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
                   w: img[ 0 ].width || img.width(),
                   h: img[ 0 ].height || img.height()
                 };
-                if ( rst.h <= 0 ) {
+
+                console.log( img.attr( 'src' ) );
+                console.log( JSON.stringify( img[ 0 ] ) );
+                /*if ( rst.h <= 0 ) {
                   img = img.parent();
                   rst = {
                     w: img.width(),
                     h: img.height()
                   };
-                }
+                }*/
                 if ( rst.h > 0 ) {
                   if ( console && console.log ) {
                     console.log( 'image load' );
@@ -13960,7 +13963,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
               }
             }
 
-            $that.$timeout( doubleLoader, 200 );
+            $that.$timeout( doubleLoader, 500 );
           };
           $that.$timeout( doubleLoader, 1000 );
         }
