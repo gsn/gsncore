@@ -130,6 +130,7 @@
     },
     set: function ( e, v ) {
       if ( v ) {
+        var imageToFind = 'img[src="' + v + '"]';
         if ( v.indexOf( '//' ) === 0 ) {
           v = 'https:' + v;
         }
@@ -137,17 +138,31 @@
         var iw = angular.element( 'head > meta[property="og:image:width"]' ).attr( 'content', '300' );
         var ih = angular.element( 'head > meta[property="og:image:height"]' ).attr( 'content', '300' );
         if ( v ) {
+          var loadCompleted = false;
           var setImageDimension = function ( rst ) {
-            console.log( 'debug' );
-            console.log( rst.w );
-            console.log( rst.h );
+            loadCompleted = true;
             iw.attr( 'content', rst.w || 300 );
             ih.attr( 'content', rst.h || 300 );
           };
           var gsnApi = this.gsnApi;
-          this.$timeout( function () {
-            gsnApi.loadImage( v, setImageDimension );
-          }, 200 );
+          gsnApi.loadImage( v, setImageDimension );
+          var doubleLoader = function () {
+            if ( !loadCompleted ) {
+              var img = angular.element( imageToFind );
+              if ( img[ 0 ] ) {
+                var rst = {
+                  w: img[ 0 ].width || img.width(),
+                  h: img[ 0 ].height || img.height()
+                };
+                console.log( 'internal load' );
+                console.log( rst );
+                setImageDimension( rst );
+              }
+            } else {
+              this.$timeout( doubleLoader, 200 );
+            }
+          };
+          this.$timeout( doubleLoader, 1000 );
         }
       }
 

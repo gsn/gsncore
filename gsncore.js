@@ -2,7 +2,7 @@
  * gsncore
  * version 1.10.55
  * gsncore repository
- * Build date: Fri Jun 30 2017 19:44:08 GMT-0500 (CDT)
+ * Build date: Fri Jun 30 2017 19:52:28 GMT-0500 (CDT)
  */
 ( function () {
   'use strict';
@@ -1267,7 +1267,6 @@
 
           var im = img[ 0 ] || img;
           var w = im.naturalWidth || im.width || img.width();
-          var h = im.naturalHeight || im.height || img.height();
 
           if ( ( im.naturalWidth || 0 ) > 0 ) {
             onHasSize();
@@ -13916,6 +13915,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     },
     set: function ( e, v ) {
       if ( v ) {
+        var imageToFind = 'img[src="' + v + '"]';
         if ( v.indexOf( '//' ) === 0 ) {
           v = 'https:' + v;
         }
@@ -13923,15 +13923,31 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         var iw = angular.element( 'head > meta[property="og:image:width"]' ).attr( 'content', '300' );
         var ih = angular.element( 'head > meta[property="og:image:height"]' ).attr( 'content', '300' );
         if ( v ) {
+          var loadCompleted = false;
           var setImageDimension = function ( rst ) {
-            console.log( 'debug' );
-            console.log( rst.w );
-            console.log( rst.h );
+            loadCompleted = true;
             iw.attr( 'content', rst.w || 300 );
             ih.attr( 'content', rst.h || 300 );
           };
-
-          this.gsnApi.loadImage( v, setImageDimension );
+          var gsnApi = this.gsnApi;
+          gsnApi.loadImage( v, setImageDimension );
+          var doubleLoader = function () {
+            if ( !loadCompleted ) {
+              var img = angular.element( imageToFind );
+              if ( img[ 0 ] ) {
+                var rst = {
+                  w: img[ 0 ].width || img.width(),
+                  h: img[ 0 ].height || img.height()
+                };
+                console.log( 'internal load' );
+                console.log( rst );
+                setImageDimension( rst );
+              }
+            } else {
+              this.$timeout( doubleLoader, 200 );
+            }
+          };
+          this.$timeout( doubleLoader, 1000 );
         }
       }
 
