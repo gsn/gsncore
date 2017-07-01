@@ -134,58 +134,16 @@
           v = 'https:' + v;
         }
 
-        var loadCount = 0;
         var $that = this;
         var iw = angular.element( 'head > meta[property="og:image:width"]' ).attr( 'content', '300' );
         var ih = angular.element( 'head > meta[property="og:image:height"]' ).attr( 'content', '300' );
-        if ( v ) {
-          var setImageDimension = function ( rst ) {
-            loadCount = 5;
-            iw.attr( 'content', rst.w || 300 );
-            ih.attr( 'content', rst.h || 300 );
-          };
 
-          $that.gsnApi.loadImage( v, setImageDimension );
+        var setImageDimension = function ( rst ) {
+          iw.attr( 'content', rst.w || 300 );
+          ih.attr( 'content', rst.h || 300 );
+        };
 
-          var doubleLoader = function () {
-            if ( loadCount < 5 ) {
-              loadCount++;
-              var img = angular.element( 'img[src="' + v + '"]' );
-              if ( img[ 0 ] ) {
-                img.css( 'width', 'auto' );
-                img.css( 'height', 'auto' );
-                var rst = {
-                  w: img[ 0 ].width || img.width(),
-                  h: img[ 0 ].height || img.height()
-                };
-
-                console.log( img.attr( 'src' ) );
-                console.log( img[ 0 ].width );
-                console.log( img[ 0 ].naturalWidth );
-
-                /*if ( rst.h <= 0 ) {
-                  img = img.parent();
-                  rst = {
-                    w: img.width(),
-                    h: img.height()
-                  };
-                }*/
-                if ( rst.h > 0 ) {
-                  if ( console && console.log ) {
-                    console.log( 'image load' );
-                    console.log( rst.w );
-                    console.log( rst.h );
-                  }
-                  setImageDimension( rst );
-                  return;
-                }
-              }
-            }
-
-            $that.$timeout( doubleLoader, 500 );
-          };
-          $that.$timeout( doubleLoader, 1000 );
-        }
+        $that.gsnApi.loadImage( v, setImageDimension );
       }
 
       return e.attr( 'content', v );
