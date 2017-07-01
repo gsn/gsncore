@@ -2,7 +2,7 @@
  * gsncore
  * version 1.10.55
  * gsncore repository
- * Build date: Fri Jun 30 2017 19:33:15 GMT-0500 (CDT)
+ * Build date: Fri Jun 30 2017 19:44:08 GMT-0500 (CDT)
  */
 ( function () {
   'use strict';
@@ -1242,15 +1242,14 @@
     gsn.getUserId = returnObj.getProfileId;
 
     returnObj.loadImage = function ( src, cb, container ) {
-      var supportsNatural = ( 'naturalWidth' in ( new Image() ) ),
-        imagePath = src,
-        interval,
+      var imagePath = src,
+        img,
         hasSize,
         onHasSize = function () {
           if ( hasSize ) return;
-
-          var w = supportsNatural ? img[ 0 ].naturalWidth : img.width();
-          var h = supportsNatural ? img[ 0 ].naturalHeight : img.height();
+          var im = img[ 0 ] || img;
+          var w = im.naturalWidth || im.width || img.width();
+          var h = im.naturalHeight || im.height || img.height();
 
           hasSize = true;
           cb( {
@@ -1266,23 +1265,25 @@
         },
         checkSize = function () {
 
-          if ( supportsNatural ) {
-            if ( img[ 0 ].naturalWidth > 0 ) {
-              onHasSize();
-              return;
-            }
-          } else {
-            // some browsers will return height of an empty image about 20-40px
-            // just to be sure we check for 50
-            if ( img.width() > 50 ) {
-              onHasSize();
-              return;
-            }
+          var im = img[ 0 ] || img;
+          var w = im.naturalWidth || im.width || img.width();
+          var h = im.naturalHeight || im.height || img.height();
+
+          if ( ( im.naturalWidth || 0 ) > 0 ) {
+            onHasSize();
+            return;
+          }
+          // some browsers will return height of an empty image about 20-40px
+          // just to be sure we check for 50
+          else if ( w > 50 ) {
+            onHasSize();
+            return;
           }
 
           $timeout( checkSize, 100 );
-        },
-        img = angular.element( '<img style="display: none" />' )
+        };
+
+      img = angular.element( '<img style="display: none" />' )
         .on( 'load', onLoaded )
         .on( 'error', onError )
         .attr( 'src', imagePath )
