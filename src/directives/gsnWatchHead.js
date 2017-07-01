@@ -154,8 +154,9 @@
                   w: img[ 0 ].width || img.width(),
                   h: img[ 0 ].height || img.height()
                 };
-                console.log( 'internal load' );
-                console.log( rst );
+                console.log( 'internal load2' );
+                console.log( rst.w );
+                console.log( rst.h );
                 setImageDimension( rst );
               }
             } else {
