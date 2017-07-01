@@ -158,10 +158,11 @@
                 console.log( rst.w );
                 console.log( rst.h );
                 setImageDimension( rst );
+                return;
               }
-            } else {
-              $that.$timeout( doubleLoader, 200 );
             }
+
+            $that.$timeout( doubleLoader, 200 );
           };
           $that.$timeout( doubleLoader, 1000 );
         }
