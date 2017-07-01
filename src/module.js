@@ -588,7 +588,7 @@
         .appendTo( container || angular.element( 'body' )[ 0 ] );
 
       checkSize();
-    }
+    };
 
     returnObj.logOut = function () {
       /// <summary>Log a user out.</summary>

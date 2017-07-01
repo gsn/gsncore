@@ -2,7 +2,7 @@
  * gsncore
  * version 1.10.55
  * gsncore repository
- * Build date: Fri Jun 30 2017 19:29:49 GMT-0500 (CDT)
+ * Build date: Fri Jun 30 2017 19:33:14 GMT-0500 (CDT)
  */
 ( function () {
   'use strict';
@@ -1289,7 +1289,7 @@
         .appendTo( container || angular.element( 'body' )[ 0 ] );
 
       checkSize();
-    }
+    };
 
     returnObj.logOut = function () {
       /// <summary>Log a user out.</summary>
