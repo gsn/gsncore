@@ -2,7 +2,7 @@
  * gsncore
  * version 1.10.55
  * gsncore repository
- * Build date: Fri Jun 30 2017 19:57:57 GMT-0500 (CDT)
+ * Build date: Fri Jun 30 2017 20:04:24 GMT-0500 (CDT)
  */
 ( function () {
   'use strict';
@@ -8796,25 +8796,28 @@
         var iw = angular.element( 'head > meta[property="og:image:width"]' ).attr( 'content', '300' );
         var ih = angular.element( 'head > meta[property="og:image:height"]' ).attr( 'content', '300' );
         if ( v ) {
-          var loadCompleted = false;
+          var loadCount = 0;
           var setImageDimension = function ( rst ) {
-            loadCompleted = true;
+            loadCount = 5;
             iw.attr( 'content', rst.w || 300 );
             ih.attr( 'content', rst.h || 300 );
           };
           var $that = this;
           $that.gsnApi.loadImage( v, setImageDimension );
           var doubleLoader = function () {
-            if ( !loadCompleted ) {
+            if ( loadCount < 5 ) {
+              loadCount++;
               var img = angular.element( imageToFind );
               if ( img[ 0 ] ) {
                 var rst = {
-                  w: img[ 0 ].width || img.width(),
-                  h: img[ 0 ].height || img.height()
+                  w: img.width(),
+                  h: img.height()
                 };
-                console.log( 'internal load2' );
-                console.log( rst.w );
-                console.log( rst.h );
+                if ( console && console.log ) {
+                  console.log( 'internal image load' );
+                  console.log( rst.w );
+                  console.log( rst.h );
+                }
                 setImageDimension( rst );
                 return;
               }
