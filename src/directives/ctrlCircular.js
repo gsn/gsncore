@@ -220,6 +220,13 @@
 
         $scope.vm.pageCount = $scope.vm.circular.Pages.length;
         $scope.vm.page = $scope.vm.circular.Pages[ $scope.vm.pageIdx - 1 ];
+
+        // something went wrong, redirect to circular home
+        if ( !$scope.vm.page ) {
+          $scope.goUrl( '/circular' );
+          return;
+        }
+
         if ( !$scope.vm.page.sorted ) {
           $scope.vm.page.Items.sort( sortMe );
           $scope.vm.page.sorted = true;

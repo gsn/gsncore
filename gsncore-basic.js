@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.10.56
+ * version 1.10.57
  * gsncore repository
- * Build date: Fri Jun 30 2017 23:09:54 GMT-0500 (CDT)
+ * Build date: Fri Jun 30 2017 23:19:08 GMT-0500 (CDT)
  */
 ( function () {
   'use strict';
@@ -5565,6 +5565,13 @@
 
         $scope.vm.pageCount = $scope.vm.circular.Pages.length;
         $scope.vm.page = $scope.vm.circular.Pages[ $scope.vm.pageIdx - 1 ];
+
+        // something went wrong, redirect to circular home
+        if ( !$scope.vm.page ) {
+          $scope.goUrl( '/circular' );
+          return;
+        }
+
         if ( !$scope.vm.page.sorted ) {
           $scope.vm.page.Items.sort( sortMe );
           $scope.vm.page.sorted = true;
