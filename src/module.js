@@ -581,7 +581,7 @@
           $timeout( checkSize, 100 );
         };
 
-      img = angular.element( '<img style="position:absolute; top: -9999; z-index: -999" />' )
+      img = angular.element( '<img style="position:absolute; top: -9999; z-index: -999; height: auto; width: auto; max-width: 100%;" />' )
         .on( 'load', onLoaded )
         .on( 'error', onError )
         .attr( 'src', imagePath )
