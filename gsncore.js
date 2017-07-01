@@ -2,7 +2,7 @@
  * gsncore
  * version 1.10.55
  * gsncore repository
- * Build date: Fri Jun 30 2017 19:14:51 GMT-0500 (CDT)
+ * Build date: Fri Jun 30 2017 19:28:26 GMT-0500 (CDT)
  */
 ( function () {
   'use strict';
@@ -1240,6 +1240,56 @@
 
     gsn.isLoggedIn = returnObj.isLoggedIn;
     gsn.getUserId = returnObj.getProfileId;
+
+    returnObj.loadImage = function ( src, cb, container ) {
+      var supportsNatural = ( 'naturalWidth' in ( new Image() ) ),
+        imagePath = src,
+        interval,
+        hasSize,
+        onHasSize = function () {
+          if ( hasSize ) return;
+
+          var w = supportsNatural ? img[ 0 ].naturalWidth : img.width();
+          var h = supportsNatural ? img[ 0 ].naturalHeight : img.height();
+
+          hasSize = true;
+          cb( {
+            w: w,
+            h: h
+          } );
+        },
+        onLoaded = function () {
+          onHasSize();
+        },
+        onError = function () {
+          onHasSize();
+        },
+        checkSize = function () {
+
+          if ( supportsNatural ) {
+            if ( img[ 0 ].naturalWidth > 0 ) {
+              onHasSize();
+              return;
+            }
+          } else {
+            // some browsers will return height of an empty image about 20-40px
+            // just to be sure we check for 50
+            if ( img.width() > 50 ) {
+              onHasSize();
+              return;
+            }
+          }
+
+          $timeout( checkSize, 100 );
+        },
+        img = angular.element( '<img style="display: none" />' )
+        .on( 'load', onLoaded )
+        .on( 'error', onError )
+        .attr( 'src', imagePath )
+        .appendTo( container || angular.element( 'body' )[ 0 ] );
+
+      checkSize();
+    }
 
     returnObj.logOut = function () {
       /// <summary>Log a user out.</summary>
@@ -13429,7 +13479,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
   'use strict';
   var myModule = angular.module( 'gsn.core' );
 
-  myModule.directive( 'gsnSvgImage', [ '$window', '$timeout', 'debounce', function ( $window, $timeout, debounce ) {
+  myModule.directive( 'gsnSvgImage', [ '$window', '$timeout', 'debounce', 'gsnApi', function ( $window, $timeout, debounce, gsnApi ) {
 
     var directive = {
       link: link,
@@ -13443,71 +13493,58 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       var width = 0,
         height = 0;
 
-      var loadImage = function ( src, cb ) {
-        var img = new Image();
-        img.onload = function () {
-          cb( null, img );
-        };
-        img.onerror = function () {
-          cb( 'ERROR LOADING IMAGE ' + src, null );
-        };
-        img.src = src;
-      };
-
       function doLoadImage() {
         var $win = angular.element( $window );
         if ( attrs.src === '' ) {
           $timeout( doLoadImage, 200 );
           return;
         }
+        element.html( '' );
 
-        loadImage( attrs.src, function ( err, img ) {
-          if ( !err ) {
-            element.html( '' );
-            element.append( img );
-            width = img.width || img.naturalWidth || img.offsetWidth;
-            height = img.height || img.naturalHeight || img.offsetHeight;
+        gsnApi.loadImage( attrs.src, function ( err, img ) {
+          width = img.w;
+          height = img.h;
 
-            // set viewBox
-            img = angular.element( attrs.gsnSvgImage );
-            svg = img.parent( 'svg' );
-            // append Image
-            svg[ 0 ].setAttributeNS( '', 'viewBox', '0 0 ' + width + ' ' + height + '' );
-            img.attr( 'width', width ).attr( 'height', height ).attr( 'xlink:href', attrs.src );
-            img.show();
-            var isIE = /Trident.*rv:11\.0/.test( navigator.userAgent ) || /msie/gi.test( navigator.userAgent );
+          // set viewBox
+          img = angular.element( attrs.gsnSvgImage );
+          svg = img.parent( 'svg' );
+          // append Image
+          svg[ 0 ].setAttributeNS( '', 'viewBox', '0 0 ' + width + ' ' + height + '' );
+          img.attr( 'width', width ).attr( 'height', height ).attr( 'xlink:href', attrs.src );
+          img.show();
+          var isIE = /Trident.*rv:11\.0/.test( navigator.userAgent ) || /msie/gi.test( navigator.userAgent );
 
-            if ( isIE && attrs.syncHeight ) {
-              var resizer = debounce( function () {
-                var actualWidth = element.parent().width();
-                var ratio = actualWidth / ( width || actualWidth || 1 );
-                var newHeight = ratio * height;
+          if ( isIE && attrs.syncHeight ) {
+            var resizer = debounce( function () {
+              var actualWidth = element.parent().width();
+              var ratio = actualWidth / ( width || actualWidth || 1 );
+              var newHeight = ratio * height;
 
-                angular.element( attrs.syncHeight ).height( newHeight );
+              angular.element( attrs.syncHeight ).height( newHeight );
 
-              }, 200 );
-
-              resizer();
-              $win.on( 'resize', resizer );
-            }
-
-            // re-adjust
-            var reAdjust = debounce( function () {
-              // click activate to re-arrange item
-              angular.element( '.onlist' ).click();
-
-              // remove active item
-              $timeout( function () {
-                scope.vm.activeItem = null;
-                scope.vm.loadCount++;
-              }, 200 );
             }, 200 );
-            reAdjust();
 
-            $win.on( 'resize', reAdjust );
-            $win.on( 'orientationchange', reAdjust );
+            resizer();
+            $win.on( 'resize', resizer );
           }
-        } );
+
+          // re-adjust
+          var reAdjust = debounce( function () {
+            // click activate to re-arrange item
+            angular.element( '.onlist' ).click();
+
+            // remove active item
+            $timeout( function () {
+              scope.vm.activeItem = null;
+              scope.vm.loadCount++;
+            }, 200 );
+          }, 200 );
+          reAdjust();
+
+          $win.on( 'resize', reAdjust );
+          $win.on( 'orientationchange', reAdjust );
+
+        }, element );
       }
       var myLoadImage = debounce( doLoadImage, 100 );
       scope.$watch( attrs.watch || 'vm.page', myLoadImage );
@@ -13757,12 +13794,13 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     // 2014-06-22 TomN - fix global variable
     var options = angular.copy( opt );
 
-    return myModule.directive( options.name, [ '$timeout',
-      function ( $timeout ) {
+    return myModule.directive( options.name, [ '$timeout', 'gsnApi',
+      function ( $timeout, gsnApi ) {
         return {
           restrict: 'A',
           link: function ( scope, e, attrs ) {
             options.$timeout = $timeout;
+            options.gsnApi = gsnApi;
             var modifierName = '$' + options.name;
 
             // Disable parent modifier so that it doesn't
@@ -13867,17 +13905,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     }
   } );
 
-  var loadImage = function ( src, cb ) {
-    var img = new Image();
-    img.onload = function () {
-      cb( null, img );
-    };
-    img.onerror = function () {
-      cb( 'ERROR LOADING IMAGE ' + src, null );
-    };
-    img.src = src;
-  };
-
   // image
   ngModifyElementDirective( {
     name: 'gsnMetaImage',
@@ -13895,21 +13922,15 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         var iw = angular.element( 'head > meta[property="og:image:width"]' ).attr( 'content', '300' );
         var ih = angular.element( 'head > meta[property="og:image:height"]' ).attr( 'content', '300' );
         if ( v ) {
-          var setImageDimension = function ( err, img ) {
-            if ( img ) {
-
-              var width = img.width || img.naturalWidth || img.offsetWidth;
-              var height = img.height || img.naturalHeight || img.offsetHeight;
-
-              console.log( 'debug' );
-              console.log( height );
-              console.log( width );
-              iw.attr( 'content', height || 300 );
-              ih.attr( 'content', width || 300 );
-            }
+          var setImageDimension = function ( rst ) {
+            console.log( 'debug' );
+            console.log( rst.w );
+            console.log( rst.h );
+            iw.attr( 'content', rst.w || 300 );
+            ih.attr( 'content', rst.h || 300 );
           };
 
-          loadImage( v, setImageDimension );
+          this.gsnApi.loadImage( v, setImageDimension );
         }
       }
 

@@ -9,12 +9,13 @@
     // 2014-06-22 TomN - fix global variable
     var options = angular.copy( opt );
 
-    return myModule.directive( options.name, [ '$timeout',
-      function ( $timeout ) {
+    return myModule.directive( options.name, [ '$timeout', 'gsnApi',
+      function ( $timeout, gsnApi ) {
         return {
           restrict: 'A',
           link: function ( scope, e, attrs ) {
             options.$timeout = $timeout;
+            options.gsnApi = gsnApi;
             var modifierName = '$' + options.name;
 
             // Disable parent modifier so that it doesn't
@@ -119,17 +120,6 @@
     }
   } );
 
-  var loadImage = function ( src, cb ) {
-    var img = new Image();
-    img.onload = function () {
-      cb( null, img );
-    };
-    img.onerror = function () {
-      cb( 'ERROR LOADING IMAGE ' + src, null );
-    };
-    img.src = src;
-  };
-
   // image
   ngModifyElementDirective( {
     name: 'gsnMetaImage',
@@ -147,21 +137,15 @@
         var iw = angular.element( 'head > meta[property="og:image:width"]' ).attr( 'content', '300' );
         var ih = angular.element( 'head > meta[property="og:image:height"]' ).attr( 'content', '300' );
         if ( v ) {
-          var setImageDimension = function ( err, img ) {
-            if ( img ) {
-
-              var width = img.width || img.naturalWidth || img.offsetWidth;
-              var height = img.height || img.naturalHeight || img.offsetHeight;
-
-              console.log( 'debug' );
-              console.log( height );
-              console.log( width );
-              iw.attr( 'content', height || 300 );
-              ih.attr( 'content', width || 300 );
-            }
+          var setImageDimension = function ( rst ) {
+            console.log( 'debug' );
+            console.log( rst.w );
+            console.log( rst.h );
+            iw.attr( 'content', rst.w || 300 );
+            ih.attr( 'content', rst.h || 300 );
           };
 
-          loadImage( v, setImageDimension );
+          this.gsnApi.loadImage( v, setImageDimension );
         }
       }
 
