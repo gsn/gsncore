@@ -140,7 +140,6 @@
     },
     set: function ( e, v ) {
       if ( v ) {
-        var imageToFind = 'img[src="' + v + '"]';
         if ( v.indexOf( '//' ) === 0 ) {
           v = 'https:' + v;
         }
@@ -154,6 +153,7 @@
               var width = img.width || img.naturalWidth || img.offsetWidth;
               var height = img.height || img.naturalHeight || img.offsetHeight;
 
+              console.log( 'debug' );
               console.log( height );
               console.log( width );
               iw.attr( 'content', height || 300 );

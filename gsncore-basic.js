@@ -2,7 +2,7 @@
  * gsncore
  * version 1.10.55
  * gsncore repository
- * Build date: Fri Jun 30 2017 19:13:46 GMT-0500 (CDT)
+ * Build date: Fri Jun 30 2017 19:14:51 GMT-0500 (CDT)
  */
 ( function () {
   'use strict';
@@ -8761,7 +8761,6 @@
     },
     set: function ( e, v ) {
       if ( v ) {
-        var imageToFind = 'img[src="' + v + '"]';
         if ( v.indexOf( '//' ) === 0 ) {
           v = 'https:' + v;
         }
@@ -8775,6 +8774,7 @@
               var width = img.width || img.naturalWidth || img.offsetWidth;
               var height = img.height || img.naturalHeight || img.offsetHeight;
 
+              console.log( 'debug' );
               console.log( height );
               console.log( width );
               iw.attr( 'content', height || 300 );
