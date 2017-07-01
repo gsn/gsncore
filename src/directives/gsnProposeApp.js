@@ -37,7 +37,7 @@
             var myHtml = '<div class="myModalForm" style="display: block"><div class="modal-dialog">' + response.response + '</div></div>"';
             var $modalElement = angular.element( $compile( myHtml )( scope ) );
 
-            console.log( 'redirect to page or show PopUp' );
+            // console.log( 'redirect to page or show PopUp' );
             gmodal.show( {
               content: $modalElement[ 0 ]
             } );

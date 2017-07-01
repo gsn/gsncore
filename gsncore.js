@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.10.55
+ * version 1.10.56
  * gsncore repository
- * Build date: Fri Jun 30 2017 23:08:24 GMT-0500 (CDT)
+ * Build date: Fri Jun 30 2017 23:09:55 GMT-0500 (CDT)
  */
 ( function () {
   'use strict';
@@ -5008,7 +5008,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
             $rootScope.$broadcast( 'gsnevent:shoppinglist-changed', returnObj );
             saveListToSession();
           } ).error( function ( response ) {
-            console.log( returnObj.ShoppingListId + ' setTitle error: ' + response );
+            // console.log( returnObj.ShoppingListId + ' setTitle error: ' + response );
             deferred.resolve( {
               success: false,
               response: response
@@ -12719,7 +12719,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
             var myHtml = '<div class="myModalForm" style="display: block"><div class="modal-dialog">' + response.response + '</div></div>"';
             var $modalElement = angular.element( $compile( myHtml )( scope ) );
 
-            console.log( 'redirect to page or show PopUp' );
+            // console.log( 'redirect to page or show PopUp' );
             gmodal.show( {
               content: $modalElement[ 0 ]
             } );

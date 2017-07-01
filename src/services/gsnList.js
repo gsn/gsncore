@@ -419,7 +419,7 @@
             $rootScope.$broadcast( 'gsnevent:shoppinglist-changed', returnObj );
             saveListToSession();
           } ).error( function ( response ) {
-            console.log( returnObj.ShoppingListId + ' setTitle error: ' + response );
+            // console.log( returnObj.ShoppingListId + ' setTitle error: ' + response );
             deferred.resolve( {
               success: false,
               response: response
