@@ -119,6 +119,17 @@
     }
   } );
 
+  var loadImage = function ( src, cb ) {
+    var img = new Image();
+    img.onload = function () {
+      cb( null, img );
+    };
+    img.onerror = function () {
+      cb( 'ERROR LOADING IMAGE ' + src, null );
+    };
+    img.src = src;
+  };
+
   // image
   ngModifyElementDirective( {
     name: 'gsnMetaImage',
@@ -137,26 +148,20 @@
         var iw = angular.element( 'head > meta[property="og:image:width"]' ).attr( 'content', '300' );
         var ih = angular.element( 'head > meta[property="og:image:height"]' ).attr( 'content', '300' );
         if ( v ) {
-          var $that = this;
-          var img = new Image();
+          var setImageDimension = function ( err, img ) {
+            if ( img ) {
 
-          var setImageDimension = function () {
-            var h = img.naturalHeight;
-            var w = img.naturalWidth;
+              var width = img.width || img.naturalWidth || img.offsetWidth;
+              var height = img.height || img.naturalHeight || img.offsetHeight;
 
-            console.log( h );
-            console.log( w );
-            if ( h ) {
-              iw.attr( 'content', w || 300 );
-              ih.attr( 'content', h || 300 );
-              return;
+              console.log( height );
+              console.log( width );
+              iw.attr( 'content', height || 300 );
+              ih.attr( 'content', width || 300 );
             }
-
-            $that.$timeout( setImageDimension, 200 );
           };
-          img.onload = setImageDimension;
-          img.src = v;
-          $that.$timeout( setImageDimension, 200 );
+
+          loadImage( v, setImageDimension );
         }
       }
 

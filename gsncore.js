@@ -2,7 +2,7 @@
  * gsncore
  * version 1.10.55
  * gsncore repository
- * Build date: Fri Jun 30 2017 19:01:53 GMT-0500 (CDT)
+ * Build date: Fri Jun 30 2017 19:13:46 GMT-0500 (CDT)
  */
 ( function () {
   'use strict';
@@ -13445,21 +13445,13 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
 
       var loadImage = function ( src, cb ) {
         var img = new Image();
-        var error = null;
-        var completed = false;
         img.onload = function () {
-          if ( completed ) return;
-          completed = true;
           cb( null, img );
         };
         img.onerror = function () {
-          if ( completed ) return;
-          completed = true;
           cb( 'ERROR LOADING IMAGE ' + src, null );
         };
         img.src = src;
-
-        $timeout( img.onload, 200 );
       };
 
       function doLoadImage() {
@@ -13875,6 +13867,17 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     }
   } );
 
+  var loadImage = function ( src, cb ) {
+    var img = new Image();
+    img.onload = function () {
+      cb( null, img );
+    };
+    img.onerror = function () {
+      cb( 'ERROR LOADING IMAGE ' + src, null );
+    };
+    img.src = src;
+  };
+
   // image
   ngModifyElementDirective( {
     name: 'gsnMetaImage',
@@ -13893,26 +13896,20 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         var iw = angular.element( 'head > meta[property="og:image:width"]' ).attr( 'content', '300' );
         var ih = angular.element( 'head > meta[property="og:image:height"]' ).attr( 'content', '300' );
         if ( v ) {
-          var $that = this;
-          var img = new Image();
+          var setImageDimension = function ( err, img ) {
+            if ( img ) {
 
-          var setImageDimension = function () {
-            var h = img.naturalHeight;
-            var w = img.naturalWidth;
+              var width = img.width || img.naturalWidth || img.offsetWidth;
+              var height = img.height || img.naturalHeight || img.offsetHeight;
 
-            console.log( h );
-            console.log( w );
-            if ( h ) {
-              iw.attr( 'content', w || 300 );
-              ih.attr( 'content', h || 300 );
-              return;
+              console.log( height );
+              console.log( width );
+              iw.attr( 'content', height || 300 );
+              ih.attr( 'content', width || 300 );
             }
-
-            $that.$timeout( setImageDimension, 200 );
           };
-          img.onload = setImageDimension;
-          img.src = v;
-          $that.$timeout( setImageDimension, 200 );
+
+          loadImage( v, setImageDimension );
         }
       }
 
