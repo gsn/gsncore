@@ -1,7 +1,7 @@
 ( function ( angular, undefined ) {
   'use strict';
   var myDirectiveName = 'ctrlCouponClassic';
-  angular.module( 'gsn.core' ).controller( myDirectiveName, [ '$scope', 'gsnStore', 'gsnApi', '$timeout', '$analytics', '$filter', 'gsnYoutech', 'gsnProfile', 'gsnProLogicRewardCard', '$location', myController ] ).directive( myDirectiveName, myDirective );
+  angular.module( 'gsn.core' ).controller( myDirectiveName, [ '$scope', 'gsnStore', 'gsnApi', '$timeout', '$analytics', '$filter', 'gsnYoutech', 'gsnProfile', '$location', myController ] ).directive( myDirectiveName, myDirective );
 
   function myDirective() {
     var directive = {
@@ -12,7 +12,7 @@
     return directive;
   }
 
-  function myController( $scope, gsnStore, gsnApi, $timeout, $analytics, $filter, gsnYoutech, gsnProfile, gsnProLogicRewardCard, $location ) {
+  function myController( $scope, gsnStore, gsnApi, $timeout, $analytics, $filter, gsnYoutech, gsnProfile, $location ) {
     $scope.activate = activate;
     $scope.addCouponToCard = addCouponToCard;
     $scope.printManufacturerCoupon = printManufacturerCoupon;
@@ -134,18 +134,6 @@
       loadMore();
     }
 
-    function init() {
-      isValidProLogicInit();
-    }
-
-    function isValidProLogicInit() {
-      gsnProfile.getProfile().then( function ( p ) {
-        gsnProLogicRewardCard.getLoyaltyCard( p.response, function ( card, isValid ) {
-          $scope.isValidProLogic = isValid;
-        } );
-      } );
-    }
-    init();
     $scope.$on( 'gsnevent:circular-loaded', function ( event, data ) {
       if ( data.success ) {
         $timeout( activate, 500 );
