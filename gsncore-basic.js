@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.10.57
+ * version 1.10.58
  * gsncore repository
- * Build date: Fri Jun 30 2017 23:19:08 GMT-0500 (CDT)
+ * Build date: Mon Jul 10 2017 10:06:57 GMT-0500 (CDT)
  */
 ( function () {
   'use strict';
@@ -879,7 +879,7 @@
         return url;
       }
 
-      return url.replace( 'https://', $location.protocol() + '://' );
+      return url.replace( 'http://', '//' );
     };
 
     returnObj.getDefaultLayout = function ( defaultUrl ) {

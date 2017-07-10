@@ -178,7 +178,7 @@
         return url;
       }
 
-      return url.replace( 'https://', $location.protocol() + '://' );
+      return url.replace( 'http://', '//' );
     };
 
     returnObj.getDefaultLayout = function ( defaultUrl ) {
