@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.10.59
+ * version 1.10.60
  * gsncore repository
- * Build date: Wed Jul 12 2017 14:43:53 GMT-0500 (CDT)
+ * Build date: Wed Jul 12 2017 15:36:12 GMT-0500 (CDT)
  */
 ( function () {
   'use strict';
@@ -5348,98 +5348,6 @@
       $timeout( refresh, timeout );
     }
   } ] );
-} )( angular );
-
-( function ( angular, undefined ) {
-  'use strict';
-  var myModule = angular.module( 'gsn.core' );
-
-  myModule.directive( 'gsnTwitterShare', [ '$timeout', 'gsnApi', function ( $timeout, gsnApi ) {
-    // Usage:   display twitter share
-    //
-    // Creates: 2014-01-06
-    //
-    var directive = {
-      link: link,
-      restrict: 'A'
-    };
-    return directive;
-
-    function link( scope, element, attrs ) {
-      var defaults = {
-        count: 'none'
-      };
-      var loadingScript = false;
-
-      function loadShare() {
-
-        if ( typeof twttr === 'undefined' ) {
-
-          if ( loadingScript ) return;
-          loadingScript = true;
-          // dynamically load twitter
-          var src = '//platform.twitter.com/widgets.js';
-          gsnApi.loadScripts( [ src ], loadShare );
-          return;
-        }
-
-        if ( element.html().length > 10 ) return;
-
-        var options = scope.$eval( attrs.gsnTwitterShare );
-        angular.extend( defaults, options );
-        twttr.widgets.createShareButton(
-          attrs.url,
-          element[ 0 ],
-          function ( el ) {}, defaults
-        );
-
-        return;
-      }
-
-      loadShare();
-    }
-  } ] );
-
-} )( angular );
-
-( function ( angular, undefined ) {
-  'use strict';
-  var myModule = angular.module( 'gsn.core' );
-
-  myModule.directive( 'gsnTwitterTimeline', [ '$timeout', 'gsnApi', function ( $timeout, gsnApi ) {
-    // Usage:   display twitter timeline
-    //
-    // Creates: 2014-01-06
-    //
-    var directive = {
-      link: link,
-      restrict: 'A'
-    };
-    return directive;
-
-    function link( scope, element, attrs ) {
-      var loadingScript = false;
-      element.html( '<a class="twitter-timeline" href="' + attrs.href + '" data-widget-id="' + attrs.gsnTwitterTimeline + '">' + attrs.title + '</a>' );
-
-      function loadTimeline() {
-        if ( typeof twttr === 'undefined' ) {
-          if ( loadingScript ) return;
-          loadingScript = true;
-
-          // dynamically load twitter
-          var src = '//platform.twitter.com/widgets.js';
-          gsnApi.loadScripts( [ src ], loadTimeline );
-          return;
-        }
-
-        twttr.widgets.load();
-        return;
-      }
-
-      loadTimeline();
-    }
-  } ] );
-
 } )( angular );
 
 ( function ( angular, undefined ) {
