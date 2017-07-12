@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.10.58
+ * version 1.10.59
  * gsncore repository
- * Build date: Mon Jul 10 2017 16:08:10 GMT-0500 (CDT)
+ * Build date: Wed Jul 12 2017 14:43:54 GMT-0500 (CDT)
  */
 ( function () {
   'use strict';
@@ -13356,7 +13356,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
   ngModifyElementDirective( {
     name: 'gsnTitle',
     selector: 'meta[itemprop="title"]',
-    html: '<meta itemprop="title" property="og:title"/>',
+    html: '<meta itemprop="title" name="twitter:title" property="og:title"/>',
     get: function ( e ) {
       return e.attr( 'content' );
     },
@@ -13384,7 +13384,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
   ngModifyElementDirective( {
     name: 'gsnMetaDescription',
     selector: 'meta[itemprop="description"]',
-    html: '<meta itemprop="description" name="description" property="og:description"/>',
+    html: '<meta itemprop="description" name="twitter:description" property="og:description"/>',
     get: function ( e ) {
       return e.attr( 'content' );
     },
@@ -13397,7 +13397,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
   ngModifyElementDirective( {
     name: 'gsnMetaImage',
     selector: 'meta[itemprop="image"]',
-    html: '<meta itemprop="image" property="og:image"/><meta content="300" property="og:image:width"/><meta content="300" property="og:image:height"/>',
+    html: '<meta itemprop="image" name="twitter:image" property="og:image"/><meta content="300" property="og:image:width"/><meta content="300" property="og:image:height"/>',
     get: function ( e ) {
       return e.attr( 'content' );
     },

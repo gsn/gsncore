@@ -83,7 +83,7 @@
   ngModifyElementDirective( {
     name: 'gsnTitle',
     selector: 'meta[itemprop="title"]',
-    html: '<meta itemprop="title" property="og:title"/>',
+    html: '<meta itemprop="title" name="twitter:title" property="og:title"/>',
     get: function ( e ) {
       return e.attr( 'content' );
     },
@@ -111,7 +111,7 @@
   ngModifyElementDirective( {
     name: 'gsnMetaDescription',
     selector: 'meta[itemprop="description"]',
-    html: '<meta itemprop="description" name="description" property="og:description"/>',
+    html: '<meta itemprop="description" name="twitter:description" property="og:description"/>',
     get: function ( e ) {
       return e.attr( 'content' );
     },
@@ -124,7 +124,7 @@
   ngModifyElementDirective( {
     name: 'gsnMetaImage',
     selector: 'meta[itemprop="image"]',
-    html: '<meta itemprop="image" property="og:image"/><meta content="300" property="og:image:width"/><meta content="300" property="og:image:height"/>',
+    html: '<meta itemprop="image" name="twitter:image" property="og:image"/><meta content="300" property="og:image:width"/><meta content="300" property="og:image:height"/>',
     get: function ( e ) {
       return e.attr( 'content' );
     },
