@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.10.61
+ * version 1.10.62
  * gsncore repository
- * Build date: Thu Jul 13 2017 12:39:24 GMT-0500 (CDT)
+ * Build date: Thu Jul 20 2017 10:28:04 GMT-0500 (CDT)
  */
 ( function () {
   'use strict';
@@ -6953,7 +6953,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       if ( $saveData.youtechCouponUrl.length > 2 ) {
         //    - When profile change occurred, make call to get any available coupon for card
         $saveData.currentProfile = result.response;
-        loadCardCoupon();
       }
     } );
     $rootScope.$on( 'gsnevent:store-persisted', function ( event, result ) {

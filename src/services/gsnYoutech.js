@@ -40,7 +40,6 @@
       if ( $saveData.youtechCouponUrl.length > 2 ) {
         //    - When profile change occurred, make call to get any available coupon for card
         $saveData.currentProfile = result.response;
-        loadCardCoupon();
       }
     } );
     $rootScope.$on( 'gsnevent:store-persisted', function ( event, result ) {
