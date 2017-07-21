@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.10.64
+ * version 1.10.65
  * gsncore repository
- * Build date: Thu Jul 20 2017 20:59:09 GMT-0500 (CDT)
+ * Build date: Thu Jul 20 2017 21:07:42 GMT-0500 (CDT)
  */
 ( function () {
   'use strict';
@@ -3867,7 +3867,6 @@
       if ( previousProfileId !== profileId ) {
         previousProfileId = profileId;
         returnObj.getProfile( true );
-        returnObj.resetCampaign();
       }
     } );
 

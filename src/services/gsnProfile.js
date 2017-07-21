@@ -547,7 +547,6 @@
       if ( previousProfileId !== profileId ) {
         previousProfileId = profileId;
         returnObj.getProfile( true );
-        returnObj.resetCampaign();
       }
     } );
 
