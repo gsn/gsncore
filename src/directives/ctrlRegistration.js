@@ -59,12 +59,6 @@
         $scope.profile.LastName = user.last_name;
       }
 
-      gsnStore.getManufacturerCouponTotalSavings().then( function ( rst ) {
-        if ( rst.success ) {
-          $scope.totalSavings = gsnApi.isNaN( parseFloat( rst.response ), 0.00 ).toFixed( 2 );
-        }
-      } );
-
       gsnStore.getStores().then( function ( rsp ) {
         $scope.stores = rsp.response;
       } );
@@ -91,7 +85,6 @@
         payload.ChainName = gsnApi.getChainName();
         payload.FromEmail = gsnApi.getRegistrationFromEmailAddress();
         payload.emailLogo = gsnApi.getRegistrationEmailLogo();
-        payload.ManufacturerCouponTotalSavings = '$' + $scope.totalSavings;
         payload.CopyrightYear = ( new Date() ).getFullYear();
         payload.UserName = gsnApi.isNull( payload.UserName, payload.Email );
         payload.WelcomeSubject = 'Welcome to ' + payload.ChainName + ' online.';

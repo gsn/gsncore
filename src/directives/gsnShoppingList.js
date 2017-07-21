@@ -21,7 +21,6 @@
 
         function controller( $scope, $element, $attrs ) {
           $scope.coupons = [];
-          $scope.manufacturerCoupons = [];
           $scope.instoreCoupons = [];
           $scope.circularCoupons = [];
           $scope.addString = '';
@@ -36,14 +35,6 @@
           $scope.shoppinglistdeleted = 0;
           $scope.shoppinglistcreated = 0;
           $scope.circular = gsnStore.getCircularData();
-          $scope.printer = {
-            blocked: 0,
-            notsupported: 0,
-            notinstalled: 0,
-            printed: null,
-            count: 0,
-            total: 0
-          };
 
           $scope.reloadShoppingList = function ( shoppingListId ) {
             $timeout( function () {
@@ -74,7 +65,6 @@
             if ( gsnApi.isNull( list, null ) === null ) return null;
 
             $scope.coupons.length = 0;
-            $scope.manufacturerCoupons.length = 0;
             $scope.totalQuantity = 0;
             $scope.title = list.getTitle();
             $scope.currentDate = new Date();
@@ -147,9 +137,6 @@
                 }
 
                 $scope.coupons.push( item );
-                if ( item.ItemTypeId === 2 ) {
-                  $scope.manufacturerCoupons.push( item );
-                }
               } else if ( item.ItemTypeId === 0 && item.Meta ) {
                 if ( !item.LinkedItem && ( item.Meta + '' ).indexOf( '}' ) > 0 ) {
                   item.LinkedItem = JSON.parse( item.Meta );
@@ -404,43 +391,6 @@
           // Per Request: signal that the list has been created.
           $scope.$on( 'gsnevent:shopping-list-created', function ( event, data ) {
             $scope.shoppinglistcreated++;
-          } );
-
-          $scope.$on( 'gsnevent:gsnshoppinglist-itemavailable', function ( event ) {
-            if ( $scope.manufacturerCoupons.length <= 0 ) return;
-            if ( $scope.hasInitializePrinter ) return;
-
-            if ( $scope.currentPath.indexOf( 'print' ) > 0 ) {
-              $scope.hasInitializePrinter = true;
-              // initialize printer
-              if ( $scope.manufacturerCoupons.length > 0 ) {
-                if ( $scope.canPrint ) {
-                  $scope.printer.print = null;
-                  $scope.printer.total = $scope.manufacturerCoupons.length;
-                }
-              }
-            }
-          } );
-
-          // trigger modal
-          $scope.$on( 'gsnevent:gcprinter-not-supported', function () {
-            $scope.printer.notsupported++;
-          } );
-          $scope.$on( 'gsnevent:gcprinter-blocked', function () {
-            $scope.printer.blocked++;
-          } );
-          $scope.$on( 'gsnevent:gcprinter-not-found', function () {
-            $scope.printer.notinstalled++;
-          } );
-          $scope.$on( 'gsnevent:gcprinter-printed', function ( evt, e, rsp ) {
-            $scope.printer.printed = e;
-            if ( rsp ) {
-              $scope.printer.errors = gsnApi.isNull( rsp.ErrorCoupons, [] );
-              var count = $scope.printer.total - $scope.printer.errors.length;
-              if ( count > 0 ) {
-                $scope.printer.count = count;
-              }
-            }
           } );
         }
       }

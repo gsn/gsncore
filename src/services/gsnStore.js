@@ -12,9 +12,7 @@
     // cache current user selection
     var _lc = {
       previousGetStore: null,
-      manufacturerCoupons: {},
       instoreCoupons: {},
-      youtechCoupons: {},
       quickSearchItems: {},
       topRecipes: {},
       faAskTheChef: {},
@@ -23,7 +21,6 @@
       faRecipe: {},
       faVideo: {},
       mealPlanners: {},
-      manuCouponTotalSavings: {},
       states: {},
       adPods: {},
       specialAttributes: {},
@@ -40,8 +37,6 @@
       itemsById: {},
       staticCircularById: {},
       storeCouponById: {},
-      manuCouponById: {},
-      youtechCouponById: {},
       processCompleted: 0, // process completed date
       lastProcessDate: 0 // number represent a date in month
     };
@@ -57,18 +52,6 @@
     // get all categories
     returnObj.getCategories = function () {
       return _cp.categoryById;
-    };
-
-    // get inventory categories
-    returnObj.getInventoryCategories = function () {
-      var url = gsnApi.getStoreUrl() + '/GetInventoryCategories/' + gsnApi.getChainId() + '/' + gsnApi.getSelectedStoreId();
-      return gsnApi.http( {}, url );
-    };
-
-    // get sale item categories
-    returnObj.getSaleItemCategories = function () {
-      var url = gsnApi.getStoreUrl() + '/GetSaleItemCategories/' + gsnApi.getChainId() + '/' + gsnApi.getSelectedStoreId();
-      return gsnApi.http( {}, url );
     };
 
     // refresh current store circular
@@ -104,12 +87,6 @@
           $rootScope.$broadcast( 'gsnevent:circular-failed', rst );
         }
       } );
-    };
-
-
-    returnObj.searchProducts = function ( searchTerm ) {
-      var url = gsnApi.getStoreUrl() + '/SearchProduct/' + gsnApi.getSelectedStoreId() + '?q=' + encodeURIComponent( searchTerm );
-      return gsnApi.http( {}, url );
     };
 
     returnObj.searchRecipes = function ( searchTerm ) {
@@ -222,17 +199,8 @@
       return gsnApi.http( _lc.faRecipe, url );
     };
 
-    returnObj.getCoupon = function ( couponId, couponType ) {
-      return couponType === 2 ? _cp.manuCouponById[ couponId ] : ( couponType === 10 ? _cp.storeCouponById[ couponId ] : _cp.youtechCouponById[ couponId ] );
-    };
-
-    returnObj.getManufacturerCoupons = function () {
-      return _lc.manufacturerCoupons;
-    };
-
-    returnObj.getManufacturerCouponTotalSavings = function () {
-      var url = gsnApi.getStoreUrl() + '/GetManufacturerCouponTotalSavings/' + gsnApi.getChainId();
-      return gsnApi.http( _lc.manuCouponTotalSavings, url );
+    returnObj.getCoupon = function ( couponId ) {
+      return _cp.storeCouponById[ couponId ];
     };
 
     returnObj.getStates = function () {
@@ -244,23 +212,8 @@
       return _lc.instoreCoupons;
     };
 
-    returnObj.getYoutechCoupons = function () {
-      return _lc.youtechCoupons;
-    };
-
     returnObj.getRecipe = function ( recipeId ) {
       var url = gsnApi.getStoreUrl() + '/RecipeBy/' + recipeId;
-      return gsnApi.http( {}, url );
-    };
-
-    returnObj.getStaticContent = function ( contentName ) {
-      var url = gsnApi.getStoreUrl() + '/GetPartials/' + gsnApi.getChainId() + '/';
-      var storeId = gsnApi.isNull( gsnApi.getSelectedStoreId(), 0 );
-      if ( storeId > 0 ) {
-        url += storeId + '/';
-      }
-      url += '?name=' + encodeURIComponent( contentName );
-
       return gsnApi.http( {}, url );
     };
 
@@ -282,29 +235,9 @@
       return gsnApi.http( {}, url );
     };
 
-    returnObj.getSaleItems = function ( departmentId, categoryId ) {
-      var url = gsnApi.getStoreUrl() + '/FilterSaleItem/' + gsnApi.getSelectedStoreId() + '?' + 'departmentId=' + gsnApi.isNull( departmentId, '' ) + '&categoryId=' + gsnApi.isNull( categoryId, '' );
-      return gsnApi.http( {}, url );
-    };
-
-    returnObj.getInventory = function ( departmentId, categoryId ) {
-      var url = gsnApi.getStoreUrl() + '/FilterInventory/' + gsnApi.getSelectedStoreId() + '?' + 'departmentId=' + gsnApi.isNull( departmentId, '' ) + '&categoryId=' + gsnApi.isNull( categoryId, '' );
-      return gsnApi.http( {}, url );
-    };
-
-    returnObj.getSpecialAttributes = function () {
-      var url = gsnApi.getStoreUrl() + '/GetSpecialAttributes/' + gsnApi.getChainId();
-      return gsnApi.http( _lc.specialAttributes, url );
-    };
-
     returnObj.getMealPlannerRecipes = function () {
       var url = gsnApi.getStoreUrl() + '/GetMealPlannerRecipes/' + gsnApi.getChainId();
       return gsnApi.http( _lc.mealPlanners, url );
-    };
-
-    returnObj.getAdPods = function () {
-      var url = gsnApi.getStoreUrl() + '/ListSlots/' + gsnApi.getChainId();
-      return gsnApi.http( _lc.adPods, url );
     };
 
     returnObj.hasCompleteCircular = function () {
@@ -368,11 +301,6 @@
         // async init data
         $timeout( processCircularData, 0 );
       }
-
-      if ( gsnApi.isNull( isApi, null ) !== null ) {
-        returnObj.getAdPods();
-        returnObj.getManufacturerCouponTotalSavings();
-      }
     };
 
     $rootScope.$on( 'gsnevent:store-setid', function ( event, values ) {
@@ -432,21 +360,6 @@
       }
     }
 
-    function processManufacturerCoupon() {
-      if ( gsnApi.isNull( _lc.manufacturerCoupons.items, [] ).length > 0 ) return;
-
-      // process manufacturer coupon
-      var circular = returnObj.getCircularData();
-      _lc.manufacturerCoupons.items = circular.ManufacturerCoupons;
-      angular.forEach( _lc.manufacturerCoupons.items, function ( item ) {
-        item.CategoryName = gsnApi.isNull( _cp.categoryById[ item.CategoryId ], {
-          CategoryName: ''
-        } ).CategoryName;
-        _cp.manuCouponById[ item.ItemId ] = item;
-      } );
-      gsnApi.getConfig().hasPrintableCoupon = _lc.manufacturerCoupons.items.length > 0;
-    }
-
     function processInstoreCoupon() {
       var circular = returnObj.getCircularData();
       // process in-store coupon
@@ -466,28 +379,9 @@
       _lc.instoreCoupons.items = items;
     }
 
-    function processYoutechCoupon() {
-      if ( gsnApi.isNull( _lc.youtechCoupons.items, [] ).length > 0 ) return;
-
-      var circular = returnObj.getCircularData();
-
-      // process youtech coupon
-      _lc.youtechCoupons.items = circular.YoutechCoupons;
-      angular.forEach( _lc.youtechCoupons.items, function ( item ) {
-        item.CategoryName = gsnApi.isNull( _cp.categoryById[ item.CategoryId ], {
-          CategoryName: ''
-        } ).CategoryName;
-        _cp.youtechCouponById[ item.ItemId ] = item;
-      } );
-
-      gsnApi.getConfig().hasDigitalCoupon = _lc.youtechCoupons.items.length > 0;
-    }
-
     function processCoupon() {
       if ( _cp ) {
-        $timeout( processManufacturerCoupon, 50 );
         $timeout( processInstoreCoupon, 50 );
-        $timeout( processYoutechCoupon, 50 );
       }
     }
 
@@ -504,7 +398,7 @@
       processingQueue.push( function () {
         if ( _cp.lastProcessDate === ( new Date().getDate() ) && _cp.categoryById[ -1 ] ) return;
 
-        var categoryById = gsnApi.mapObject( circularData.Categories, 'CategoryId' );
+        var categoryById = gsnApi.mapObject( circularData.Departments, 'CategoryId' );
 
         categoryById[ null ] = {
           CategoryId: null,

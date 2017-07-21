@@ -1,23 +1,16 @@
 ( function ( angular, undefined ) {
   'use strict';
   var serviceId = 'gsnProfile';
-  angular.module( 'gsn.core' ).service( serviceId, [ '$rootScope', '$http', 'gsnApi', '$q', 'gsnList', 'gsnStore', '$location', '$timeout', '$sessionStorage', '$localStorage', gsnProfile ] );
+  angular.module( 'gsn.core' ).service( serviceId, [ '$rootScope', '$http', 'gsnApi', '$q', 'gsnList', 'gsnStore', '$location', '$timeout', '$localStorage', gsnProfile ] );
 
-  function gsnProfile( $rootScope, $http, gsnApi, $q, gsnList, gsnStore, $location, $timeout, $sessionStorage, $localStorage ) {
+  function gsnProfile( $rootScope, $http, gsnApi, $q, gsnList, gsnStore, $location, $timeout, $localStorage ) {
     var returnObj = {},
       previousProfileId = gsnApi.getProfileId(),
-      couponStorage = $sessionStorage,
       $profileDefer = null,
       $creatingDefer = null,
       $savedData = {
         allShoppingLists: {},
-        profile: null,
-        profileData: {
-          scoredProducts: {},
-          circularItems: {},
-          availableCoupons: {},
-          myPantry: {}
-        }
+        profile: null
       };
 
     $rootScope[ serviceId ] = returnObj;
@@ -103,9 +96,6 @@
     // it should reset shopping list
     returnObj.logOut = function () {
       gsnApi.logOut();
-      couponStorage.clipped = [];
-      couponStorage.printed = [];
-      couponStorage.preClipped = {};
     };
 
     // proxy method to add item to current shopping list
@@ -190,13 +180,7 @@
           // reset other data
           $savedData = {
             allShoppingLists: {},
-            profile: null,
-            profileData: {
-              scoredProducts: {},
-              circularItems: {},
-              availableCoupons: {},
-              myPantry: {}
-            }
+            profile: null
           };
           returnObj.refreshShoppingLists();
         }, 5 );
@@ -437,26 +421,6 @@
       return deferred.promise;
     };
 
-    returnObj.getMyCircularItems = function () {
-      var url = gsnApi.getProfileApiUrl() + '/GetCircularItems/' + gsnApi.getProfileId();
-      return gsnApi.http( $savedData.profileData.circularItems, url );
-    };
-
-    returnObj.getMyPantry = function ( departmentId, categoryId ) {
-      var url = gsnApi.getProfileApiUrl() + '/GetPantry/' + gsnApi.getProfileId() + '?' + 'departmentId=' + gsnApi.isNull( departmentId, '' ) + '&categoryId=' + gsnApi.isNull( categoryId, '' );
-      return gsnApi.http( $savedData.profileData.myPantry, url );
-    };
-
-    returnObj.getMyPantry2 = function () {
-      var url = gsnApi.getProfileApiUrl() + '/GetPantry2/' + gsnApi.getChainId() + '/' + gsnApi.getProfileId() + '/' + gsnApi.getSelectedStoreId();
-      return gsnApi.http( $savedData.profileData.myPantry, url );
-    };
-
-    returnObj.getMyProducts = function () {
-      var url = gsnApi.getProfileApiUrl() + '/GetScoredProducts/' + gsnApi.getProfileId();
-      return gsnApi.http( $savedData.profileData.scoredProducts, url );
-    };
-
     returnObj.getMyRecipes = function () {
       var url = gsnApi.getProfileApiUrl() + '/GetSavedRecipes/' + gsnApi.getProfileId();
       return gsnApi.http( {}, url );
@@ -477,23 +441,9 @@
       return gsnApi.http( {}, url, {} );
     };
 
-    returnObj.saveProduct = function ( productId, comment ) {
-      var url = gsnApi.getProfileApiUrl() + '/SaveProduct/' + productId + '/' + gsnApi.getProfileId() + '?comment=' + encodeURIComponent( comment );
-      return gsnApi.http( {}, url, {} );
-    };
-
     returnObj.selectStore = function ( storeId ) {
       var url = gsnApi.getProfileApiUrl() + '/SelectStore/' + gsnApi.getProfileId() + '/' + storeId;
       return gsnApi.http( {}, url, {} );
-    };
-
-    returnObj.getCampaign = function () {
-      var url = gsnApi.getProfileApiUrl() + '/GetCampaign/' + gsnApi.getProfileId();
-      return gsnApi.http( {}, url );
-    };
-
-    returnObj.resetCampaign = function () {
-      $sessionStorage.GsnCampaign = 0;
     };
 
     returnObj.sendContactUs = function ( payload ) {
@@ -566,41 +516,6 @@
       } );
 
       return deferred.promise;
-    };
-
-    returnObj.clipCoupon = function ( productCode ) {
-      if ( !couponStorage.clipped )
-        couponStorage.clipped = [];
-      if ( couponStorage.clipped.indexOf( productCode ) < 0 )
-        couponStorage.clipped.push( productCode );
-    };
-
-    returnObj.unclipCoupon = function ( productCode ) {
-      var index = couponStorage.clipped.indexOf( productCode );
-      couponStorage.clipped.splice( index, 1 );
-    };
-
-    returnObj.getClippedCoupons = function () {
-      return couponStorage.clipped;
-    };
-
-    returnObj.savePreclippedCoupon = function ( item ) {
-      couponStorage.preClipped = item;
-    };
-
-    returnObj.getPreclippedCoupon = function () {
-      return couponStorage.preClipped;
-    };
-
-    returnObj.addPrinted = function ( productCode ) {
-      if ( !couponStorage.printed )
-        couponStorage.printed = [];
-      if ( couponStorage.printed.indexOf( productCode ) < 0 )
-        couponStorage.printed.push( productCode );
-    };
-
-    returnObj.getPrintedCoupons = function () {
-      return couponStorage.printed;
     };
 
     //#region Events Handling

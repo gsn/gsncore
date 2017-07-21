@@ -58,8 +58,6 @@
     StoreServiceUrl: '/proxy/store',
     ProfileServiceUrl: '/proxy/profile',
     ShoppingListServiceUrl: '/proxy/shoppinglist',
-    LoggingServiceUrl: '/proxy/logging',
-    YoutechCouponUrl: '/proxy/couponut',
     ApiUrl: '',
 
     // global config
@@ -77,19 +75,15 @@
     ChainName: 'Brick, Inc.',
     GoogleTagId: null,
     GoogleAnalyticAccountId1: null,
-    GoogleSiteVerificationId: null,
     RegistrationFromEmailAddress: 'tech@grocerywebsites.com',
     RegistrationEmailLogo: null,
     FacebookAppId: null,
     FacebookPermission: null,
-    GoogleSiteSearchCode: null,
     Theme: null,
     HomePage: null,
     StoreList: null,
     AllContent: null,
-    hasDigitalCoupon: false,
     hasStoreCoupon: false,
-    hasPrintableCoupon: false,
     hasInit: false,
     isPrerender: /siteid\=/.test( root.location.href )
   };
@@ -495,7 +489,6 @@
   gsn.initAngular = function ( $sceProvider, $sceDelegateProvider, $locationProvider, $httpProvider, FacebookProvider ) {
     gsn.applyConfig( root.globalConfig.data || {} );
     gsn.config.ContentBaseUrl = root.location.port > 1000 && root.location.port < 5000 ? '/asset/' + gsn.config.ChainId : gsn.config.ContentBaseUrl;
-    gsn.config.DisableLimitedTimeCoupons = ( 215 === gsn.config.ChainId );
     if ( gsn.config.Theme ) {
       gsn.setTheme( gsn.config.Theme );
     }

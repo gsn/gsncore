@@ -24,18 +24,12 @@
     $scope.vm = {
       Message: ''
     };
-    $scope.totalSavings = '';
 
     $scope.hasSubmitted = false; // true when user has click the submit button
     $scope.isValidSubmit = true; // true when result of submit is valid
     $scope.isSubmitting = false; // true if we're waiting for result from server
 
     function activate() {
-      gsnStore.getManufacturerCouponTotalSavings().then( function ( rst ) {
-        if ( rst.success ) {
-          $scope.totalSavings = gsnApi.isNaN( parseFloat( rst.response ), 0.00 ).toFixed( 2 );
-        }
-      } );
 
       gsnProfile.getProfile().then( function ( p ) {
         if ( p.success ) {
@@ -45,7 +39,6 @@
           email.FirstName = profile.FirstName;
           email.ChainName = gsnApi.getChainName();
           email.CopyrightYear = ( new Date() ).getFullYear();
-          email.ManufacturerCouponTotalSavings = '$' + $scope.totalSavings;
           email.FromEmail = gsnApi.getRegistrationFromEmailAddress();
 
           $scope.vm = angular.copy( email, $scope.vm );

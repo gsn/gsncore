@@ -188,24 +188,12 @@
       return defaultUrl;
     };
 
-    returnObj.getYoutechCouponUrl = function () {
-      return gsn.config.YoutechCouponUrl;
-    };
-
-    returnObj.getProductServiceUrl = function () {
-      return gsn.config.ProductServiceUrl;
-    };
-
     returnObj.getShoppingListApiUrl = function () {
       return gsn.config.ShoppingListServiceUrl;
     };
 
     returnObj.getProfileApiUrl = function () {
       return gsn.config.ProfileServiceUrl;
-    };
-
-    returnObj.getLoggingApiUrl = function () {
-      return gsn.config.LoggingServiceUrl;
     };
 
     returnObj.getUseLocalStorage = function () {
@@ -216,14 +204,6 @@
       /// <summary>Get the application version</summary>
 
       return gsn.config.Version;
-    };
-
-    returnObj.getGoogleSiteSearchCode = function () {
-      return gsn.config.GoogleSiteSearchCode;
-    };
-
-    returnObj.getGoogleSiteVerificationId = function () {
-      return gsn.config.GoogleSiteVerificationId;
     };
 
     returnObj.isBetween = function ( value, min, max ) {
@@ -275,9 +255,7 @@
       return angular.lowercase( val1 ) === angular.lowercase( val2 );
     };
 
-    returnObj.toLowerCase = function ( str ) {
-      return angular.lowercase( str );
-    };
+    returnObj.toLowerCase = angular.lowercase;
 
     returnObj.params = function ( obj ) {
       var k = gsn.keys( obj );
@@ -364,14 +342,6 @@
           }
         }
       }
-    };
-
-    returnObj.doSiteSearch = function ( search ) {
-      returnObj.goUrl( '/search?q=' + encodeURIComponent( search ) );
-    };
-
-    returnObj.doItemSearch = function ( search ) {
-      returnObj.goUrl( '/product/search?q=' + encodeURIComponent( search ) );
     };
 
     returnObj.decodeServerUrl = function ( url ) {

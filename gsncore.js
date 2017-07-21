@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.10.62
+ * version 1.10.64
  * gsncore repository
- * Build date: Thu Jul 20 2017 10:28:04 GMT-0500 (CDT)
+ * Build date: Thu Jul 20 2017 20:59:09 GMT-0500 (CDT)
  */
 ( function () {
   'use strict';
@@ -64,8 +64,6 @@
     StoreServiceUrl: '/proxy/store',
     ProfileServiceUrl: '/proxy/profile',
     ShoppingListServiceUrl: '/proxy/shoppinglist',
-    LoggingServiceUrl: '/proxy/logging',
-    YoutechCouponUrl: '/proxy/couponut',
     ApiUrl: '',
 
     // global config
@@ -83,19 +81,15 @@
     ChainName: 'Brick, Inc.',
     GoogleTagId: null,
     GoogleAnalyticAccountId1: null,
-    GoogleSiteVerificationId: null,
     RegistrationFromEmailAddress: 'tech@grocerywebsites.com',
     RegistrationEmailLogo: null,
     FacebookAppId: null,
     FacebookPermission: null,
-    GoogleSiteSearchCode: null,
     Theme: null,
     HomePage: null,
     StoreList: null,
     AllContent: null,
-    hasDigitalCoupon: false,
     hasStoreCoupon: false,
-    hasPrintableCoupon: false,
     hasInit: false,
     isPrerender: /siteid\=/.test( root.location.href )
   };
@@ -501,7 +495,6 @@
   gsn.initAngular = function ( $sceProvider, $sceDelegateProvider, $locationProvider, $httpProvider, FacebookProvider ) {
     gsn.applyConfig( root.globalConfig.data || {} );
     gsn.config.ContentBaseUrl = root.location.port > 1000 && root.location.port < 5000 ? '/asset/' + gsn.config.ChainId : gsn.config.ContentBaseUrl;
-    gsn.config.DisableLimitedTimeCoupons = ( 215 === gsn.config.ChainId );
     if ( gsn.config.Theme ) {
       gsn.setTheme( gsn.config.Theme );
     }
@@ -889,24 +882,12 @@
       return defaultUrl;
     };
 
-    returnObj.getYoutechCouponUrl = function () {
-      return gsn.config.YoutechCouponUrl;
-    };
-
-    returnObj.getProductServiceUrl = function () {
-      return gsn.config.ProductServiceUrl;
-    };
-
     returnObj.getShoppingListApiUrl = function () {
       return gsn.config.ShoppingListServiceUrl;
     };
 
     returnObj.getProfileApiUrl = function () {
       return gsn.config.ProfileServiceUrl;
-    };
-
-    returnObj.getLoggingApiUrl = function () {
-      return gsn.config.LoggingServiceUrl;
     };
 
     returnObj.getUseLocalStorage = function () {
@@ -917,14 +898,6 @@
       /// <summary>Get the application version</summary>
 
       return gsn.config.Version;
-    };
-
-    returnObj.getGoogleSiteSearchCode = function () {
-      return gsn.config.GoogleSiteSearchCode;
-    };
-
-    returnObj.getGoogleSiteVerificationId = function () {
-      return gsn.config.GoogleSiteVerificationId;
     };
 
     returnObj.isBetween = function ( value, min, max ) {
@@ -976,9 +949,7 @@
       return angular.lowercase( val1 ) === angular.lowercase( val2 );
     };
 
-    returnObj.toLowerCase = function ( str ) {
-      return angular.lowercase( str );
-    };
+    returnObj.toLowerCase = angular.lowercase;
 
     returnObj.params = function ( obj ) {
       var k = gsn.keys( obj );
@@ -1065,14 +1036,6 @@
           }
         }
       }
-    };
-
-    returnObj.doSiteSearch = function ( search ) {
-      returnObj.goUrl( '/search?q=' + encodeURIComponent( search ) );
-    };
-
-    returnObj.doItemSearch = function ( search ) {
-      returnObj.goUrl( '/product/search?q=' + encodeURIComponent( search ) );
     };
 
     returnObj.decodeServerUrl = function ( url ) {
@@ -4146,9 +4109,9 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
 ( function ( angular, undefined ) {
   'use strict';
   var serviceId = 'gsnGlobal';
-  angular.module( 'gsn.core' ).service( serviceId, [ '$window', '$location', '$timeout', '$route', 'gsnApi', 'gsnProfile', 'gsnStore', '$rootScope', 'Facebook', '$analytics', 'gsnYoutech', 'gsnAdvertising', '$anchorScroll', gsnGlobal ] );
+  angular.module( 'gsn.core' ).service( serviceId, [ '$window', '$location', '$timeout', '$route', 'gsnApi', 'gsnProfile', 'gsnStore', '$rootScope', 'Facebook', '$analytics', 'gsnAdvertising', '$anchorScroll', gsnGlobal ] );
 
-  function gsnGlobal( $window, $location, $timeout, $route, gsnApi, gsnProfile, gsnStore, $rootScope, Facebook, $analytics, gsnYoutech, gsnAdvertising, $anchorScroll ) {
+  function gsnGlobal( $window, $location, $timeout, $route, gsnApi, gsnProfile, gsnStore, $rootScope, Facebook, $analytics, gsnAdvertising, $anchorScroll ) {
     var returnObj = {
       init: init,
       hasInit: false
@@ -4181,7 +4144,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         currentStore: {},
         adsCollapsed: false
       };
-      $scope.youtech = gsnYoutech;
       $scope.search = {
         site: '',
         item: ''
@@ -4468,8 +4430,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
             var evt = 'MiscItemAddUpdate';
             if ( item.ItemTypeId === 8 ) {
               evt = 'CircularItemAddUpdate';
-            } else if ( item.ItemTypeId === 2 ) {
-              evt = 'ManufacturerCouponAddUpdate';
             } else if ( item.ItemTypeId === 3 ) {
               evt = 'ProductAddUpdate';
             } else if ( item.ItemTypeId === 5 ) {
@@ -4478,8 +4438,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
               evt = 'OwnItemAddUpdate';
             } else if ( item.ItemTypeId === 10 ) {
               evt = 'StoreCouponAddUpdate';
-            } else if ( item.ItemTypeId === 13 ) {
-              evt = 'YoutechCouponAddUpdate';
             }
             $analytics.eventTrack( evt, {
               category: ( item.ItemTypeId === 13 ) ? item.ExtCategory : cat.CategoryName,
@@ -4498,19 +4456,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
               itemId = item.ItemId;
             if ( item.ItemTypeId === 8 ) {
               $analytics.eventTrack( 'CircularItemRemove', {
-                category: cat.CategoryName,
-                label: item.Description,
-                item: item
-              } );
-            } else if ( item.ItemTypeId === 2 ) {
-              coupon = gsnStore.getCoupon( item.ItemId, 2 );
-              if ( coupon ) {
-                item = coupon;
-                if ( gsnApi.isNull( item.ProductCode, '' ).length > 0 ) {
-                  itemId = item.ProductCode;
-                }
-              }
-              $analytics.eventTrack( 'ManufacturerCouponRemove', {
                 category: cat.CategoryName,
                 label: item.Description,
                 item: item
@@ -4541,19 +4486,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
               }
               $analytics.eventTrack( 'StoreCouponRemove', {
                 category: cat.CategoryName,
-                label: item.Description,
-                item: item
-              } );
-            } else if ( item.ItemTypeId === 13 ) {
-              coupon = gsnStore.getCoupon( item.ItemId, 13 );
-              if ( coupon ) {
-                item = coupon;
-                if ( gsnApi.isNull( item.ProductCode, '' ).length > 0 ) {
-                  itemId = item.ProductCode;
-                }
-              }
-              $analytics.eventTrack( 'YoutechCouponRemove', {
-                category: item.ExtCategory,
                 label: item.Description,
                 item: item
               } );
@@ -5326,23 +5258,16 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
 ( function ( angular, undefined ) {
   'use strict';
   var serviceId = 'gsnProfile';
-  angular.module( 'gsn.core' ).service( serviceId, [ '$rootScope', '$http', 'gsnApi', '$q', 'gsnList', 'gsnStore', '$location', '$timeout', '$sessionStorage', '$localStorage', gsnProfile ] );
+  angular.module( 'gsn.core' ).service( serviceId, [ '$rootScope', '$http', 'gsnApi', '$q', 'gsnList', 'gsnStore', '$location', '$timeout', '$localStorage', gsnProfile ] );
 
-  function gsnProfile( $rootScope, $http, gsnApi, $q, gsnList, gsnStore, $location, $timeout, $sessionStorage, $localStorage ) {
+  function gsnProfile( $rootScope, $http, gsnApi, $q, gsnList, gsnStore, $location, $timeout, $localStorage ) {
     var returnObj = {},
       previousProfileId = gsnApi.getProfileId(),
-      couponStorage = $sessionStorage,
       $profileDefer = null,
       $creatingDefer = null,
       $savedData = {
         allShoppingLists: {},
-        profile: null,
-        profileData: {
-          scoredProducts: {},
-          circularItems: {},
-          availableCoupons: {},
-          myPantry: {}
-        }
+        profile: null
       };
 
     $rootScope[ serviceId ] = returnObj;
@@ -5428,9 +5353,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     // it should reset shopping list
     returnObj.logOut = function () {
       gsnApi.logOut();
-      couponStorage.clipped = [];
-      couponStorage.printed = [];
-      couponStorage.preClipped = {};
     };
 
     // proxy method to add item to current shopping list
@@ -5515,13 +5437,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
           // reset other data
           $savedData = {
             allShoppingLists: {},
-            profile: null,
-            profileData: {
-              scoredProducts: {},
-              circularItems: {},
-              availableCoupons: {},
-              myPantry: {}
-            }
+            profile: null
           };
           returnObj.refreshShoppingLists();
         }, 5 );
@@ -5762,26 +5678,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       return deferred.promise;
     };
 
-    returnObj.getMyCircularItems = function () {
-      var url = gsnApi.getProfileApiUrl() + '/GetCircularItems/' + gsnApi.getProfileId();
-      return gsnApi.http( $savedData.profileData.circularItems, url );
-    };
-
-    returnObj.getMyPantry = function ( departmentId, categoryId ) {
-      var url = gsnApi.getProfileApiUrl() + '/GetPantry/' + gsnApi.getProfileId() + '?' + 'departmentId=' + gsnApi.isNull( departmentId, '' ) + '&categoryId=' + gsnApi.isNull( categoryId, '' );
-      return gsnApi.http( $savedData.profileData.myPantry, url );
-    };
-
-    returnObj.getMyPantry2 = function () {
-      var url = gsnApi.getProfileApiUrl() + '/GetPantry2/' + gsnApi.getChainId() + '/' + gsnApi.getProfileId() + '/' + gsnApi.getSelectedStoreId();
-      return gsnApi.http( $savedData.profileData.myPantry, url );
-    };
-
-    returnObj.getMyProducts = function () {
-      var url = gsnApi.getProfileApiUrl() + '/GetScoredProducts/' + gsnApi.getProfileId();
-      return gsnApi.http( $savedData.profileData.scoredProducts, url );
-    };
-
     returnObj.getMyRecipes = function () {
       var url = gsnApi.getProfileApiUrl() + '/GetSavedRecipes/' + gsnApi.getProfileId();
       return gsnApi.http( {}, url );
@@ -5802,23 +5698,9 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       return gsnApi.http( {}, url, {} );
     };
 
-    returnObj.saveProduct = function ( productId, comment ) {
-      var url = gsnApi.getProfileApiUrl() + '/SaveProduct/' + productId + '/' + gsnApi.getProfileId() + '?comment=' + encodeURIComponent( comment );
-      return gsnApi.http( {}, url, {} );
-    };
-
     returnObj.selectStore = function ( storeId ) {
       var url = gsnApi.getProfileApiUrl() + '/SelectStore/' + gsnApi.getProfileId() + '/' + storeId;
       return gsnApi.http( {}, url, {} );
-    };
-
-    returnObj.getCampaign = function () {
-      var url = gsnApi.getProfileApiUrl() + '/GetCampaign/' + gsnApi.getProfileId();
-      return gsnApi.http( {}, url );
-    };
-
-    returnObj.resetCampaign = function () {
-      $sessionStorage.GsnCampaign = 0;
     };
 
     returnObj.sendContactUs = function ( payload ) {
@@ -5891,41 +5773,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       } );
 
       return deferred.promise;
-    };
-
-    returnObj.clipCoupon = function ( productCode ) {
-      if ( !couponStorage.clipped )
-        couponStorage.clipped = [];
-      if ( couponStorage.clipped.indexOf( productCode ) < 0 )
-        couponStorage.clipped.push( productCode );
-    };
-
-    returnObj.unclipCoupon = function ( productCode ) {
-      var index = couponStorage.clipped.indexOf( productCode );
-      couponStorage.clipped.splice( index, 1 );
-    };
-
-    returnObj.getClippedCoupons = function () {
-      return couponStorage.clipped;
-    };
-
-    returnObj.savePreclippedCoupon = function ( item ) {
-      couponStorage.preClipped = item;
-    };
-
-    returnObj.getPreclippedCoupon = function () {
-      return couponStorage.preClipped;
-    };
-
-    returnObj.addPrinted = function ( productCode ) {
-      if ( !couponStorage.printed )
-        couponStorage.printed = [];
-      if ( couponStorage.printed.indexOf( productCode ) < 0 )
-        couponStorage.printed.push( productCode );
-    };
-
-    returnObj.getPrintedCoupons = function () {
-      return couponStorage.printed;
     };
 
     //#region Events Handling
@@ -6226,9 +6073,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     // cache current user selection
     var _lc = {
       previousGetStore: null,
-      manufacturerCoupons: {},
       instoreCoupons: {},
-      youtechCoupons: {},
       quickSearchItems: {},
       topRecipes: {},
       faAskTheChef: {},
@@ -6237,7 +6082,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       faRecipe: {},
       faVideo: {},
       mealPlanners: {},
-      manuCouponTotalSavings: {},
       states: {},
       adPods: {},
       specialAttributes: {},
@@ -6254,8 +6098,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       itemsById: {},
       staticCircularById: {},
       storeCouponById: {},
-      manuCouponById: {},
-      youtechCouponById: {},
       processCompleted: 0, // process completed date
       lastProcessDate: 0 // number represent a date in month
     };
@@ -6271,18 +6113,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     // get all categories
     returnObj.getCategories = function () {
       return _cp.categoryById;
-    };
-
-    // get inventory categories
-    returnObj.getInventoryCategories = function () {
-      var url = gsnApi.getStoreUrl() + '/GetInventoryCategories/' + gsnApi.getChainId() + '/' + gsnApi.getSelectedStoreId();
-      return gsnApi.http( {}, url );
-    };
-
-    // get sale item categories
-    returnObj.getSaleItemCategories = function () {
-      var url = gsnApi.getStoreUrl() + '/GetSaleItemCategories/' + gsnApi.getChainId() + '/' + gsnApi.getSelectedStoreId();
-      return gsnApi.http( {}, url );
     };
 
     // refresh current store circular
@@ -6318,12 +6148,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
           $rootScope.$broadcast( 'gsnevent:circular-failed', rst );
         }
       } );
-    };
-
-
-    returnObj.searchProducts = function ( searchTerm ) {
-      var url = gsnApi.getStoreUrl() + '/SearchProduct/' + gsnApi.getSelectedStoreId() + '?q=' + encodeURIComponent( searchTerm );
-      return gsnApi.http( {}, url );
     };
 
     returnObj.searchRecipes = function ( searchTerm ) {
@@ -6436,17 +6260,8 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       return gsnApi.http( _lc.faRecipe, url );
     };
 
-    returnObj.getCoupon = function ( couponId, couponType ) {
-      return couponType === 2 ? _cp.manuCouponById[ couponId ] : ( couponType === 10 ? _cp.storeCouponById[ couponId ] : _cp.youtechCouponById[ couponId ] );
-    };
-
-    returnObj.getManufacturerCoupons = function () {
-      return _lc.manufacturerCoupons;
-    };
-
-    returnObj.getManufacturerCouponTotalSavings = function () {
-      var url = gsnApi.getStoreUrl() + '/GetManufacturerCouponTotalSavings/' + gsnApi.getChainId();
-      return gsnApi.http( _lc.manuCouponTotalSavings, url );
+    returnObj.getCoupon = function ( couponId ) {
+      return _cp.storeCouponById[ couponId ];
     };
 
     returnObj.getStates = function () {
@@ -6458,23 +6273,8 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       return _lc.instoreCoupons;
     };
 
-    returnObj.getYoutechCoupons = function () {
-      return _lc.youtechCoupons;
-    };
-
     returnObj.getRecipe = function ( recipeId ) {
       var url = gsnApi.getStoreUrl() + '/RecipeBy/' + recipeId;
-      return gsnApi.http( {}, url );
-    };
-
-    returnObj.getStaticContent = function ( contentName ) {
-      var url = gsnApi.getStoreUrl() + '/GetPartials/' + gsnApi.getChainId() + '/';
-      var storeId = gsnApi.isNull( gsnApi.getSelectedStoreId(), 0 );
-      if ( storeId > 0 ) {
-        url += storeId + '/';
-      }
-      url += '?name=' + encodeURIComponent( contentName );
-
       return gsnApi.http( {}, url );
     };
 
@@ -6496,29 +6296,9 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       return gsnApi.http( {}, url );
     };
 
-    returnObj.getSaleItems = function ( departmentId, categoryId ) {
-      var url = gsnApi.getStoreUrl() + '/FilterSaleItem/' + gsnApi.getSelectedStoreId() + '?' + 'departmentId=' + gsnApi.isNull( departmentId, '' ) + '&categoryId=' + gsnApi.isNull( categoryId, '' );
-      return gsnApi.http( {}, url );
-    };
-
-    returnObj.getInventory = function ( departmentId, categoryId ) {
-      var url = gsnApi.getStoreUrl() + '/FilterInventory/' + gsnApi.getSelectedStoreId() + '?' + 'departmentId=' + gsnApi.isNull( departmentId, '' ) + '&categoryId=' + gsnApi.isNull( categoryId, '' );
-      return gsnApi.http( {}, url );
-    };
-
-    returnObj.getSpecialAttributes = function () {
-      var url = gsnApi.getStoreUrl() + '/GetSpecialAttributes/' + gsnApi.getChainId();
-      return gsnApi.http( _lc.specialAttributes, url );
-    };
-
     returnObj.getMealPlannerRecipes = function () {
       var url = gsnApi.getStoreUrl() + '/GetMealPlannerRecipes/' + gsnApi.getChainId();
       return gsnApi.http( _lc.mealPlanners, url );
-    };
-
-    returnObj.getAdPods = function () {
-      var url = gsnApi.getStoreUrl() + '/ListSlots/' + gsnApi.getChainId();
-      return gsnApi.http( _lc.adPods, url );
     };
 
     returnObj.hasCompleteCircular = function () {
@@ -6582,11 +6362,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         // async init data
         $timeout( processCircularData, 0 );
       }
-
-      if ( gsnApi.isNull( isApi, null ) !== null ) {
-        returnObj.getAdPods();
-        returnObj.getManufacturerCouponTotalSavings();
-      }
     };
 
     $rootScope.$on( 'gsnevent:store-setid', function ( event, values ) {
@@ -6646,21 +6421,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       }
     }
 
-    function processManufacturerCoupon() {
-      if ( gsnApi.isNull( _lc.manufacturerCoupons.items, [] ).length > 0 ) return;
-
-      // process manufacturer coupon
-      var circular = returnObj.getCircularData();
-      _lc.manufacturerCoupons.items = circular.ManufacturerCoupons;
-      angular.forEach( _lc.manufacturerCoupons.items, function ( item ) {
-        item.CategoryName = gsnApi.isNull( _cp.categoryById[ item.CategoryId ], {
-          CategoryName: ''
-        } ).CategoryName;
-        _cp.manuCouponById[ item.ItemId ] = item;
-      } );
-      gsnApi.getConfig().hasPrintableCoupon = _lc.manufacturerCoupons.items.length > 0;
-    }
-
     function processInstoreCoupon() {
       var circular = returnObj.getCircularData();
       // process in-store coupon
@@ -6680,28 +6440,9 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       _lc.instoreCoupons.items = items;
     }
 
-    function processYoutechCoupon() {
-      if ( gsnApi.isNull( _lc.youtechCoupons.items, [] ).length > 0 ) return;
-
-      var circular = returnObj.getCircularData();
-
-      // process youtech coupon
-      _lc.youtechCoupons.items = circular.YoutechCoupons;
-      angular.forEach( _lc.youtechCoupons.items, function ( item ) {
-        item.CategoryName = gsnApi.isNull( _cp.categoryById[ item.CategoryId ], {
-          CategoryName: ''
-        } ).CategoryName;
-        _cp.youtechCouponById[ item.ItemId ] = item;
-      } );
-
-      gsnApi.getConfig().hasDigitalCoupon = _lc.youtechCoupons.items.length > 0;
-    }
-
     function processCoupon() {
       if ( _cp ) {
-        $timeout( processManufacturerCoupon, 50 );
         $timeout( processInstoreCoupon, 50 );
-        $timeout( processYoutechCoupon, 50 );
       }
     }
 
@@ -6718,7 +6459,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       processingQueue.push( function () {
         if ( _cp.lastProcessDate === ( new Date().getDate() ) && _cp.categoryById[ -1 ] ) return;
 
-        var categoryById = gsnApi.mapObject( circularData.Categories, 'CategoryId' );
+        var categoryById = gsnApi.mapObject( circularData.Departments, 'CategoryId' );
 
         categoryById[ null ] = {
           CategoryId: null,
@@ -6905,212 +6646,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         item.SmallImageUrl = item.ImageUrl.replace( 'upload.gsngrocers.com/', 'upload.brickinc.net/' ).replace( 'upload.brickinc.net/', 'cdn2.brickinc.net/rx/120/up/' );
         item.Quantity = item.Quantity || 1;
         items.push( item );
-      } );
-    }
-    //#endregion
-  }
-} )( angular );
-
-( function ( angular, undefined ) {
-  'use strict';
-  var serviceId = 'gsnYoutech';
-  angular.module( 'gsn.core' ).service( serviceId, [ '$rootScope', 'gsnApi', 'gsnProfile', 'gsnStore', '$q', '$http', gsnYoutech ] );
-
-  function gsnYoutech( $rootScope, gsnApi, gsnProfile, gsnStore, $q, $http ) {
-    // Usage: Youtech coupon integration service
-    //        Written here as an example of future integration
-    //
-    // Summary:
-    //    - When youtech api url exists, make call to get and cache total savings
-    //    - When profile change occurred, make call to get any available coupon for card
-    //
-    // Creates: 2013-12-28 TomN
-    //
-    var service = {
-      isValidCoupon: isValidCoupon,
-      hasValidCard: hasValidCard,
-      addCouponTocard: addCouponToCard,
-      removeCouponFromCard: removeCouponFromCard,
-      isAvailable: isAvailable,
-      isOnCard: isOnCard,
-      hasRedeemed: hasRedeemed,
-      hasCard: hasCard,
-      enable: true
-    };
-    var $saveData = initData();
-    $rootScope[ serviceId ] = service;
-    $rootScope.$on( 'gsnevent:logout', function ( event, result ) {
-      if ( !service.enable ) {
-        return;
-      }
-      $saveData = initData();
-    } );
-    $rootScope.$on( 'gsnevent:profile-load-success', function ( event, result ) {
-      if ( !service.enable ) {
-        return;
-      }
-      initData();
-      if ( $saveData.youtechCouponUrl.length > 2 ) {
-        //    - When profile change occurred, make call to get any available coupon for card
-        $saveData.currentProfile = result.response;
-      }
-    } );
-    $rootScope.$on( 'gsnevent:store-persisted', function ( event, result ) {
-      if ( !service.enable ) {
-        return;
-      }
-      initData();
-      if ( $saveData.currentProfile && $saveData.youtechCouponUrl.length > 2 ) {
-        loadCardCoupon();
-      }
-    } );
-    return service;
-    //#region Internal Methods
-    function initData() {
-      return {
-        youtechCouponUrl: gsnApi.isNull( gsnApi.getYoutechCouponUrl(), '' ),
-        cardCouponResponse: null,
-        availableCouponById: {},
-        takenCouponById: {},
-        redeemedCouponById: {},
-        isValidResponse: false,
-        currentProfile: {}
-      };
-    }
-
-    function hasCard() {
-      return ( gsnApi.isNull( $saveData.currentProfile.ExternalId, '' ).length > 0 );
-    }
-
-    function hasValidCard() {
-      return hasCard() && $saveData.isValidResponse;
-    }
-
-    function isValidCoupon( couponId ) {
-      var isValid = ( isAvailable( couponId ) || isOnCard( couponId ) );
-      return isValid;
-    }
-
-    function isAvailable( couponId ) {
-      return ( gsnApi.isNull( $saveData.availableCouponById[ couponId ], null ) !== null );
-    }
-
-    function isOnCard( couponId ) {
-      return ( gsnApi.isNull( $saveData.takenCouponById[ couponId ], null ) !== null );
-    }
-
-    function hasRedeemed( couponId ) {
-      return ( gsnApi.isNull( $saveData.redeemedCouponById[ couponId ], null ) !== null );
-    }
-
-    function handleFailureEvent( eventName, deferred, couponId, response ) {
-      deferred.resolve( {
-        success: false,
-        response: response
-      } );
-      $rootScope.$broadcast( eventName, couponId );
-    }
-
-    function addCouponToCard( couponId ) {
-      var deferred = $q.defer();
-      gsnApi.getAccessToken().then( function () {
-        var url = $saveData.youtechCouponUrl + '/AddToCard/' + gsnApi.getProfileId() + '/' + couponId;
-        $http.post( url, {}, {
-          headers: gsnApi.getApiHeaders()
-        } ).success( function ( response ) {
-          if ( response.Success ) {
-            $saveData.takenCouponById[ couponId ] = true;
-            $saveData.availableCouponById[ couponId ] = null;
-            deferred.resolve( {
-              success: response.Success,
-              response: response
-            } );
-            $rootScope.$broadcast( 'gsnevent:youtech-cardcoupon-added', couponId );
-          } else {
-            handleFailureEvent( 'gsnevent:youtech-cardcoupon-addedfail', deferred, couponId, response.Message );
-          }
-        } ).error( function ( response ) {
-          handleFailureEvent( 'gsnevent:youtech-cardcoupon-addfail', deferred, couponId, response );
-        } );
-      } );
-      return deferred.promise;
-    }
-
-    function removeCouponFromCard( couponId ) {
-      var deferred = $q.defer();
-      gsnApi.getAccessToken().then( function () {
-        var url = $saveData.youtechCouponUrl + '/RemoveFromCard/' + gsnApi.getProfileId() + '/' + couponId;
-        $http.post( url, {}, {
-          headers: gsnApi.getApiHeaders()
-        } ).success( function ( response ) {
-          if ( response.Success ) {
-            $saveData.availableCouponById[ couponId ] = true;
-            $saveData.takenCouponById[ couponId ] = null;
-            deferred.resolve( {
-              success: response.Success,
-              response: response
-            } );
-            $rootScope.$broadcast( 'gsnevent:youtech-cardcoupon-removed', couponId );
-          } else {
-            handleFailureEvent( 'gsnevent:youtech-cardcoupon-removefail', deferred, couponId, response.Message );
-          }
-        } ).error( function ( response ) {
-          handleFailureEvent( 'gsnevent:youtech-cardcoupon-removefail', deferred, couponId, response );
-        } );
-      } );
-      return deferred.promise;
-    }
-
-    function loadCardCoupon() {
-      gsnApi.getAccessToken().then( function () {
-        var url = $saveData.youtechCouponUrl + '/GetProfileCoupons/' + gsnApi.getProfileId();
-        $http.get( url, {
-          headers: gsnApi.getApiHeaders()
-        } ).success( function ( response ) {
-          // process card coupon response
-          if ( response.Success ) {
-            var i = 0;
-            $saveData.isValidResponse = true;
-            try {
-              $saveData.cardCouponResponse = response.Response;
-              if ( $saveData.cardCouponResponse.availableCoupons ) {
-                $saveData.availableCouponById = gsnApi.mapObject( $saveData.cardCouponResponse.availableCoupons.coupon, 'couponId' );
-              }
-              if ( $saveData.cardCouponResponse.available_ids ) {
-                $saveData.availableCouponById = {};
-                for ( i = 0; i < $saveData.cardCouponResponse.available_ids.length; i++ ) {
-                  $saveData.availableCouponById[ $saveData.cardCouponResponse.available_ids[ i ] ] = true;
-                }
-              }
-              if ( $saveData.cardCouponResponse.takenCoupons ) {
-                $saveData.takenCouponById = gsnApi.mapObject( $saveData.cardCouponResponse.takenCoupons.coupon, 'couponId' );
-              }
-              var toParse = gsnApi.isNull( $saveData.cardCouponResponse.taken_ids, $saveData.cardCouponResponse.clipped_active_ids );
-              if ( toParse ) {
-                $saveData.takenCouponById = {};
-                for ( i = 0; i < toParse.length; i++ ) {
-                  $saveData.takenCouponById[ toParse[ i ] ] = true;
-                }
-              }
-              // add clipped_redeemed_ids
-              toParse = $saveData.cardCouponResponse.clipped_redeemed_ids;
-              if ( toParse ) {
-                $saveData.redeemedCouponById = {};
-                for ( i = 0; i < toParse.length; i++ ) {
-                  $saveData.takenCouponById[ toParse[ i ] ] = true;
-                  $saveData.redeemedCouponById[ toParse[ i ] ] = true;
-                }
-              }
-            } catch ( e ) {}
-            $rootScope.$broadcast( 'gsnevent:youtech-cardcoupon-loaded', service );
-            return;
-          }
-          $saveData = initData();
-          $rootScope.$broadcast( 'gsnevent:youtech-cardcoupon-loadfail', service );
-        } ).error( function ( response ) {
-          $saveData.isValidResponse = false;
-          $rootScope.$broadcast( 'gsnevent:youtech-cardcoupon-loadfail', service );
-        } );
       } );
     }
     //#endregion
@@ -8010,7 +7545,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
 ( function ( angular, undefined ) {
   'use strict';
   var myDirectiveName = 'ctrlCouponClassic';
-  angular.module( 'gsn.core' ).controller( myDirectiveName, [ '$scope', 'gsnStore', 'gsnApi', '$timeout', '$analytics', '$filter', 'gsnYoutech', 'gsnProfile', '$location', myController ] ).directive( myDirectiveName, myDirective );
+  angular.module( 'gsn.core' ).controller( myDirectiveName, [ '$scope', 'gsnStore', 'gsnApi', '$timeout', '$analytics', '$filter', 'gsnProfile', '$location', myController ] ).directive( myDirectiveName, myDirective );
 
   function myDirective() {
     var directive = {
@@ -8021,26 +7556,13 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     return directive;
   }
 
-  function myController( $scope, gsnStore, gsnApi, $timeout, $analytics, $filter, gsnYoutech, gsnProfile, $location ) {
+  function myController( $scope, gsnStore, gsnApi, $timeout, $analytics, $filter, gsnProfile, $location ) {
     $scope.activate = activate;
-    $scope.addCouponToCard = addCouponToCard;
-    $scope.printManufacturerCoupon = printManufacturerCoupon;
     $scope.loadMore = loadMore;
-    $scope.printer = {
-      blocked: 0,
-      notsupported: 0,
-      notinstalled: 0,
-      printed: null,
-      count: 0,
-      total: 0,
-      isChrome: /chrome/gi.test( gsnApi.userAgent )
-    };
-    $scope.isValidProLogic = false;
     $scope.selectedCoupons = {
       items: [],
       targeted: [],
       noCircular: false,
-      cardCouponOnly: false,
       totalSavings: 0
     };
     $scope.preSelectedCoupons = {
@@ -8048,12 +7570,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       targeted: []
     };
     $scope.coupons = {
-      printable: {
-        items: []
-      },
-      digital: {
-        items: []
-      },
       store: {
         items: []
       }
@@ -8063,11 +7579,10 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       sortBy: 'EndDate',
       sortByName: 'About to Expire'
     };
-    $scope.couponType = $scope.friendlyPath.replace( 'coupons-', '' );
+
+    $scope.couponType = 'store';
     $scope.itemsPerPage = $location.search().itemsperpage || $location.search().itemsPerPage || $scope.itemsPerPage || 20;
-    if ( $scope.couponType.length < 1 || $scope.couponType === $scope.friendlyPath ) {
-      $scope.couponType = 'printable';
-    }
+
     if ( $scope.couponiFrame ) {
       $scope.couponType = 'store';
       if ( gsnApi.isNull( gsnApi.getSelectedStoreId(), 0 ) <= 0 ) {
@@ -8090,43 +7605,20 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     }
 
     function loadCoupons() {
-      var manuCoupons = gsnStore.getManufacturerCoupons(),
-        youtechCouponsOriginal = gsnStore.getYoutechCoupons(),
-        instoreCoupons = gsnStore.getInstoreCoupons();
+      var instoreCoupons = gsnStore.getInstoreCoupons();
       if ( !$scope.preSelectedCoupons.items ) {
         $scope.preSelectedCoupons = {
           items: [],
           targeted: []
         };
       }
-      $scope.coupons.printable.items = manuCoupons.items || [];
+
       $scope.coupons.store.items = instoreCoupons.items || [];
-      $scope.coupons.digital.items = youtechCouponsOriginal.items || [];
       $scope.preSelectedCoupons.items.length = 0;
       $scope.preSelectedCoupons.targeted.length = 0;
       var list = $scope.preSelectedCoupons;
-      if ( $scope.couponType === 'digital' ) {
-        var totalSavings = 0.0;
-        angular.forEach( youtechCouponsOriginal.items, function ( item ) {
-          if ( !$scope.selectedCoupons.cardCouponOnly || !gsnYoutech.isAvailable( item.ProductCode ) ) {
-            if ( gsnYoutech.isValidCoupon( item.ProductCode ) ) {
-              item.AddCount = 1;
-              list.items.push( item );
-              if ( item.IsTargeted ) {
-                list.targeted.push( item );
-              }
-              totalSavings += gsnApi.isNaN( parseFloat( item.TopTagLine ), 0 );
-            }
-          }
-        } );
-        $scope.selectedCoupons.totalSavings = totalSavings.toFixed( 2 );
-      } else if ( $scope.couponType === 'store' ) {
+      if ( $scope.couponType === 'store' ) {
         list.items = instoreCoupons.items;
-      } else {
-        gsnStore.getManufacturerCouponTotalSavings().then( function ( rst ) {
-          $scope.selectedCoupons.totalSavings = parseFloat( rst.response ).toFixed( 2 );
-        } );
-        list.items = manuCoupons.items;
       }
     }
 
@@ -8151,57 +7643,11 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         $scope.selectedCoupons.noCircular = true;
       }
     } );
-    $scope.$on( 'gsnevent:youtech-cardcoupon-loaded', activate );
-    $scope.$on( 'gsnevent:youtech-cardcoupon-loadfail', activate );
+
     $scope.$watch( 'vm.sortBy', activate );
     $scope.$watch( 'vm.filterBy', activate );
-    $scope.$watch( 'selectedCoupons.cardCouponOnly', activate );
 
     $timeout( activate, 500 );
-    //#region Internal Methods
-    function printManufacturerCoupon( evt, item ) {
-      $scope.printer.total = 1;
-      $analytics.eventTrack( 'CouponPrintNow', {
-        category: item.ExtCategory,
-        label: item.Description,
-        item: item
-      } );
-    }
-
-    function addCouponToCard( evt, item ) {
-      if ( $scope.youtech.isAvailable( item.ProductCode ) ) {
-        $scope.youtech.addCouponTocard( item.ProductCode ).then( function ( rst ) {
-          if ( rst.success ) {
-            // log coupon add to card
-            //var cat = gsnStore.getCategories()[item.CategoryId];
-            $analytics.eventTrack( 'CouponAddToCard', {
-              category: item.ExtCategory,
-              label: item.Description,
-              item: item
-            } );
-            $scope.doToggleCartItem( evt, item );
-            // apply
-            $timeout( function () {
-              item.AddCount++;
-            }, 50 );
-          }
-        } );
-      } else {
-        // log coupon remove from card
-        //var cat = gsnStore.getCategories()[item.CategoryId];
-        $analytics.eventTrack( 'CouponRemoveFromCard', {
-          category: item.ExtCategory,
-          label: item.Description,
-          item: item
-        } );
-        $scope.doToggleCartItem( evt, item );
-        // apply
-        $timeout( function () {
-          item.AddCount--;
-        }, 50 );
-      }
-    }
-    //#endregion
   }
 } )( angular );
 
@@ -8231,18 +7677,12 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     $scope.vm = {
       Message: ''
     };
-    $scope.totalSavings = '';
 
     $scope.hasSubmitted = false; // true when user has click the submit button
     $scope.isValidSubmit = true; // true when result of submit is valid
     $scope.isSubmitting = false; // true if we're waiting for result from server
 
     function activate() {
-      gsnStore.getManufacturerCouponTotalSavings().then( function ( rst ) {
-        if ( rst.success ) {
-          $scope.totalSavings = gsnApi.isNaN( parseFloat( rst.response ), 0.00 ).toFixed( 2 );
-        }
-      } );
 
       gsnProfile.getProfile().then( function ( p ) {
         if ( p.success ) {
@@ -8252,7 +7692,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
           email.FirstName = profile.FirstName;
           email.ChainName = gsnApi.getChainName();
           email.CopyrightYear = ( new Date() ).getFullYear();
-          email.ManufacturerCouponTotalSavings = '$' + $scope.totalSavings;
           email.FromEmail = gsnApi.getRegistrationFromEmailAddress();
 
           $scope.vm = angular.copy( email, $scope.vm );
@@ -8306,16 +7745,8 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
   function myController( $scope, gsnStore, gsnApi, gsnProfile, $location ) {
     $scope.activate = activate;
     $scope.email = {};
-    $scope.totalSavings = '';
 
     function activate() {
-      gsnStore.getManufacturerCouponTotalSavings().then( function ( rst ) {
-        if ( rst.success ) {
-          $scope.totalSavings = gsnApi.isNaN( parseFloat( rst.response ), 0.00 ).toFixed( 2 );
-          $scope.email.ManufacturerCouponTotalSavings = '$' + $scope.totalSavings;
-        }
-      } );
-
       gsnProfile.getProfile().then( function ( p ) {
         if ( p.success ) {
           var profile = gsnApi.isNull( angular.copy( p.response ), {} );
@@ -8324,7 +7755,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
           email.FirstName = profile.FirstName;
           email.ChainName = gsnApi.getChainName();
           email.CopyrightYear = ( new Date() ).getFullYear();
-          email.ManufacturerCouponTotalSavings = '$' + $scope.totalSavings;
           email.FromEmail = gsnApi.getRegistrationFromEmailAddress();
           angular.copy( $location.search(), email );
         }
@@ -8706,62 +8136,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
 ( function ( angular, undefined ) {
   'use strict';
 
-  var myDirectiveName = 'ctrlMyPantry';
-
-  angular.module( 'gsn.core' )
-    .controller( myDirectiveName, [ '$scope', 'gsnProfile', 'gsnApi', myController ] )
-    .directive( myDirectiveName, myDirective );
-
-  function myDirective() {
-    var directive = {
-      restrict: 'EA',
-      scope: true,
-      controller: myDirectiveName
-    };
-
-    return directive;
-  }
-
-  function myController( $scope, gsnProfile, gsnApi ) {
-    $scope.activate = activate;
-    $scope.vm = {
-      products: [],
-      productsByCategory: [],
-      hasAllItems: true
-    };
-
-    function activate() {
-      gsnProfile.getMyPantry2().then( function ( result ) {
-        if ( result.success ) {
-          $scope.vm.products = result.response;
-          $scope.vm.productsByCategory = gsnApi.groupBy( result.response, 'DepartmentName' );
-        }
-      } );
-    }
-
-
-    $scope.selectFilter = function ( filterGroup, filterItem ) {
-      var hasAllItems = true;
-      angular.forEach( filterGroup, function ( item ) {
-        if ( item.selected ) {
-          hasAllItems = false;
-        }
-      } );
-
-      $scope.vm.hasAllItems = hasAllItems;
-    };
-
-    $scope.activate();
-    //#region Internal Methods
-
-    //#endregion
-  }
-
-} )( angular );
-
-( function ( angular, undefined ) {
-  'use strict';
-
   var myDirectiveName = 'ctrlMyRecipes';
 
   angular.module( 'gsn.core' )
@@ -8800,65 +8174,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     $scope.activate();
     //#region Internal Methods
 
-    //#endregion
-  }
-
-} )( angular );
-
-( function ( angular, undefined ) {
-  'use strict';
-
-  var myDirectiveName = 'ctrlMySpecials';
-
-  angular.module( 'gsn.core' )
-    .controller( myDirectiveName, [ '$scope', 'gsnStore', 'gsnProfile', 'gsnApi', '$timeout', myController ] )
-    .directive( myDirectiveName, myDirective );
-
-
-  function myDirective() {
-    var directive = {
-      restrict: 'EA',
-      scope: true,
-      controller: myDirectiveName
-    };
-
-    return directive;
-  }
-
-  function myController( $scope, gsnStore, gsnProfile, gsnApi, $timeout ) {
-    $scope.activate = activate;
-    $scope.vm = {
-      specials: [],
-      products: [],
-      productsByCategory: []
-    };
-
-    function activate() {
-      if ( gsnStore.hasCompleteCircular() ) {
-        gsnProfile.getMyCircularItems().then( function ( result ) {
-          if ( result.success ) {
-            $scope.vm.specials = result.response;
-          }
-        } );
-
-        gsnProfile.getMyProducts().then( function ( result ) {
-          if ( result.success ) {
-            $scope.vm.products = result.response;
-            $scope.vm.productsByCategory = gsnApi.groupBy( result.response, 'DepartmentName' );
-          }
-        } );
-      }
-    }
-
-    $scope.$on( 'gsnevent:circular-loaded', function ( event, data ) {
-      if ( data.success ) {
-        $timeout( activate, 500 );
-      }
-    } );
-
-    $scope.activate();
-
-    //#region Internal Methods
     //#endregion
   }
 
@@ -8964,250 +8279,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     function processData( data ) {
       partialData = gsnApi.parsePartialContentData( data );
     }
-    //#endregion
-  }
-
-} )( angular );
-
-( function ( angular, undefined ) {
-  'use strict';
-
-  var myDirectiveName = 'ctrlProductByCategory';
-
-  angular.module( 'gsn.core' )
-    .controller( myDirectiveName, [ '$scope', 'gsnApi', 'gsnStore', '$filter', '$timeout', '$q', myController ] )
-    .directive( myDirectiveName, myDirective );
-
-
-  function myDirective() {
-    var directive = {
-      restrict: 'EA',
-      scope: true,
-      controller: myDirectiveName
-    };
-
-    return directive;
-  }
-
-  function myController( $scope, gsnApi, gsnStore, $filter, $timeout, $q ) {
-    $scope.activate = activate;
-    $scope.loadMore = loadMore;
-    $scope.categories = [];
-    $scope.vm = {
-      noCircular: false,
-      saleItemOnly: false,
-      parentCategories: [],
-      childCategories: [],
-      levelOneCategory: null,
-      levelTwoCategory: null,
-      levelThreeCategory: null,
-      allProductsByCategory: null,
-      filteredProducts: {},
-      showLoading: false,
-      filterBy: '',
-      sortBy: 'BrandName',
-      childCategoryById: {}
-    };
-    $scope.currentPage = 1;
-    $scope.itemsPerPage = 10;
-    $scope.loadAll = $scope.loadAll || true;
-    $scope.allItems = [];
-
-    function activate() {
-      // activate depend on URL
-      var catDefer = ( $scope.vm.saleItemOnly ) ? gsnStore.getSaleItemCategories : gsnStore.getInventoryCategories;
-      catDefer().then( function ( rsp ) {
-        var categories = rsp.response;
-        angular.forEach( categories, function ( item ) {
-          if ( gsnApi.isNull( item.CategoryId, -1 ) < 0 ) return;
-          if ( gsnApi.isNull( item.ParentCategoryId, null ) === null ) {
-            $scope.vm.parentCategories.push( item );
-          } else {
-            $scope.vm.childCategories.push( item );
-          }
-        } );
-
-        gsnApi.sortOn( $scope.vm.parentCategories, 'CategoryName' );
-        gsnApi.sortOn( $scope.vm.childCategories, 'CategoryName' );
-
-        $scope.vm.childCategoryById = gsnApi.mapObject( gsnApi.groupBy( $scope.vm.childCategories, 'ParentCategoryId' ), 'key' );
-      } );
-    }
-
-    $scope.productData = [];
-    $scope.showProductDetails = function ( data ) {
-      $scope.productData = data;
-      angular.element( '#myProductDetailsModal' ).modal( 'show' );
-    };
-
-    $scope.getChildCategories = function ( cat ) {
-      return cat ? $scope.vm.childCategories : [];
-    };
-
-    $scope.$watch( 'vm.filterBy', function ( newValue, oldValue ) {
-      if ( $scope.vm.showLoading ) return;
-      $timeout( doFilterSort, 500 );
-    } );
-
-    $scope.$watch( 'vm.sortBy', function ( newValue, oldValue ) {
-      if ( $scope.vm.showLoading ) return;
-      $timeout( doFilterSort, 500 );
-    } );
-
-    $scope.$watch( 'vm.levelOneCategory', function ( newValue, oldValue ) {
-      $scope.vm.levelTwoCategory = null;
-      $scope.vm.levelThreeCategory = null;
-    } );
-
-    $scope.$watch( 'vm.levelTwoCategory', function ( newValue, oldValue ) {
-      $scope.vm.levelThreeCategory = null;
-      if ( newValue ) {
-        var selectedValue = $scope.vm.childCategoryById[ newValue.CategoryId ];
-        if ( gsnApi.isNull( selectedValue, {
-            items: []
-          } ).items.length === 1 ) {
-          $scope.vm.levelThreeCategory = selectedValue.items[ 0 ];
-        }
-      }
-    } );
-
-    $scope.$watch( 'vm.levelThreeCategory', function ( newValue, oldValue ) {
-      if ( newValue ) {
-        $scope.vm.showLoading = true;
-        $scope.vm.filteredProducts = {};
-        getData( $scope.vm.levelOneCategory.CategoryId, newValue.CategoryId ).then( doFilterSort );
-      }
-    } );
-
-    //#region Internal Methods
-    function loadMore() {
-      var items = $scope.vm.filteredProducts.fitems || [];
-      if ( items.length > 0 ) {
-        var itemsToLoad = $scope.itemsPerPage;
-        if ( $scope.loadAll ) {
-          itemsToLoad = items.length;
-        }
-
-        var last = $scope.allItems.length - 1;
-        for ( var i = 1; i <= itemsToLoad; i++ ) {
-          var item = items[ last + i ];
-          if ( item ) {
-            $scope.allItems.push( item );
-          }
-        }
-      }
-    }
-
-    function doFilterSort( data ) {
-      $scope.vm.showLoading = false;
-
-      if ( data ) {
-        $scope.vm.filteredProducts = data;
-      }
-
-      if ( $scope.vm.filteredProducts.items ) {
-        var result = $filter( 'filter' )( $scope.vm.filteredProducts.items, $scope.vm.filterBy || '' );
-        $scope.vm.filteredProducts.fitems = $filter( 'orderBy' )( result, $scope.vm.sortBy || 'BrandName' );
-        $scope.allItems = [];
-        loadMore();
-      }
-    }
-
-    function getData( departmentId, categoryId ) {
-      var deferred = $q.defer();
-      if ( $scope.vm.saleItemOnly ) {
-        gsnStore.getSaleItems( departmentId, categoryId ).then( function ( result ) {
-          if ( result.success ) {
-            deferred.resolve( {
-              items: result.response
-            } );
-          }
-        } );
-      } else {
-        gsnStore.getInventory( departmentId, categoryId ).then( function ( result ) {
-          if ( result.success ) {
-            deferred.resolve( {
-              items: result.response
-            } );
-          }
-        } );
-      }
-
-      return deferred.promise;
-    }
-    //#endregion
-
-    activate();
-  }
-
-} )( angular );
-
-( function ( angular, undefined ) {
-  'use strict';
-
-  var myDirectiveName = 'ctrlProductSearch';
-
-  angular.module( 'gsn.core' )
-    .controller( myDirectiveName, [ '$scope', 'gsnApi', 'gsnStore', '$filter', '$timeout', '$q', '$location', myController ] )
-    .directive( myDirectiveName, myDirective );
-
-  function myDirective() {
-    var directive = {
-      restrict: 'EA',
-      scope: true,
-      controller: myDirectiveName
-    };
-
-    return directive;
-  }
-
-  function myController( $scope, gsnApi, gsnStore, $filter, $timeout, $q, $location ) {
-    $scope.activate = activate;
-    $scope.categories = [];
-    $scope.vm = {
-      searchResult: {},
-      hasAllItems: true
-    };
-    $scope.totalItems = 10;
-    $scope.currentPage = 1;
-    $scope.itemsPerPage = 10;
-    $scope.isSubmitting = true;
-
-    function activate() {
-      gsnStore.searchProducts( $location.search().q ).then( function ( rst ) {
-        $scope.isSubmitting = false;
-        if ( rst.success ) {
-          $scope.vm.searchResult = rst.response;
-          $scope.vm.searchResult.NonSaleItemResultGrouping = gsnApi.groupBy( $scope.vm.searchResult.ProductResult, 'DepartmentName' );
-          $scope.vm.searchResult.NonSaleItemResult = {
-            items: $scope.vm.searchResult.ProductResult
-          };
-
-          $scope.totalItems = $scope.vm.searchResult.ProductResult.length;
-        }
-      } );
-    }
-
-    $scope.selectFilter = function ( filterGroup, filterItem ) {
-      angular.forEach( filterGroup, function ( item ) {
-        if ( item !== filterItem ) {
-          item.selected = false;
-        }
-      } );
-
-      if ( filterItem.selected ) {
-        $scope.vm.searchResult.NonSaleItemResult = filterItem;
-      } else {
-        $scope.vm.searchResult.NonSaleItemResult = {
-          items: $scope.vm.searchResult.ProductResult
-        };
-      }
-
-      $scope.vm.hasAllItems = !filterItem.selected;
-    };
-    $scope.activate();
-
-    //#region Internal Methods
     //#endregion
   }
 
@@ -9749,12 +8820,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         $scope.profile.LastName = user.last_name;
       }
 
-      gsnStore.getManufacturerCouponTotalSavings().then( function ( rst ) {
-        if ( rst.success ) {
-          $scope.totalSavings = gsnApi.isNaN( parseFloat( rst.response ), 0.00 ).toFixed( 2 );
-        }
-      } );
-
       gsnStore.getStores().then( function ( rsp ) {
         $scope.stores = rsp.response;
       } );
@@ -9781,7 +8846,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         payload.ChainName = gsnApi.getChainName();
         payload.FromEmail = gsnApi.getRegistrationFromEmailAddress();
         payload.emailLogo = gsnApi.getRegistrationEmailLogo();
-        payload.ManufacturerCouponTotalSavings = '$' + $scope.totalSavings;
         payload.CopyrightYear = ( new Date() ).getFullYear();
         payload.UserName = gsnApi.isNull( payload.UserName, payload.Email );
         payload.WelcomeSubject = 'Welcome to ' + payload.ChainName + ' online.';
@@ -10175,107 +9239,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
 
     $scope.activate();
   }
-} )( angular );
-
-( function ( angular, undefined ) {
-  'use strict';
-
-  var myDirectiveName = 'ctrlStaticContent';
-
-  angular.module( 'gsn.core' )
-    .controller( myDirectiveName, [ '$scope', 'gsnApi', 'gsnStore', '$timeout', myController ] )
-    .directive( myDirectiveName, myDirective );
-
-  function myDirective() {
-    var directive = {
-      restrict: 'EA',
-      scope: true,
-      controller: myDirectiveName
-    };
-
-    return directive;
-  }
-
-  function myController( $scope, gsnApi, gsnStore, $timeout ) {
-    $scope.activate = activate;
-    $scope.notFound = false;
-    $scope.hasScript = false;
-    $scope.staticContents = [];
-    $scope.firstContent = {};
-    $scope.searchContentName = gsnApi.isNull( $scope.currentPath.replace( /^\/+/gi, '' ), '' ).replace( /[\-]/gi, ' ' );
-    $scope.contentName = angular.lowercase( $scope.searchContentName );
-    $scope.rst = null;
-
-    function activate() {
-      var contentName = $scope.contentName;
-      if ( contentName.indexOf( '.aspx' ) > 0 ) {
-        // do nothing for aspx page
-        return;
-      }
-      if ( $scope.rst ) {
-        return;
-      }
-
-      // attempt to retrieve static content remotely
-      gsnStore.getStaticContent( contentName ).then( function ( rst ) {
-        $scope.rst = rst;
-        if ( rst.success ) {
-          processData( rst.response );
-        }
-      } );
-    }
-
-    $scope.$on( 'gsnevent:circular-loaded', function ( event, data ) {
-      if ( data.success ) {
-
-        $timeout( activate, 500 );
-
-        $scope.noCircular = false;
-      } else {
-        $scope.noCircular = true;
-      }
-    } );
-
-    $scope.activate();
-
-    //#region Internal Methods
-    function processData( data ) {
-
-      var hasScript = false;
-      if ( !angular.isArray( data ) || gsnApi.isNull( data ).length <= 0 ) {
-        $scope.notFound = true;
-        return;
-      }
-
-      // make sure we sort the static content correctly
-      gsnApi.sortOn( data, 'SortBy' );
-
-      // detect for script in all contents so we can render inside of iframe
-      for ( var i = 0; i < data.length; i++ ) {
-        // do not continue processing
-        if ( hasScript ) break;
-
-        var item = data[ i ];
-        if ( item.Description ) {
-          // find scripts
-          hasScript = angular.element( '<div>' + item.Description + '</div>' ).find( 'script' ).length > 0;
-        }
-      }
-
-      if ( hasScript && data.length === 1 ) {
-        $scope.contentName = '$has-scripting$';
-      }
-
-      // make first element
-      if ( data.length >= 1 ) {
-        $scope.firstContent = data.shift();
-      }
-
-      $scope.staticContents = data;
-    }
-    //#endregion
-  }
-
 } )( angular );
 
 ( function ( angular, undefined ) {
@@ -11139,99 +10102,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
   'use strict';
   var myModule = angular.module( 'gsn.core' );
 
-  myModule.directive( 'gsnCouponPopover', [ '$window', function ( $window ) {
-
-    var directive = {
-      restrict: 'EA',
-      scope: true,
-      link: link
-    };
-
-    return directive;
-
-    function appendEllipsis( element, attrs ) {
-      var $ = angular.element;
-      if ( $( element )[ 0 ].scrollHeight > 97 && !$( element.find( '.ellipsis' ) ).length ) {
-
-        var isOpenedByClick = false;
-        $( element ).css( 'height', '96px' );
-        $( element ).append( '<button class="ellipsis pull-right">...</button>' );
-
-        $( element.find( '.ellipsis' ) ).popover( {
-          html: true,
-          content: attrs.popoverHtml,
-          placement: 'top',
-          container: 'body',
-          trigger: 'manual'
-        } );
-
-        $( element.find( '.ellipsis' ) ).bind( 'click', function () {
-          if ( !$( '.popover' ).length ) {
-            $( this ).focus();
-          } else {
-            $( this ).blur();
-          }
-        } );
-
-        $( element.find( '.ellipsis' ) ).bind( 'mouseover', function () {
-          if ( !$( '.popover' ).length ) {
-            $( this ).focus();
-          }
-        } );
-
-        $( element.find( '.ellipsis' ) ).bind( 'mouseout', function () {
-          if ( !isOpenedByClick )
-            $( this ).blur();
-        } );
-
-
-        $( element.find( '.ellipsis' ) ).bind( 'blur', function () {
-          $( this ).popover( 'hide' );
-          isOpenedByClick = false;
-        } );
-
-        $( element.find( '.ellipsis' ) ).bind( 'focus', function () {
-          $( this ).popover( 'show' );
-        } );
-
-        $( element.find( 'p' ) ).bind( 'click', function () {
-          var eliipsis = $( element.find( '.ellipsis' ) );
-          if ( !$( '.popover' ).length ) {
-            eliipsis.focus();
-            isOpenedByClick = true;
-          } else {
-            eliipsis.blur();
-          }
-        } );
-
-      }
-      if ( $( element )[ 0 ].clientHeight === $( element )[ 0 ].scrollHeight && $( element.find( '.ellipsis' ) ).length ) {
-        $( element.find( '.ellipsis' ) ).remove();
-        $( element.find( 'p' ) ).unbind( 'click' );
-      }
-    }
-
-    function link( scope, element, attrs ) {
-
-      scope.$watch( '$viewContentLoaded',
-        function () {
-          appendEllipsis( element, attrs );
-        } );
-
-      scope.$watch( function () {
-        return $window.innerWidth;
-      }, function () {
-        appendEllipsis( element, attrs );
-      } );
-
-    }
-  } ] );
-} )( angular );
-
-( function ( angular, undefined ) {
-  'use strict';
-  var myModule = angular.module( 'gsn.core' );
-
   myModule.directive( 'gsnDigitalCirc', [ '$timeout', '$rootScope', '$analytics', 'gsnApi', '$location',
     function ( $timeout, $rootScope, $analytics, gsnApi, $location ) {
       // Usage: create classic hovering digital circular
@@ -11835,102 +10705,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
 ( function ( angular, undefined ) {
   'use strict';
   var myModule = angular.module( 'gsn.core' );
-
-  myModule.directive( 'gsnPartial', [ '$timeout', 'gsnStore', 'gsnApi', function ( $timeout, gsnStore, gsnApi ) {
-    // Usage:   bind rss feed to some property
-    //
-    // Creates: 2014-01-06
-    //
-    var directive = {
-      link: link,
-      restrict: 'EA',
-      scope: true,
-    };
-    return directive;
-
-    function link( scope, element, attrs ) {
-      scope.version = attrs.version || '1';
-      scope.activate = activate;
-      scope.notFound = false;
-      scope.hasScript = false;
-      scope.partialContents = [];
-      scope.firstContent = {};
-      scope.searchContentName = gsnApi.isNull( attrs.gsnPartial.replace( /^\/+/gi, '' ), '' ).replace( /[\-]/gi, ' ' );
-      scope.contentName = angular.lowercase( scope.searchContentName );
-
-      function activate() {
-        var contentName = scope.contentName;
-
-        // attempt to retrieve static content remotely
-        if ( scope.version === '2' ) {
-          gsnStore.getPartial( contentName ).then( function ( rst ) {
-            if ( rst.success ) {
-              processData2( rst.response );
-            } else {
-              scope.notFound = true;
-            }
-          } );
-        } else {
-          gsnStore.getStaticContent( contentName ).then( function ( rst ) {
-            if ( rst.success ) {
-              processData( rst.response );
-            } else {
-              scope.notFound = true;
-            }
-          } );
-        }
-      }
-
-      scope.activate();
-
-      //#region Internal Methods
-
-      function processData2( data ) {
-        if ( data ) {
-          processData( data.Contents || [] );
-        }
-      }
-
-      function processData( data ) {
-        var hasScript = false;
-        var result = [];
-        if ( !angular.isArray( data ) || gsnApi.isNull( data, [] ).length <= 0 ) {
-          scope.notFound = true;
-          return;
-        }
-
-        // make sure we sort the static content correctly
-        gsnApi.sortOn( data, 'SortBy' );
-
-        // detect for script in all contents so we can render inside of iframe
-        for ( var i = 0; i < data.length; i++ ) {
-          var item = data[ i ];
-          if ( item.IsMetaData ) continue;
-          result.push( item );
-
-          if ( !hasScript && item.Description ) {
-            // find scripts
-            hasScript = /<\/script>/gi.test( item.Description + '' );
-          }
-        }
-
-        scope.hasScript = hasScript;
-
-        // make first element
-        if ( data.length >= 1 ) {
-          scope.firstContent = result[ 0 ];
-        }
-
-        scope.partialContents = result;
-      }
-      //#endregion
-    }
-  } ] );
-} )( angular );
-
-( function ( angular, undefined ) {
-  'use strict';
-  var myModule = angular.module( 'gsn.core' );
   myModule.directive( 'gsnPartialContent', [ '$timeout', 'gsnStore', 'gsnApi', '$location', '$anchorScroll', function ( $timeout, gsnStore, gsnApi, $location, $anchorScroll ) {
     // Usage:   allow for store specific partial content
     //
@@ -12275,7 +11049,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
 
         function controller( $scope, $element, $attrs ) {
           $scope.coupons = [];
-          $scope.manufacturerCoupons = [];
           $scope.instoreCoupons = [];
           $scope.circularCoupons = [];
           $scope.addString = '';
@@ -12290,14 +11063,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
           $scope.shoppinglistdeleted = 0;
           $scope.shoppinglistcreated = 0;
           $scope.circular = gsnStore.getCircularData();
-          $scope.printer = {
-            blocked: 0,
-            notsupported: 0,
-            notinstalled: 0,
-            printed: null,
-            count: 0,
-            total: 0
-          };
 
           $scope.reloadShoppingList = function ( shoppingListId ) {
             $timeout( function () {
@@ -12328,7 +11093,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
             if ( gsnApi.isNull( list, null ) === null ) return null;
 
             $scope.coupons.length = 0;
-            $scope.manufacturerCoupons.length = 0;
             $scope.totalQuantity = 0;
             $scope.title = list.getTitle();
             $scope.currentDate = new Date();
@@ -12401,9 +11165,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
                 }
 
                 $scope.coupons.push( item );
-                if ( item.ItemTypeId === 2 ) {
-                  $scope.manufacturerCoupons.push( item );
-                }
               } else if ( item.ItemTypeId === 0 && item.Meta ) {
                 if ( !item.LinkedItem && ( item.Meta + '' ).indexOf( '}' ) > 0 ) {
                   item.LinkedItem = JSON.parse( item.Meta );
@@ -12659,102 +11420,10 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
           $scope.$on( 'gsnevent:shopping-list-created', function ( event, data ) {
             $scope.shoppinglistcreated++;
           } );
-
-          $scope.$on( 'gsnevent:gsnshoppinglist-itemavailable', function ( event ) {
-            if ( $scope.manufacturerCoupons.length <= 0 ) return;
-            if ( $scope.hasInitializePrinter ) return;
-
-            if ( $scope.currentPath.indexOf( 'print' ) > 0 ) {
-              $scope.hasInitializePrinter = true;
-              // initialize printer
-              if ( $scope.manufacturerCoupons.length > 0 ) {
-                if ( $scope.canPrint ) {
-                  $scope.printer.print = null;
-                  $scope.printer.total = $scope.manufacturerCoupons.length;
-                }
-              }
-            }
-          } );
-
-          // trigger modal
-          $scope.$on( 'gsnevent:gcprinter-not-supported', function () {
-            $scope.printer.notsupported++;
-          } );
-          $scope.$on( 'gsnevent:gcprinter-blocked', function () {
-            $scope.printer.blocked++;
-          } );
-          $scope.$on( 'gsnevent:gcprinter-not-found', function () {
-            $scope.printer.notinstalled++;
-          } );
-          $scope.$on( 'gsnevent:gcprinter-printed', function ( evt, e, rsp ) {
-            $scope.printer.printed = e;
-            if ( rsp ) {
-              $scope.printer.errors = gsnApi.isNull( rsp.ErrorCoupons, [] );
-              var count = $scope.printer.total - $scope.printer.errors.length;
-              if ( count > 0 ) {
-                $scope.printer.count = count;
-              }
-            }
-          } );
         }
       }
     ] );
 
-} )( angular );
-
-( function ( angular, undefined ) {
-  'use strict';
-  var myModule = angular.module( 'gsn.core' );
-
-  myModule.directive( 'gsnSiteSearch', [ '$routeParams', '$timeout', 'gsnApi', '$window', function ( $routeParams, $timeout, gsnApi, $window ) {
-    // Usage:   site search control
-    //
-    // Creates: 2014-01-09
-    //
-    var directive = {
-      link: link,
-      restrict: 'A'
-    };
-    return directive;
-
-    function link( scope, element, attrs ) {
-      var loadingScript = false;
-
-      function loadSearch() {
-        if ( undefined === $window.google || undefined === $window.google.load ) {
-          $timeout( loadSearch, 500 );
-
-          if ( loadingScript ) return;
-
-          loadingScript = true;
-
-          // dynamically load google
-          var src = '//www.google.com/jsapi';
-
-          gsnApi.loadScripts( [ src ], loadSearch );
-          return;
-        }
-
-        google.load( 'search', '1', {
-          language: 'en',
-          callback: function () {
-            var customSearchControl = new google.search.CustomSearchControl( gsnApi.getGoogleSiteSearchCode() );
-            customSearchControl.setResultSetSize( google.search.Search.FILTERED_CSE_RESULTSET );
-            customSearchControl.setLinkTarget( google.search.Search.LINK_TARGET_SELF );
-            customSearchControl.draw( attrs.id );
-            if ( attrs.query ) {
-              customSearchControl.execute( $routeParams[ attrs.query ] );
-            }
-          }
-        } );
-
-        return;
-      }
-
-
-      $timeout( loadSearch, 500 );
-    }
-  } ] );
 } )( angular );
 
 ( function ( angular, undefined ) {

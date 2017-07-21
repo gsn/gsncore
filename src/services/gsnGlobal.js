@@ -2,9 +2,9 @@
 ( function ( angular, undefined ) {
   'use strict';
   var serviceId = 'gsnGlobal';
-  angular.module( 'gsn.core' ).service( serviceId, [ '$window', '$location', '$timeout', '$route', 'gsnApi', 'gsnProfile', 'gsnStore', '$rootScope', 'Facebook', '$analytics', 'gsnYoutech', 'gsnAdvertising', '$anchorScroll', gsnGlobal ] );
+  angular.module( 'gsn.core' ).service( serviceId, [ '$window', '$location', '$timeout', '$route', 'gsnApi', 'gsnProfile', 'gsnStore', '$rootScope', 'Facebook', '$analytics', 'gsnAdvertising', '$anchorScroll', gsnGlobal ] );
 
-  function gsnGlobal( $window, $location, $timeout, $route, gsnApi, gsnProfile, gsnStore, $rootScope, Facebook, $analytics, gsnYoutech, gsnAdvertising, $anchorScroll ) {
+  function gsnGlobal( $window, $location, $timeout, $route, gsnApi, gsnProfile, gsnStore, $rootScope, Facebook, $analytics, gsnAdvertising, $anchorScroll ) {
     var returnObj = {
       init: init,
       hasInit: false
@@ -37,7 +37,6 @@
         currentStore: {},
         adsCollapsed: false
       };
-      $scope.youtech = gsnYoutech;
       $scope.search = {
         site: '',
         item: ''
@@ -324,8 +323,6 @@
             var evt = 'MiscItemAddUpdate';
             if ( item.ItemTypeId === 8 ) {
               evt = 'CircularItemAddUpdate';
-            } else if ( item.ItemTypeId === 2 ) {
-              evt = 'ManufacturerCouponAddUpdate';
             } else if ( item.ItemTypeId === 3 ) {
               evt = 'ProductAddUpdate';
             } else if ( item.ItemTypeId === 5 ) {
@@ -334,8 +331,6 @@
               evt = 'OwnItemAddUpdate';
             } else if ( item.ItemTypeId === 10 ) {
               evt = 'StoreCouponAddUpdate';
-            } else if ( item.ItemTypeId === 13 ) {
-              evt = 'YoutechCouponAddUpdate';
             }
             $analytics.eventTrack( evt, {
               category: ( item.ItemTypeId === 13 ) ? item.ExtCategory : cat.CategoryName,
@@ -354,19 +349,6 @@
               itemId = item.ItemId;
             if ( item.ItemTypeId === 8 ) {
               $analytics.eventTrack( 'CircularItemRemove', {
-                category: cat.CategoryName,
-                label: item.Description,
-                item: item
-              } );
-            } else if ( item.ItemTypeId === 2 ) {
-              coupon = gsnStore.getCoupon( item.ItemId, 2 );
-              if ( coupon ) {
-                item = coupon;
-                if ( gsnApi.isNull( item.ProductCode, '' ).length > 0 ) {
-                  itemId = item.ProductCode;
-                }
-              }
-              $analytics.eventTrack( 'ManufacturerCouponRemove', {
                 category: cat.CategoryName,
                 label: item.Description,
                 item: item
@@ -397,19 +379,6 @@
               }
               $analytics.eventTrack( 'StoreCouponRemove', {
                 category: cat.CategoryName,
-                label: item.Description,
-                item: item
-              } );
-            } else if ( item.ItemTypeId === 13 ) {
-              coupon = gsnStore.getCoupon( item.ItemId, 13 );
-              if ( coupon ) {
-                item = coupon;
-                if ( gsnApi.isNull( item.ProductCode, '' ).length > 0 ) {
-                  itemId = item.ProductCode;
-                }
-              }
-              $analytics.eventTrack( 'YoutechCouponRemove', {
-                category: item.ExtCategory,
                 label: item.Description,
                 item: item
               } );
