@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.10.65
+ * version 1.10.66
  * gsncore repository
- * Build date: Thu Jul 20 2017 21:07:42 GMT-0500 (CDT)
+ * Build date: Thu Jul 20 2017 21:30:23 GMT-0500 (CDT)
  */
 ( function () {
   'use strict';
@@ -79,7 +79,6 @@
 
     ChainId: 0,
     ChainName: 'Brick, Inc.',
-    GoogleTagId: null,
     GoogleAnalyticAccountId1: null,
     RegistrationFromEmailAddress: 'tech@grocerywebsites.com',
     RegistrationEmailLogo: null,

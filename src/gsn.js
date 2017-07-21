@@ -73,7 +73,6 @@
 
     ChainId: 0,
     ChainName: 'Brick, Inc.',
-    GoogleTagId: null,
     GoogleAnalyticAccountId1: null,
     RegistrationFromEmailAddress: 'tech@grocerywebsites.com',
     RegistrationEmailLogo: null,
