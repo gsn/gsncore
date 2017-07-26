@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.10.68
+ * version 1.10.69
  * gsncore repository
- * Build date: Wed Jul 26 2017 15:17:13 GMT-0500 (CDT)
+ * Build date: Wed Jul 26 2017 15:36:31 GMT-0500 (CDT)
  */
 ( function () {
   'use strict';
@@ -1456,7 +1456,7 @@
 
       // give the UI 2/10 of a second to be ready
       $timeout( function () {
-        $rootScope.appState = 'ready';
+        $rootScope.win.appState = 'ready';
       }, 200 );
     };
 
@@ -2425,9 +2425,6 @@
         } );
         $scope.hasJustLoggedIn = true;
         $scope.loggedInWithFacebook = ( result.payload.grant_type === 'facebook' );
-
-        // load shopping lists
-        gsnProfile.refreshShoppingLists();
       } );
       $scope.$on( 'gsnevent:login-failed', function ( event, result ) {
         if ( result.payload.grant_type === 'facebook' ) {
@@ -3411,6 +3408,13 @@
         returnObj.getProfile( true );
       }
 
+      $timeout( function () {
+        if ( !returnObj.getShoppingList() ) {
+          // load shopping lists
+          returnObj.refreshShoppingLists();
+        }
+
+      }, 200 );
       gsnStore.initialize();
     };
 

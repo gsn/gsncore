@@ -256,9 +256,6 @@
         } );
         $scope.hasJustLoggedIn = true;
         $scope.loggedInWithFacebook = ( result.payload.grant_type === 'facebook' );
-
-        // load shopping lists
-        gsnProfile.refreshShoppingLists();
       } );
       $scope.$on( 'gsnevent:login-failed', function ( event, result ) {
         if ( result.payload.grant_type === 'facebook' ) {

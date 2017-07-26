@@ -89,6 +89,13 @@
         returnObj.getProfile( true );
       }
 
+      $timeout( function () {
+        if ( !returnObj.getShoppingList() ) {
+          // load shopping lists
+          returnObj.refreshShoppingLists();
+        }
+
+      }, 200 );
       gsnStore.initialize();
     };
 

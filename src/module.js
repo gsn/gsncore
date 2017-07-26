@@ -763,7 +763,7 @@
 
       // give the UI 2/10 of a second to be ready
       $timeout( function () {
-        $rootScope.appState = 'ready';
+        $rootScope.win.appState = 'ready';
       }, 200 );
     };
 
