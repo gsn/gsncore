@@ -1,7 +1,7 @@
 {
   "name": "gsncore",
   "description": "gsncore repository",
-  "version": "1.10.67",
+  "version": "1.10.68",
   "homepage": "https://github.com/gsn/gsncore",
   "author": {
     "name": "Brick, Inc.",
@@ -31,25 +31,20 @@
     "gsncore-basic.js",
     "gsncore-basic.min.js"
   ],
-  "dependencies": {
-    "gulp-sourcemaps": "^2.4.1"
-  },
+  "dependencies": {},
   "devDependencies": {
     "gulp": "*",
     "gulp-bump": "*",
-    "gulp-header": "~1.2.2",
+    "gulp-header": "*",
     "gulp-jshint": "~1.9.0",
-    "gulp-load-plugins": "^1.2.0",
-    "gulp-rename": "~1.2.0",
-    "gulp-uglify": "~1.1.0",
+    "gulp-load-plugins": "*",
+    "gulp-rename": "*",
+    "gulp-uglify": "*",
     "gulp-inject": "*",
-    "gulp-concat": "~2.3.4",
+    "gulp-concat": "*",
     "gulp-util": "*",
-    "gulp-git": "~1.1.0",
-    "run-sequence": "~1.0.2",
-    "express": "4.12.3",
-    "coffee-script": "1.9.2",
-    "uglify-js": "2.4.20"
+    "gulp-sourcemaps": "*",
+    "run-sequence": "*"
   },
   "engines": {
     "node": ">= 0.12.0"

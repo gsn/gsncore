@@ -62,17 +62,13 @@ gulp.task( 'build-basic', function () {
     .pipe( gulp.dest( '.' ) );
 } );
 
-/*
-    .pipe($.header(banner, {
-      pkg: pkg
-    }))
- */
 gulp.task( 'default', [ 'lint', 'build', 'build-basic' ], function () {
   gulp.src( './gsncore-basic.js' )
     .pipe( sourcemaps.init() )
-    .pipe( $.uglify() )
-    .pipe( $.header( banner, {
-      pkg: pkg
+    .pipe( $.uglify( {
+      output: {
+        comments: /^!/
+      }
     } ) )
     .pipe( $.rename( {
       suffix: '.min'
@@ -82,9 +78,10 @@ gulp.task( 'default', [ 'lint', 'build', 'build-basic' ], function () {
 
   return gulp.src( './gsncore.js' )
     .pipe( sourcemaps.init() )
-    .pipe( $.uglify() )
-    .pipe( $.header( banner, {
-      pkg: pkg
+    .pipe( $.uglify( {
+      output: {
+        comments: /^!/
+      }
     } ) )
     .pipe( $.rename( {
       suffix: '.min'
