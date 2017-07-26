@@ -144,8 +144,9 @@
 
     // get shopping list provided id
     returnObj.getShoppingList = function ( shoppingListId ) {
-      if ( gsnApi.isNull( shoppingListId, null ) === null )
+      if ( gsnApi.isNull( shoppingListId, null ) === null ) {
         shoppingListId = returnObj.getShoppingListId();
+      }
 
       var result = $savedData.allShoppingLists[ shoppingListId ];
       return result;

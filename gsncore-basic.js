@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.10.66
+ * version 1.10.67
  * gsncore repository
- * Build date: Thu Jul 20 2017 21:30:23 GMT-0500 (CDT)
+ * Build date: Tue Jul 25 2017 20:04:13 GMT-0500 (CDT)
  */
 ( function () {
   'use strict';
@@ -2425,6 +2425,9 @@
         } );
         $scope.hasJustLoggedIn = true;
         $scope.loggedInWithFacebook = ( result.payload.grant_type === 'facebook' );
+
+        // load shopping lists
+        gsnProfile.refreshShoppingLists();
       } );
       $scope.$on( 'gsnevent:login-failed', function ( event, result ) {
         if ( result.payload.grant_type === 'facebook' ) {
@@ -3463,8 +3466,9 @@
 
     // get shopping list provided id
     returnObj.getShoppingList = function ( shoppingListId ) {
-      if ( gsnApi.isNull( shoppingListId, null ) === null )
+      if ( gsnApi.isNull( shoppingListId, null ) === null ) {
         shoppingListId = returnObj.getShoppingListId();
+      }
 
       var result = $savedData.allShoppingLists[ shoppingListId ];
       return result;
