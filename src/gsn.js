@@ -84,7 +84,7 @@
     AllContent: null,
     hasStoreCoupon: false,
     hasInit: false,
-    isPrerender: /siteid\=/.test( root.location.href )
+    isPrerender: /Prerender/.test( root.navigator.userAgent )
   };
 
   gsn.identity = function ( value ) {

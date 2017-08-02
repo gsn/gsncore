@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.10.69
+ * version 1.10.70
  * gsncore repository
- * Build date: Wed Jul 26 2017 15:36:31 GMT-0500 (CDT)
+ * Build date: Wed Aug 02 2017 11:37:08 GMT-0500 (CDT)
  */
 ( function () {
   'use strict';
@@ -90,7 +90,7 @@
     AllContent: null,
     hasStoreCoupon: false,
     hasInit: false,
-    isPrerender: /siteid\=/.test( root.location.href )
+    isPrerender: /Prerender/.test( root.navigator.userAgent )
   };
 
   gsn.identity = function ( value ) {
@@ -4470,7 +4470,7 @@
         }
       }
       var search = $location.search();
-      var selectFirstStore = search.sfs || search.selectFirstStore || search.selectfirststore;
+      var selectFirstStore = gsnApi.getConfig().isPrerender || search.sfs || search.selectFirstStore || search.selectfirststore;
       storeList = gsnApi.isNull( storeList, [] );
       var storeByNumber = gsnApi.mapObject( storeList, 'StoreNumber' );
       if ( storeList.length === 1 || selectFirstStore ) {

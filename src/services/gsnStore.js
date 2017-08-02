@@ -340,7 +340,7 @@
         }
       }
       var search = $location.search();
-      var selectFirstStore = search.sfs || search.selectFirstStore || search.selectfirststore;
+      var selectFirstStore = gsnApi.getConfig().isPrerender || search.sfs || search.selectFirstStore || search.selectfirststore;
       storeList = gsnApi.isNull( storeList, [] );
       var storeByNumber = gsnApi.mapObject( storeList, 'StoreNumber' );
       if ( storeList.length === 1 || selectFirstStore ) {
