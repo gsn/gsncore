@@ -1,7 +1,7 @@
-( function ( angular, undefined ) {
+(function(angular, undefined) {
   'use strict';
-  var myModule = angular.module( 'gsn.core' );
-  myModule.directive( 'gsnPartialContent', [ '$timeout', 'gsnStore', 'gsnApi', '$location', '$anchorScroll', function ( $timeout, gsnStore, gsnApi, $location, $anchorScroll ) {
+  var myModule = angular.module('gsn.core');
+  myModule.directive('gsnPartialContent', ['$timeout', 'gsnStore', 'gsnApi', '$location', '$anchorScroll', function($timeout, gsnStore, gsnApi, $location, $anchorScroll) {
     // Usage:   allow for store specific partial content
     //
     // Creates: 2015-02-26
@@ -13,9 +13,9 @@
     };
     return directive;
 
-    function link( scope, element, attrs ) {
-      var currentPath = gsnApi.isNull( $location.path(), '' );
-      attrs.gsnPartialContent = angular.lowercase( attrs.gsnPartialContent || currentPath ).replace( /^\/+|\/+$/, '' ).replace( /[\-\/]/gi, ' ' );
+    function link(scope, element, attrs) {
+      var currentPath = gsnApi.isNull($location.path(), '');
+      attrs.gsnPartialContent = angular.lowercase(attrs.gsnPartialContent || currentPath).replace(/^\/+|\/+$/, '').replace(/[\-\/]/gi, ' ');
       scope.activate = activate;
       scope.pcvm = {
         hasScript: false,
@@ -36,55 +36,55 @@
 
       function activate() {
         // attempt to retrieve static content remotely
-        gsnStore.getPartial( scope.contentDetail.url ).then( function ( rst ) {
+        gsnStore.getPartial(scope.contentDetail.url).then(function(rst) {
           scope.pcvm.hasScript = false;
           scope.pcvm.isLoading = false;
-          if ( rst.success ) {
+          if (rst.success) {
             scope.pcvm.notFound = rst.response === 'null';
-            processData( rst.response );
+            processData(rst.response);
           }
-        } );
+        });
       }
-      scope.getContentList = function () {
+      scope.getContentList = function() {
         var result = [];
-        if ( partialData.ContentList ) {
-          for ( var i = 0; i < partialData.ContentList.length; i++ ) {
-            var data = gsnApi.parseStoreSpecificContent( partialData.ContentList[ i ] );
-            if ( data.Headline || data.SortBy ) {
+        if (partialData.ContentList) {
+          for (var i = 0; i < partialData.ContentList.length; i++) {
+            var data = gsnApi.parseStoreSpecificContent(partialData.ContentList[i]);
+            if (data.Headline || data.SortBy) {
               // match any script with src
-              if ( /<script.+src=/gi.test( data.Description || '' ) ) {
+              if (/<script.+src=/gi.test(data.Description || '')) {
                 scope.pcvm.hasScript = true;
               }
-              result.push( data );
+              result.push(data);
             }
           }
         }
         return result;
       };
-      scope.getContent = function ( index ) {
-        return gsnApi.parseStoreSpecificContent( partialData.ContentData[ index ] );
+      scope.getContent = function(index) {
+        return gsnApi.parseStoreSpecificContent(partialData.ContentData[index]);
       };
-      scope.getConfig = function ( name ) {
-        return gsnApi.parseStoreSpecificContent( partialData.ConfigData[ name ] ) || {};
+      scope.getConfig = function(name) {
+        return gsnApi.parseStoreSpecificContent(partialData.ConfigData[name]) || {};
       };
-      scope.getConfigDescription = function ( name, defaultValue ) {
-        var resultObj = scope.getConfig( name ).Description;
-        return gsnApi.isNull( resultObj, defaultValue );
+      scope.getConfigDescription = function(name, defaultValue) {
+        var resultObj = scope.getConfig(name).Description;
+        return gsnApi.isNull(resultObj, defaultValue);
       };
       scope.activate();
       //#region Internal Methods
-      function processData( data ) {
-        partialData = gsnApi.parsePartialContentData( data );
+      function processData(data) {
+        partialData = gsnApi.parsePartialContentData(data);
         scope.partialContents = scope.getContentList();
-        scope.pcvm.layout = scope.getConfig( 'layout' ).Description || 'default';
-        if ( $location.hash() ) {
-          $timeout( function () {
+        scope.pcvm.layout = scope.getConfig('layout').Description || 'default';
+        if ($location.hash()) {
+          $timeout(function() {
             $anchorScroll();
-            angular.element( 'a[href="#' + $location.hash() + '"]' ).click();
-          }, 1000 );
+            angular.element('a[href="#' + $location.hash() + '"]').click();
+          }, 1000);
         }
       }
       //#endregion
     }
-  } ] );
-} )( angular );
+  }]);
+})(angular);

@@ -1,8 +1,8 @@
-( function ( angular, undefined ) {
+(function(angular, undefined) {
   'use strict';
-  var myModule = angular.module( 'gsn.core' );
+  var myModule = angular.module('gsn.core');
 
-  myModule.directive( 'gsnFluidVids', [ '$sce', function ( $sce ) {
+  myModule.directive('gsnFluidVids', ['$sce', function($sce) {
     // Usage: add 3rd party videos
     //
     // Creates: 2013-12-12 TomN
@@ -18,13 +18,13 @@
     };
     return directive;
 
-    function link( scope, element, attrs ) {
-      element.on( 'scroll', function () {
-        var ratio = ( attrs.height / attrs.width ) * 100;
-        element[ 0 ].style.paddingTop = ratio + '%';
-      } );
+    function link(scope, element, attrs) {
+      element.on('scroll', function() {
+        var ratio = (attrs.height / attrs.width) * 100;
+        element[0].style.paddingTop = ratio + '%';
+      });
 
-      scope.video = $sce.trustAsResourceUrl( attrs.gsnFluidVids );
+      scope.video = $sce.trustAsResourceUrl(attrs.gsnFluidVids);
     }
-  } ] );
-} )( angular );
+  }]);
+})(angular);

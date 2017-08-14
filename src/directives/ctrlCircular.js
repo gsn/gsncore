@@ -1,11 +1,11 @@
-( function ( gsn, angular, undefined ) {
+(function(gsn, angular, undefined) {
   'use strict';
 
   var myDirectiveName = 'ctrlCircular';
 
-  angular.module( 'gsn.core' )
-    .controller( myDirectiveName, [ '$scope', '$timeout', 'gsnStore', '$rootScope', '$location', 'gsnProfile', 'gsnApi', '$analytics', '$filter', myController ] )
-    .directive( myDirectiveName, myDirective );
+  angular.module('gsn.core')
+    .controller(myDirectiveName, ['$scope', '$timeout', 'gsnStore', '$rootScope', '$location', 'gsnProfile', 'gsnApi', '$analytics', '$filter', myController])
+    .directive(myDirectiveName, myDirective);
 
   function myDirective() {
     var directive = {
@@ -17,7 +17,7 @@
     return directive;
   }
 
-  function myController( $scope, $timeout, gsnStore, $rootScope, $location, gsnProfile, gsnApi, $analytics, $filter ) {
+  function myController($scope, $timeout, gsnStore, $rootScope, $location, gsnProfile, gsnApi, $analytics, $filter) {
     $scope.activate = activate;
 
     $scope.pageId = 99; // it's always all items for desktop
@@ -47,43 +47,43 @@
     };
 
     function activate() {
-      if ( $scope.vm.digitalCirc ) {
+      if ($scope.vm.digitalCirc) {
         return;
       }
 
       var config = gsnApi.getConfig();
-      if ( $scope.currentPath === '/circular' && ( gsnApi.isNull( config.defaultMobileListView, null ) === null ) ) {
+      if ($scope.currentPath === '/circular' && (gsnApi.isNull(config.defaultMobileListView, null) === null)) {
         config.defaultMobileListView = true;
-        var mobileListViewUrl = gsnApi.getThemeConfigDescription( 'default-mobile-listview' );
-        if ( gsnApi.browser.isMobile && mobileListViewUrl ) {
-          gsnApi.goUrl( mobileListViewUrl );
+        var mobileListViewUrl = gsnApi.getThemeConfigDescription('default-mobile-listview');
+        if (gsnApi.browser.isMobile && mobileListViewUrl) {
+          gsnApi.goUrl(mobileListViewUrl);
           return;
         }
       }
 
       // broadcast message
-      $rootScope.$broadcast( 'gsnevent:loadads' );
+      $rootScope.$broadcast('gsnevent:loadads');
 
-      if ( gsnStore.hasCompleteCircular() ) {
+      if (gsnStore.hasCompleteCircular()) {
         var data = gsnStore.getCircularData();
 
         //Filter circulars
-        if ( data.Circulars.length > 0 ) {
+        if (data.Circulars.length > 0) {
           var filteredByStoreCircs = [];
-          var storeId = gsnApi.isNull( gsnApi.getSelectedStoreId(), 0 );
-          angular.forEach( data.Circulars, function ( circ ) {
-            if ( gsn.contains( circ.StoreIds, storeId ) ) {
-              filteredByStoreCircs.push( circ );
+          var storeId = gsnApi.isNull(gsnApi.getSelectedStoreId(), 0);
+          angular.forEach(data.Circulars, function(circ) {
+            if (gsn.contains(circ.StoreIds, storeId)) {
+              filteredByStoreCircs.push(circ);
             }
-          } );
+          });
           data.Circulars = filteredByStoreCircs;
         } else {
           return;
         }
 
-        var myPageIdx = parseInt( $location.search().p || $location.search().pg || 0 );
-        var myCircIdx = parseInt( $location.search().c || 0 );
-        if ( data.Circulars.length === 1 ) {
+        var myPageIdx = parseInt($location.search().p || $location.search().pg || 0);
+        var myCircIdx = parseInt($location.search().c || 0);
+        if (data.Circulars.length === 1) {
           myCircIdx = myCircIdx || 1;
           myPageIdx = myPageIdx || 1;
         }
@@ -95,12 +95,12 @@
       }
     }
 
-    $scope.doAddCircularItem = function ( evt, tempItem ) {
-      var item = gsnStore.getItem( tempItem.ItemId );
-      if ( item ) {
-        gsnProfile.addItem( item );
+    $scope.doAddCircularItem = function(evt, tempItem) {
+      var item = gsnStore.getItem(tempItem.ItemId);
+      if (item) {
+        gsnProfile.addItem(item);
 
-        if ( gsnApi.isNull( item.Varieties, null ) === null ) {
+        if (gsnApi.isNull(item.Varieties, null) === null) {
           item.Varieties = [];
         }
 
@@ -109,163 +109,163 @@
       }
     };
 
-    $scope.doToggleCircularItem = function ( evt, tempItem ) {
-      if ( $scope.isOnList( tempItem ) ) {
-        gsnProfile.removeItem( tempItem );
+    $scope.doToggleCircularItem = function(evt, tempItem) {
+      if ($scope.isOnList(tempItem)) {
+        gsnProfile.removeItem(tempItem);
       } else {
-        $scope.doAddCircularItem( evt, tempItem );
+        $scope.doAddCircularItem(evt, tempItem);
       }
     };
 
-    $scope.toggleSort = function ( sortBy ) {
+    $scope.toggleSort = function(sortBy) {
       $scope.sortBy = sortBy;
-      var reverse = ( sortBy === $scope.actualSortBy );
-      $scope.actualSortBy = ( ( reverse ) ? '-' : '' ) + sortBy;
+      var reverse = (sortBy === $scope.actualSortBy);
+      $scope.actualSortBy = ((reverse) ? '-' : '') + sortBy;
       $scope.doSearchInternal();
     };
 
-    $scope.getIndex = function ( step ) {
-      var newIndex = parseInt( $scope.vm.pageIdx || 1 ) + step;
-      if ( newIndex > $scope.vm.pageCount ) {
+    $scope.getIndex = function(step) {
+      var newIndex = parseInt($scope.vm.pageIdx || 1) + step;
+      if (newIndex > $scope.vm.pageCount) {
         newIndex = 1;
-      } else if ( newIndex < 1 ) {
+      } else if (newIndex < 1) {
         newIndex = $scope.vm.pageCount;
       }
 
       return newIndex;
     };
 
-    $scope.$on( 'gsnevent:shoppinglist-loaded', activate );
-    $scope.$on( 'gsnevent:digitalcircular-itemselect', $scope.doAddCircularItem );
+    $scope.$on('gsnevent:shoppinglist-loaded', activate);
+    $scope.$on('gsnevent:digitalcircular-itemselect', $scope.doAddCircularItem);
 
-    $scope.$watch( 'vm.selectedItem', function ( newValue, oldValue ) {
-      if ( newValue ) {
-        if ( gsnApi.isNull( newValue.Varieties, [] ).length > 0 ) return;
-        if ( newValue.LinkedItemCount <= 0 ) return;
+    $scope.$watch('vm.selectedItem', function(newValue, oldValue) {
+      if (newValue) {
+        if (gsnApi.isNull(newValue.Varieties, []).length > 0) return;
+        if (newValue.LinkedItemCount <= 0) return;
 
-        gsnStore.getAvailableVarieties( newValue.ItemId ).then( function ( result ) {
-          if ( result.success ) {
+        gsnStore.getAvailableVarieties(newValue.ItemId).then(function(result) {
+          if (result.success) {
             // this is affecting the UI so render it on the UI thread
-            $timeout( function () {
+            $timeout(function() {
               newValue.Varieties = result.response;
-            }, 0 );
+            }, 0);
           }
-        } );
+        });
       }
-    } );
+    });
 
-    $scope.doSearchInternal = function () {
-      var circularType = gsnStore.getCircular( $scope.pageId );
+    $scope.doSearchInternal = function() {
+      var circularType = gsnStore.getCircular($scope.pageId);
       var list = gsnProfile.getShoppingList();
 
       // don't show circular until data and list are both loaded
-      if ( gsnApi.isNull( circularType, null ) === null || gsnApi.isNull( list, null ) === null ) return;
+      if (gsnApi.isNull(circularType, null) === null || gsnApi.isNull(list, null) === null) return;
 
-      var result1 = $filter( 'filter' )( circularType.items, $scope.vm.filter );
-      var result = $filter( 'orderBy' )( $filter( 'filter' )( result1, $scope.vm.filterBy || '' ), $scope.actualSortBy );
-      if ( !$scope.vm.circularType ) {
+      var result1 = $filter('filter')(circularType.items, $scope.vm.filter);
+      var result = $filter('orderBy')($filter('filter')(result1, $scope.vm.filterBy || ''), $scope.actualSortBy);
+      if (!$scope.vm.circularType) {
         $scope.vm.circularType = circularType;
-        $scope.vm.categories = gsnApi.groupBy( circularType.items, 'CategoryName' );
-        $scope.vm.brands = gsnApi.groupBy( circularType.items, 'BrandName' );
+        $scope.vm.categories = gsnApi.groupBy(circularType.items, 'CategoryName');
+        $scope.vm.brands = gsnApi.groupBy(circularType.items, 'BrandName');
       }
 
       $scope.vm.cacheItems = result;
-      $scope.vm.pageCount = Math.ceil( result.length / $scope.itemsPerPage );
+      $scope.vm.pageCount = Math.ceil(result.length / $scope.itemsPerPage);
       $scope.allItems = [];
       loadMore();
     };
 
-    $scope.$watch( 'vm.filterBy', $scope.doSearchInternal );
-    $scope.$watch( 'vm.filter.BrandName', $scope.doSearchInternal );
-    $scope.$watch( 'vm.filter.CategoryName', $scope.doSearchInternal );
-    $scope.$watch( 'vm.pageIdx', setPage );
-    $scope.$watch( 'vm.circIdx', setPage );
+    $scope.$watch('vm.filterBy', $scope.doSearchInternal);
+    $scope.$watch('vm.filter.BrandName', $scope.doSearchInternal);
+    $scope.$watch('vm.filter.CategoryName', $scope.doSearchInternal);
+    $scope.$watch('vm.pageIdx', setPage);
+    $scope.$watch('vm.circIdx', setPage);
 
-    $scope.$on( 'gsnevent:circular-loaded', function ( event, data ) {
-      if ( data.success ) {
+    $scope.$on('gsnevent:circular-loaded', function(event, data) {
+      if (data.success) {
         $scope.vm.noCircular = false;
-        $timeout( activate, 500 );
+        $timeout(activate, 500);
       } else {
         $scope.vm.noCircular = true;
       }
-    } );
+    });
 
-    $timeout( activate, 500 );
+    $timeout(activate, 500);
 
     // activate again in 5 seconds if not responsive
-    $timeout( function () {
+    $timeout(function() {
       var items = $scope.vm.cacheItems || [];
-      if ( items.length <= 0 ) {
+      if (items.length <= 0) {
         activate();
       }
-    }, 5000 );
+    }, 5000);
 
     //#region Internal Methods
-    function sortMe( a, b ) {
-      if ( a.rect.x <= b.rect.x ) return a.rect.y - b.rect.y;
+    function sortMe(a, b) {
+      if (a.rect.x <= b.rect.x) return a.rect.y - b.rect.y;
       return a.rect.x - b.rect.x;
     }
 
-    function setPage( oldValue, newValue ) {
-      if ( !$scope.vm.digitalCirc ) return;
-      if ( !$scope.vm.digitalCirc.Circulars ) return;
-      if ( $scope.vm.digitalCirc.Circulars.length <= 0 ) return;
+    function setPage(oldValue, newValue) {
+      if (!$scope.vm.digitalCirc) return;
+      if (!$scope.vm.digitalCirc.Circulars) return;
+      if ($scope.vm.digitalCirc.Circulars.length <= 0) return;
 
-      $scope.vm.circular = $scope.vm.digitalCirc.Circulars[ $scope.vm.circIdx - 1 ];
-      if ( $scope.vm.circular ) {
-        if ( $scope.vm.pageIdx < 1 ) {
+      $scope.vm.circular = $scope.vm.digitalCirc.Circulars[$scope.vm.circIdx - 1];
+      if ($scope.vm.circular) {
+        if ($scope.vm.pageIdx < 1) {
           $scope.vm.pageIdx = 1;
           return;
         }
 
         $scope.vm.pageCount = $scope.vm.circular.Pages.length;
-        $scope.vm.page = $scope.vm.circular.Pages[ $scope.vm.pageIdx - 1 ];
+        $scope.vm.page = $scope.vm.circular.Pages[$scope.vm.pageIdx - 1];
 
         // something went wrong, redirect to circular home
-        if ( !$scope.vm.page ) {
-          $scope.goUrl( '/circular' );
+        if (!$scope.vm.page) {
+          $scope.goUrl('/circular');
           return;
         }
 
-        if ( !$scope.vm.page.sorted ) {
-          $scope.vm.page.Items.sort( sortMe );
+        if (!$scope.vm.page.sorted) {
+          $scope.vm.page.Items.sort(sortMe);
           $scope.vm.page.sorted = true;
         }
       }
-      if ( oldValue !== newValue ) {
-        var pageIdx = gsnApi.isNull( $scope.vm.pageIdx, 1 );
+      if (oldValue !== newValue) {
+        var pageIdx = gsnApi.isNull($scope.vm.pageIdx, 1);
         // must use timeout to sync with UI thread
-        $timeout( function () {
+        $timeout(function() {
           // trigger ad refresh for circular page changed
-          $rootScope.$broadcast( 'gsnevent:digitalcircular-pagechanging', {
+          $rootScope.$broadcast('gsnevent:digitalcircular-pagechanging', {
             circularIndex: $scope.vm.circIdx,
             pageIndex: pageIdx
-          } );
-        }, 50 );
+          });
+        }, 50);
 
         var circ = $scope.vm.circular;
-        if ( circ ) {
-          $analytics.eventTrack( 'PageChange', {
+        if (circ) {
+          $analytics.eventTrack('PageChange', {
             category: 'Circular_Type' + circ.CircularTypeId + '_P' + pageIdx,
             label: circ.CircularDescription
-          } );
+          });
         }
       }
     }
 
     function loadMore() {
       var items = $scope.vm.cacheItems || [];
-      if ( items.length > 0 ) {
+      if (items.length > 0) {
         var itemsToLoad = $scope.itemsPerPage;
-        if ( $scope.loadAll ) {
+        if ($scope.loadAll) {
           itemsToLoad = items.length;
         }
 
         var last = $scope.allItems.length - 1;
-        for ( var i = 1; i <= itemsToLoad; i++ ) {
-          var item = items[ last + i ];
-          if ( item ) {
-            $scope.allItems.push( item );
+        for (var i = 1; i <= itemsToLoad; i++) {
+          var item = items[last + i];
+          if (item) {
+            $scope.allItems.push(item);
           }
         }
       }
@@ -273,4 +273,4 @@
 
     //#endregion
   }
-} )( gsn, angular );
+})(gsn, angular);

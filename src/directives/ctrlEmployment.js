@@ -1,11 +1,11 @@
-( function ( angular, undefined ) {
+(function(angular, undefined) {
   'use strict';
 
   var myDirectiveName = 'ctrlEmployment';
 
-  angular.module( 'gsn.core' )
-    .controller( myDirectiveName, [ '$scope', 'gsnProfile', 'gsnApi', '$timeout', 'gsnStore', '$interpolate', '$http', '$rootScope', '$location', '$q', myController ] )
-    .directive( myDirectiveName, myDirective );
+  angular.module('gsn.core')
+    .controller(myDirectiveName, ['$scope', 'gsnProfile', 'gsnApi', '$timeout', 'gsnStore', '$interpolate', '$http', '$rootScope', '$location', '$q', myController])
+    .directive(myDirectiveName, myDirective);
 
   function myDirective() {
     var directive = {
@@ -20,7 +20,7 @@
   ////
   // Controller
   ////
-  function myController( $scope, gsnProfile, gsnApi, $timeout, gsnStore, $interpolate, $http, $rootScope, $location, $q ) {
+  function myController($scope, gsnProfile, gsnApi, $timeout, gsnStore, $interpolate, $http, $rootScope, $location, $q) {
 
     $scope.hasSubmitted = false; // true when user has click the submit button
     $scope.isValidSubmit = true; // true when result of submit is valid
@@ -82,15 +82,15 @@
     ////
     // Load the template.
     ////
-    $http.get( $scope.getThemeUrl( '/views/email/employment-apply.html' ) )
-      .success( function ( response ) {
-        template = response.replace( /data-ctrl-email-preview/gi, '' );
-      } );
+    $http.get($scope.getThemeUrl('/views/email/employment-apply.html'))
+      .success(function(response) {
+        template = response.replace(/data-ctrl-email-preview/gi, '');
+      });
 
     ////
     // jobs To Filter
     ////
-    $scope.jobsToFilter = function () {
+    $scope.jobsToFilter = function() {
 
       // Reset the flag
       $scope.indexedListings = [];
@@ -102,12 +102,12 @@
     ////
     // Filter Jobs
     ////
-    $scope.filterJobs = function ( job ) {
+    $scope.filterJobs = function(job) {
 
       // If this store is not in the array, then get out.
-      var jobIsNew = $scope.indexedListings.indexOf( job.JobPositionTitle ) === -1;
-      if ( jobIsNew ) {
-        $scope.indexedListings.push( job.JobPositionTitle );
+      var jobIsNew = $scope.indexedListings.indexOf(job.JobPositionTitle) === -1;
+      if (jobIsNew) {
+        $scope.indexedListings.push(job.JobPositionTitle);
       }
 
       return jobIsNew;
@@ -116,12 +116,12 @@
     ////
     // Has Jobs
     ////
-    $scope.hasJobs = function () {
+    $scope.hasJobs = function() {
 
       var hasJob = 0;
 
-      for ( var index = 0; index < $scope.jobPositionList.length; index++ ) {
-        if ( ( gsnApi.isNull( $scope.jobPositionList[ index ].JobOpenings, null ) !== null ) && ( $scope.jobPositionList[ index ].JobOpenings.length > 0 ) ) {
+      for (var index = 0; index < $scope.jobPositionList.length; index++) {
+        if ((gsnApi.isNull($scope.jobPositionList[index].JobOpenings, null) !== null) && ($scope.jobPositionList[index].JobOpenings.length > 0)) {
 
           // Has Jobs
           hasJob = 1;
@@ -137,7 +137,7 @@
     ////
     // Activate
     ////
-    $scope.activate = function () {
+    $scope.activate = function() {
 
       // Get the PositionId and StoreId
       $scope.jobPositionId = $location.search().Pid;
@@ -145,34 +145,34 @@
 
 
       // Generate the Urls.
-      var Url = gsnApi.getStoreUrl().replace( /store/gi, 'job' ) + '/GetChainJobPositions/' + gsnApi.getChainId();
-      $http.get( Url, {
+      var Url = gsnApi.getStoreUrl().replace(/store/gi, 'job') + '/GetChainJobPositions/' + gsnApi.getChainId();
+      $http.get(Url, {
           headers: gsnApi.getApiHeaders()
-        } )
-        .then( function ( response ) {
+        })
+        .then(function(response) {
 
           // Store the response data in the job position list.
           $scope.jobPositionList = response.data;
 
           // The application data must have a selected value.
-          if ( $scope.jobPositionId > 0 ) {
+          if ($scope.jobPositionId > 0) {
 
             // Find the item with the id. {small list so fast}
-            for ( var index = 0; index < $scope.jobPositionList.length; index++ ) {
+            for (var index = 0; index < $scope.jobPositionList.length; index++) {
 
               // Find the position that will have the stores.
-              if ( $scope.jobPositionList[ index ].JobPositionId === $scope.jobPositionId ) {
+              if ($scope.jobPositionList[index].JobPositionId === $scope.jobPositionId) {
 
                 // Store the list of job openings.
-                $scope.jobOpenings = angular.fromJson( $scope.jobPositionList[ index ].Openings );
-                $scope.jobPositionTitle = $scope.jobPositionList[ index ].JobPositionTitle;
+                $scope.jobOpenings = angular.fromJson($scope.jobPositionList[index].Openings);
+                $scope.jobPositionTitle = $scope.jobPositionList[index].JobPositionTitle;
 
-                if ( $scope.storeId ) {
-                  for ( var i = $scope.jobOpenings.length - 1; i >= 0; i-- ) {
-                    if ( $scope.jobOpenings[ i ].StoreId !== $scope.storeId ) {
-                      $scope.jobOpenings.splice( i, 1 );
+                if ($scope.storeId) {
+                  for (var i = $scope.jobOpenings.length - 1; i >= 0; i--) {
+                    if ($scope.jobOpenings[i].StoreId !== $scope.storeId) {
+                      $scope.jobOpenings.splice(i, 1);
                     } else {
-                      $scope.email.selectedStore = $scope.jobOpenings[ i ].OpeningStore;
+                      $scope.email.selectedStore = $scope.jobOpenings[i].OpeningStore;
                       break;
                     }
                   }
@@ -183,18 +183,18 @@
               }
             }
           }
-        } );
+        });
 
       // Get the states.
-      gsnStore.getStates().then( function ( rsp ) {
+      gsnStore.getStates().then(function(rsp) {
         $scope.states = rsp.response;
-      } );
+      });
     };
 
     ////
     // Is Application submitted
     ////
-    $scope.isApplicationSubmitted = function () {
+    $scope.isApplicationSubmitted = function() {
 
       return $scope.isSubmitted === true;
     };
@@ -202,16 +202,16 @@
     ////
     // Register the Application
     ////
-    $scope.registerApplication = function () {
+    $scope.registerApplication = function() {
 
       // Reset the error message.
       $scope.errorResponse = '';
 
       // Make sure that the application form is valid.
-      if ( $scope.applicationForm.$valid ) {
+      if ($scope.applicationForm.$valid) {
 
         // Generate the email address
-        var Message = $interpolate( template )( $scope );
+        var Message = $interpolate(template)($scope);
 
         // Declare the payload.
         var payload = {};
@@ -223,7 +223,7 @@
         payload.EmailFrom = gsnApi.getRegistrationFromEmailAddress();
 
         // Exit if we are submitting.
-        if ( $scope.isSubmitting ) return;
+        if ($scope.isSubmitting) return;
 
         // Set the flags.
         $scope.hasSubmitted = true;
@@ -231,8 +231,8 @@
         $scope.errorResponse = null;
 
         // Send the email message
-        gsnProfile.sendEmail( payload )
-          .then( function ( result ) {
+        gsnProfile.sendEmail(payload)
+          .then(function(result) {
 
             // Reset the flags.
             $scope.isSubmitting = false;
@@ -240,13 +240,13 @@
             $scope.isValidSubmit = result.success;
 
             // Success?
-            if ( result.success ) {
+            if (result.success) {
 
               // Define the object
               var JobApplication = {};
 
               // Populate the Job Application object.
-              JobApplication.JobOpeningId = $scope.jobOpenings[ 0 ].JobOpeningId;
+              JobApplication.JobOpeningId = $scope.jobOpenings[0].JobOpeningId;
               JobApplication.FirstName = $scope.email.FirstName;
               JobApplication.LastName = $scope.email.LastName;
               JobApplication.PrimaryAddress = $scope.email.PrimaryAddress;
@@ -259,30 +259,30 @@
               JobApplication.Email = $scope.email.Email;
 
               // Call the api.
-              var Url = gsnApi.getStoreUrl().replace( /store/gi, 'job' ) + '/InsertJobApplication/' + gsnApi.getChainId() + '/' + $scope.email.selectedStore.StoreId;
-              $http.post( Url, JobApplication, {
+              var Url = gsnApi.getStoreUrl().replace(/store/gi, 'job') + '/InsertJobApplication/' + gsnApi.getChainId() + '/' + $scope.email.selectedStore.StoreId;
+              $http.post(Url, JobApplication, {
                 headers: gsnApi.getApiHeaders()
-              } ).success( function ( response ) {
+              }).success(function(response) {
 
                 // Success
                 $scope.isSubmitted = true;
 
-              } ).error( function ( response ) {
+              }).error(function(response) {
 
                 // Store the response.
                 $scope.errorResponse = 'Your job application was un-successfully posted.';
-              } );
+              });
 
             } else {
 
               // Store the response when its an object.
               $scope.errorResponse = 'Your job application was un-successfully posted.';
             }
-          } );
+          });
       }
     };
 
     // Activate
     $scope.activate();
   }
-} )( angular );
+})(angular);

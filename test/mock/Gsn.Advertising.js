@@ -1,4 +1,4 @@
-﻿window.Gsn = {
+window.Gsn = {
   Advertising: {
     listeners: {},
     on: function(event, func) {
