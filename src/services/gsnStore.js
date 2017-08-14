@@ -289,6 +289,9 @@
       if (config.AllContent) {
         config.AllContent.Circularz = config.AllContent.Circulars;
         config.AllContent.Circulars = [];
+        _lc.faArticle.response = config.AllContent.Article;
+        _lc.faRecipe.response = config.AllContent.Recipe;
+        _lc.faVideo.response = config.AllContent.Video;
         angular.forEach(config.AllContent.Circularz, function(circ) {
           circ.Pagez = circ.Pages;
           circ.Pages = [];

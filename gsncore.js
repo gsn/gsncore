@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.10.71
+ * version 1.10.72
  * gsncore repository
- * Build date: Mon Aug 14 2017 11:06:27 GMT-0500 (CDT)
+ * Build date: Mon Aug 14 2017 17:34:43 GMT-0500 (CDT)
  */
 (function() {
   'use strict';
@@ -6363,6 +6363,9 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       if (config.AllContent) {
         config.AllContent.Circularz = config.AllContent.Circulars;
         config.AllContent.Circulars = [];
+        _lc.faArticle.response = config.AllContent.Article;
+        _lc.faRecipe.response = config.AllContent.Recipe;
+        _lc.faVideo.response = config.AllContent.Video;
         angular.forEach(config.AllContent.Circularz, function(circ) {
           circ.Pagez = circ.Pages;
           circ.Pages = [];
