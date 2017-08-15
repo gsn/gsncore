@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.10.74
+ * version 1.10.75
  * gsncore repository
- * Build date: Mon Aug 14 2017 19:16:52 GMT-0500 (CDT)
+ * Build date: Mon Aug 14 2017 19:45:10 GMT-0500 (CDT)
  */
 (function() {
   'use strict';
@@ -4311,12 +4311,9 @@
       var cacheObject = _lc.faArticle;
       if (cacheObject.data) {
         cacheObject.deferred = $q.defer();
-        var successHandler = function(response) {
-          cacheObject.response = {
-            success: true,
-            response: cacheObject.data
-          };
-          cacheObject.deferred.resolve(cacheObject.response);
+        cacheObject.response = {
+          success: true,
+          response: cacheObject.data
         };
       }
       return gsnApi.http(cacheObject, url);
@@ -4327,12 +4324,9 @@
       var cacheObject = _lc.faVideo;
       if (cacheObject.data) {
         cacheObject.deferred = $q.defer();
-        var successHandler = function(response) {
-          cacheObject.response = {
-            success: true,
-            response: cacheObject.data
-          };
-          cacheObject.deferred.resolve(cacheObject.response);
+        cacheObject.response = {
+          success: true,
+          response: cacheObject.data
         };
       }
       return gsnApi.http(cacheObject, url);
@@ -4358,12 +4352,9 @@
       var cacheObject = _lc.faRecipe;
       if (cacheObject.data) {
         cacheObject.deferred = $q.defer();
-        var successHandler = function(response) {
-          cacheObject.response = {
-            success: true,
-            response: cacheObject.data
-          };
-          cacheObject.deferred.resolve(cacheObject.response);
+        cacheObject.response = {
+          success: true,
+          response: cacheObject.data
         };
       }
       return gsnApi.http(cacheObject, url);
