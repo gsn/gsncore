@@ -28,6 +28,7 @@
       $scope.notFoundDefaultLayout = gsnApi.getThemeUrl('/views/404.html');
       $scope.notFoundLayout = $scope.notFoundDefaultLayout;
       $scope.gvm = {
+        facebookCounter: 0,
         loginCounter: 0,
         menuInactive: false,
         shoppingListActive: false,
@@ -61,6 +62,12 @@
         return dateArg1 ? new Date(dateArg1) : new Date();
       };
       $scope.validateRegistration = function(rsp) {
+        // don't be annoying
+        $scope.gvm.facebookCounter++;
+        if ($scope.gvm.facebookCounter > 3) {
+          return;
+        }
+
         // attempt to authenticate user with facebook
         // get token
         $scope.facebookData.accessToken = rsp.authResponse.accessToken;

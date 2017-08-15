@@ -59,6 +59,9 @@
       if (_lc.circularIsLoading) return;
       var config = gsnApi.getConfig();
       if (config.AllContent) {
+        _lc.faArticle.data = config.AllContent.Article;
+        _lc.faRecipe.data = config.AllContent.Recipe;
+        _lc.faVideo.data = config.AllContent.Video;
         _lc.circularIsLoading = true;
         processCircularData(function() {
           _lc.circularIsLoading = false;
@@ -171,12 +174,28 @@
 
     returnObj.getFeaturedArticle = function() {
       var url = gsnApi.getStoreUrl() + '/FeaturedArticle/' + gsnApi.getChainId() + '/2';
-      return gsnApi.http(_lc.faArticle, url);
+      var cacheObject = _lc.faArticle;
+      if (cacheObject.data) {
+        cacheObject.deferred = $q.defer();
+        cacheObject.response = {
+          success: true,
+          response: cacheObject.data
+        };
+      }
+      return gsnApi.http(cacheObject, url);
     };
 
     returnObj.getFeaturedVideo = function() {
       var url = gsnApi.getStoreUrl() + '/FeaturedVideo/' + gsnApi.getChainId();
-      return gsnApi.http(_lc.faVideo, url);
+      var cacheObject = _lc.faVideo;
+      if (cacheObject.data) {
+        cacheObject.deferred = $q.defer();
+        cacheObject.response = {
+          success: true,
+          response: cacheObject.data
+        };
+      }
+      return gsnApi.http(cacheObject, url);
     };
 
     returnObj.getRecipeVideos = function() {
@@ -196,7 +215,15 @@
 
     returnObj.getFeaturedRecipe = function() {
       var url = gsnApi.getStoreUrl() + '/FeaturedRecipe/' + gsnApi.getChainId();
-      return gsnApi.http(_lc.faRecipe, url);
+      var cacheObject = _lc.faRecipe;
+      if (cacheObject.data) {
+        cacheObject.deferred = $q.defer();
+        cacheObject.response = {
+          success: true,
+          response: cacheObject.data
+        };
+      }
+      return gsnApi.http(cacheObject, url);
     };
 
     returnObj.getCoupon = function(couponId) {
