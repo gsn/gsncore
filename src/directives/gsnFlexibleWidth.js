@@ -1,11 +1,11 @@
-( function ( angular, undefined ) {
+(function(angular, undefined) {
   'use strict';
-  var myModule = angular.module( 'gsn.core' );
+  var myModule = angular.module('gsn.core');
 
   /**
    * allow width to be flexible
    */
-  myModule.directive( 'gsnFlexibleWidth', [ 'debounce', '$window', function ( debounce, $window ) {
+  myModule.directive('gsnFlexibleWidth', ['debounce', '$window', function(debounce, $window) {
     var directive = {
       restrict: 'EA',
       scope: true,
@@ -13,16 +13,16 @@
     };
     return directive;
 
-    function link( scope, element, attrs ) {
+    function link(scope, element, attrs) {
       function updateWidth() {
-        element.css( {
-          width: element.parent()[ 0 ].offsetWidth + 'px'
-        } );
+        element.css({
+          width: element.parent()[0].offsetWidth + 'px'
+        });
       }
 
-      var myUpdateWith = debounce( updateWidth, 200 );
-      angular.element( $window ).on( 'resize', myUpdateWith );
+      var myUpdateWith = debounce(updateWidth, 200);
+      angular.element($window).on('resize', myUpdateWith);
       myUpdateWith();
     }
-  } ] );
-} )( angular );
+  }]);
+})(angular);

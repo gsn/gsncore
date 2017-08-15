@@ -1,11 +1,11 @@
-( function ( angular, undefined ) {
+(function(angular, undefined) {
   'use strict';
 
   var myDirectiveName = 'ctrlAccount';
 
-  angular.module( 'gsn.core' )
-    .controller( myDirectiveName, [ '$scope', 'gsnProfile', 'gsnApi', '$timeout', 'gsnStore', '$rootScope', '$analytics', myController ] )
-    .directive( myDirectiveName, myDirective );
+  angular.module('gsn.core')
+    .controller(myDirectiveName, ['$scope', 'gsnProfile', 'gsnApi', '$timeout', 'gsnStore', '$rootScope', '$analytics', myController])
+    .directive(myDirectiveName, myDirective);
 
   function myDirective() {
     var directive = {
@@ -17,7 +17,7 @@
     return directive;
   }
 
-  function myController( $scope, gsnProfile, gsnApi, $timeout, gsnStore, $rootScope, $analytics ) {
+  function myController($scope, gsnProfile, gsnApi, $timeout, gsnStore, $rootScope, $analytics) {
     $scope.activate = activate;
     $scope.profile = {
       PrimaryStoreId: gsnApi.getSelectedStoreId(),
@@ -35,52 +35,52 @@
     $scope.isFacebook = false;
 
     function activate() {
-      gsnStore.getStores().then( function ( rsp ) {
+      gsnStore.getStores().then(function(rsp) {
         $scope.stores = rsp.response;
-      } );
+      });
 
-      gsnProfile.getProfile().then( function ( p ) {
-        if ( p.success ) {
-          $scope.profile = angular.copy( p.response );
-          $scope.isFacebook = ( gsnApi.isNull( $scope.profile.FacebookUserId, '' ).length > 0 );
+      gsnProfile.getProfile().then(function(p) {
+        if (p.success) {
+          $scope.profile = angular.copy(p.response);
+          $scope.isFacebook = (gsnApi.isNull($scope.profile.FacebookUserId, '').length > 0);
         }
-      } );
+      });
 
-      $scope.profileUpdated = ( $scope.currentPath === '/profile/rewardcard/updated' );
+      $scope.profileUpdated = ($scope.currentPath === '/profile/rewardcard/updated');
     }
 
-    $scope.updateProfile = function () {
-      $scope.$broadcast( 'autofill:update' );
+    $scope.updateProfile = function() {
+      $scope.$broadcast('autofill:update');
       var profile = $scope.profile;
-      if ( $scope.myForm.$valid ) {
+      if ($scope.myForm.$valid) {
 
         // prevent double submit
-        if ( $scope.isSubmitting ) return;
+        if ($scope.isSubmitting) return;
 
         $scope.hasSubmitted = true;
         $scope.isSubmitting = true;
-        gsnProfile.updateProfile( profile )
-          .then( function ( result ) {
+        gsnProfile.updateProfile(profile)
+          .then(function(result) {
             $scope.isSubmitting = false;
             $scope.isValidSubmit = result.success;
-            if ( result.success ) {
-              gsnApi.setSelectedStoreId( profile.PrimaryStoreId );
+            if (result.success) {
+              gsnApi.setSelectedStoreId(profile.PrimaryStoreId);
               // trigger profile retrieval
-              gsnProfile.getProfile( true );
+              gsnProfile.getProfile(true);
 
               // Broadcast the update.
-              $rootScope.$broadcast( 'gsnevent:updateprofile-successful', result );
-              $analytics.eventTrack( 'profile-update', {
+              $rootScope.$broadcast('gsnevent:updateprofile-successful', result);
+              $analytics.eventTrack('profile-update', {
                 category: 'profile',
                 label: result.response.ReceiveEmail
-              } );
+              });
 
               // If we have the cituation where we do not want to navigate.
-              if ( !$scope.disableNavigation ) {
-                $scope.goUrl( '/profile/rewardcardupdate' );
+              if (!$scope.disableNavigation) {
+                $scope.goUrl('/profile/rewardcardupdate');
               }
             }
-          } );
+          });
       }
     };
 
@@ -89,11 +89,11 @@
     ////
     // Handle the event
     ////
-    $scope.$on( 'gsnevent:updateprofile-successful', function ( evt, result ) {
+    $scope.$on('gsnevent:updateprofile-successful', function(evt, result) {
 
       // We just updated the profile; update the counter.
       $scope.profileStatus.profileUpdated++;
-    } );
+    });
   }
 
-} )( angular );
+})(angular);
