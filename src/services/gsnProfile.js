@@ -84,8 +84,8 @@
     // if no profile id, it should create a shopping list to get a new profile id and set to current
     returnObj.initialize = function() {
       // get profile
-      var profileId = parseInt(gsnApi.isNull(returnObj.getProfileId(), 0));
-      if (profileId > 0) {
+      var profileId = gsnApi.isNull(returnObj.getProfileId(), 0);
+      if (profileId !== 0) {
         returnObj.getProfile(true);
       }
 

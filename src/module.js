@@ -87,8 +87,8 @@
       profileStorage.accessToken = data || {};
 
       if (data) {
-        var profileId = parseInt(returnObj.isNull(data.user_id, 0));
-        if (returnObj.isNaN(profileId, 0) > 0) {
+        var profileId = returnObj.isNull(data.user_id, 0);
+        if (profileId !== 0) {
           $rootScope.$broadcast('gsnevent:profile-setid', profileId);
         }
 
@@ -461,7 +461,7 @@
 
     returnObj.getProfileId = function() {
       var accessToken = getAccessToken();
-      return returnObj.isNaN(parseInt(returnObj.isNull(accessToken.user_id, 0)), 0);
+      return returnObj.isNull(accessToken.user_id, 0);
     };
 
     returnObj.getShoppingListId = function() {

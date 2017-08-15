@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.11.2
+ * version 1.11.3
  * gsncore repository
- * Build date: Tue Aug 15 2017 00:36:01 GMT-0500 (CDT)
+ * Build date: Tue Aug 15 2017 00:44:09 GMT-0500 (CDT)
  */
 (function() {
   'use strict';
@@ -781,8 +781,8 @@
       profileStorage.accessToken = data || {};
 
       if (data) {
-        var profileId = parseInt(returnObj.isNull(data.user_id, 0));
-        if (returnObj.isNaN(profileId, 0) > 0) {
+        var profileId = returnObj.isNull(data.user_id, 0);
+        if (profileId !== 0) {
           $rootScope.$broadcast('gsnevent:profile-setid', profileId);
         }
 
@@ -1155,7 +1155,7 @@
 
     returnObj.getProfileId = function() {
       var accessToken = getAccessToken();
-      return returnObj.isNaN(parseInt(returnObj.isNull(accessToken.user_id, 0)), 0);
+      return returnObj.isNull(accessToken.user_id, 0);
     };
 
     returnObj.getShoppingListId = function() {
@@ -4135,6 +4135,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       $scope.notFoundDefaultLayout = gsnApi.getThemeUrl('/views/404.html');
       $scope.notFoundLayout = $scope.notFoundDefaultLayout;
       $scope.gvm = {
+        facebookCounter: 0,
         loginCounter: 0,
         menuInactive: false,
         shoppingListActive: false,
@@ -4168,6 +4169,12 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         return dateArg1 ? new Date(dateArg1) : new Date();
       };
       $scope.validateRegistration = function(rsp) {
+        // don't be annoying
+        $scope.gvm.facebookCounter++;
+        if ($scope.gvm.facebookCounter > 3) {
+          return;
+        }
+
         // attempt to authenticate user with facebook
         // get token
         $scope.facebookData.accessToken = rsp.authResponse.accessToken;
@@ -4579,19 +4586,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
           // build new item to make sure posting of only required fields
           var itemToPost = angular.copy(existingItem);
 
-          itemToPost.BarcodeImageUrl = undefined;
-          itemToPost.BottomTagLine = undefined;
-          itemToPost.Description1 = undefined;
-          itemToPost.Description2 = undefined;
-          itemToPost.Description3 = undefined;
-          itemToPost.Description4 = undefined;
-          itemToPost.EndDate = undefined;
-          itemToPost.ImageUrl = undefined;
-          itemToPost.SmallImageUrl = undefined;
-          itemToPost.StartDate = undefined;
-          itemToPost.TopTagLine = undefined;
-          itemToPost.TotalDownloads = undefined;
-          itemToPost.TotalDownloadsAllowed = undefined;
           itemToPost.Varieties = undefined;
           itemToPost.PageNumber = undefined;
           itemToPost.rect = undefined;
@@ -5341,8 +5335,8 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     // if no profile id, it should create a shopping list to get a new profile id and set to current
     returnObj.initialize = function() {
       // get profile
-      var profileId = parseInt(gsnApi.isNull(returnObj.getProfileId(), 0));
-      if (profileId > 0) {
+      var profileId = gsnApi.isNull(returnObj.getProfileId(), 0);
+      if (profileId !== 0) {
         returnObj.getProfile(true);
       }
 

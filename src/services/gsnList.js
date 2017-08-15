@@ -58,19 +58,6 @@
           // build new item to make sure posting of only required fields
           var itemToPost = angular.copy(existingItem);
 
-          itemToPost.BarcodeImageUrl = undefined;
-          itemToPost.BottomTagLine = undefined;
-          itemToPost.Description1 = undefined;
-          itemToPost.Description2 = undefined;
-          itemToPost.Description3 = undefined;
-          itemToPost.Description4 = undefined;
-          itemToPost.EndDate = undefined;
-          itemToPost.ImageUrl = undefined;
-          itemToPost.SmallImageUrl = undefined;
-          itemToPost.StartDate = undefined;
-          itemToPost.TopTagLine = undefined;
-          itemToPost.TotalDownloads = undefined;
-          itemToPost.TotalDownloadsAllowed = undefined;
           itemToPost.Varieties = undefined;
           itemToPost.PageNumber = undefined;
           itemToPost.rect = undefined;
