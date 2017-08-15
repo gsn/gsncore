@@ -1,13 +1,13 @@
-( function ( angular, undefined ) {
+(function(angular, undefined) {
   'use strict';
-  var myModule = angular.module( 'gsn.core' );
+  var myModule = angular.module('gsn.core');
 
-  myModule.filter( 'trustedHtml', [ 'gsnApi', '$sce', function ( gsnApi, $sce ) {
+  myModule.filter('trustedHtml', ['gsnApi', '$sce', function(gsnApi, $sce) {
     // Usage: allow for binding html
     //
-    return function ( text ) {
-      return $sce.trustAsHtml( text );
+    return function(text) {
+      return $sce.trustAsHtml(text);
     };
-  } ] );
+  }]);
 
-} )( angular );
+})(angular);

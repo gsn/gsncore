@@ -9,15 +9,15 @@
  * For lazy loading of google recaptcha library
  **/
 /*global angular, Recaptcha */
-( function ( angular, undefined ) {
+(function(angular, undefined) {
   'use strict';
 
-  var app = angular.module( 'gsn.core' );
+  var app = angular.module('gsn.core');
 
   /**
    * An angular service to wrap the reCaptcha API
    */
-  app.service( 'vcRecaptchaService', [ '$timeout', '$log', '$q', '$window', 'gsnApi', function ( $timeout, $log, $q, $window, gsnApi ) {
+  app.service('vcRecaptchaService', ['$timeout', '$log', '$q', '$window', 'gsnApi', function($timeout, $log, $q, $window, gsnApi) {
 
     /**
      * The reCaptcha callback
@@ -34,7 +34,7 @@
        * @param fn   a callback function to call when the captcha is resolved
        * @param conf the captcha object configuration
        */
-      create: function ( elm, key, fn, conf ) {
+      create: function(elm, key, fn, conf) {
         callback = fn;
         conf.callback = fn;
 
@@ -46,15 +46,15 @@
           );
         }
 
-        if ( typeof ( Recaptcha ) === 'undefined' ) {
-          $timeout( loadRecaptcha, 500 );
+        if (typeof(Recaptcha) === 'undefined') {
+          $timeout(loadRecaptcha, 500);
 
-          if ( loadingScript ) return;
+          if (loadingScript) return;
           loadingScript = true;
 
           // dynamically load google
           var src = '//www.google.com/recaptcha/api/js/recaptcha_ajax.js';
-          gsnApi.loadScripts( [ src ], loadRecaptcha );
+          gsnApi.loadScripts([src], loadRecaptcha);
           return;
         }
 
@@ -66,10 +66,10 @@
        *
        * @param should_focus pass TRUE if the recaptcha should gain the focus after reloading
        */
-      reload: function ( should_focus ) {
+      reload: function(should_focus) {
 
         // $log.info('Reloading captcha');
-        Recaptcha.reload( should_focus && 't' );
+        Recaptcha.reload(should_focus && 't');
 
         /**
          * Since the previous call is asynch, we need again the same hack. See directive code.
@@ -77,74 +77,74 @@
          * @see https://github.com/VividCortex/angular-recaptcha/issues/4
          * @see https://groups.google.com/forum/#!topic/recaptcha/6b7k866qzD0
          */
-        $timeout( callback, 1000 );
+        $timeout(callback, 1000);
       },
 
-      data: function () {
+      data: function() {
         return {
           response: Recaptcha.get_response(),
           challenge: Recaptcha.get_challenge()
         };
       },
 
-      destroy: function () {
+      destroy: function() {
         Recaptcha.destroy();
       }
     };
 
-  } ] );
+  }]);
 
-}( angular ) );
+}(angular));
 
 /*global angular, Recaptcha */
-( function ( angular ) {
+(function(angular) {
   'use strict';
 
-  var app = angular.module( 'gsn.core' );
+  var app = angular.module('gsn.core');
 
-  app.directive( 'vcRecaptcha', [ '$log', '$timeout', 'vcRecaptchaService', function ( $log, $timeout, vcRecaptchaService ) {
+  app.directive('vcRecaptcha', ['$log', '$timeout', 'vcRecaptchaService', function($log, $timeout, vcRecaptchaService) {
 
     return {
       restrict: 'A',
       require: '?ngModel',
-      link: function ( scope, elm, attrs, ctrl ) {
+      link: function(scope, elm, attrs, ctrl) {
 
         // $log.info("Creating recaptcha with theme=%s and key=%s", attrs.theme, attrs.key);
 
-        if ( !attrs.hasOwnProperty( 'key' ) || attrs.key.length !== 40 ) {
+        if (!attrs.hasOwnProperty('key') || attrs.key.length !== 40) {
           throw 'You need to set the "key" attribute to your public reCaptcha key. If you don\'t have a key, please get one from https://www.google.com/recaptcha/admin/create';
         }
 
         var
           response_input, challenge_input,
-          refresh = function () {
-            if ( ctrl ) {
-              ctrl.$setViewValue( {
+          refresh = function() {
+            if (ctrl) {
+              ctrl.$setViewValue({
                 response: response_input.val(),
                 challenge: challenge_input.val()
-              } );
+              });
             }
           },
-          reload = function () {
-            var inputs = elm.find( 'input' );
-            challenge_input = angular.element( inputs[ 0 ] ); // #recaptcha_challenge_field
-            response_input = angular.element( inputs[ 1 ] ); // #recaptcha_response_field
+          reload = function() {
+            var inputs = elm.find('input');
+            challenge_input = angular.element(inputs[0]); // #recaptcha_challenge_field
+            response_input = angular.element(inputs[1]); // #recaptcha_response_field
             refresh();
           },
-          callback = function () {
+          callback = function() {
             // $log.info('Captcha rendered');
 
             reload();
 
-            response_input.bind( 'keyup', function () {
-              scope.$apply( refresh );
-            } );
+            response_input.bind('keyup', function() {
+              scope.$apply(refresh);
+            });
 
             // model -> view
-            if ( ctrl ) {
-              ctrl.$render = function () {
-                response_input.val( ctrl.$viewValue.response );
-                challenge_input.val( ctrl.$viewValue.challenge );
+            if (ctrl) {
+              ctrl.$render = function() {
+                response_input.val(ctrl.$viewValue.response);
+                challenge_input.val(ctrl.$viewValue.challenge);
               };
             }
 
@@ -152,16 +152,16 @@
             // We give some time for the new captcha to render
             // This is kind of a hack, we should think on a better way to do this
             // Probably checking for the image to change and if not, trigger the timeout again
-            elm.bind( 'click', function () {
+            elm.bind('click', function() {
               // $log.info('clicked');
-              $timeout( function () {
-                scope.$apply( reload );
-              }, 1000 );
-            } );
+              $timeout(function() {
+                scope.$apply(reload);
+              }, 1000);
+            });
           };
 
         vcRecaptchaService.create(
-          elm[ 0 ],
+          elm[0],
           attrs.key,
           callback, {
             tabindex: attrs.tabindex,
@@ -171,6 +171,6 @@
         );
       }
     };
-  } ] );
+  }]);
 
-}( angular ) );
+}(angular));

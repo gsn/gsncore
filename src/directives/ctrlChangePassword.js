@@ -1,11 +1,11 @@
-( function ( angular, undefined ) {
+(function(angular, undefined) {
   'use strict';
 
   var myDirectiveName = 'ctrlChangePassword';
 
-  angular.module( 'gsn.core' )
-    .controller( myDirectiveName, [ '$scope', 'gsnProfile', 'gsnApi', myController ] )
-    .directive( myDirectiveName, myDirective );
+  angular.module('gsn.core')
+    .controller(myDirectiveName, ['$scope', 'gsnProfile', 'gsnApi', myController])
+    .directive(myDirectiveName, myDirective);
 
   function myDirective() {
     var directive = {
@@ -17,7 +17,7 @@
     return directive;
   }
 
-  function myController( $scope, gsnProfile, gsnApi ) {
+  function myController($scope, gsnProfile, gsnApi) {
     $scope.activate = activate;
     $scope.profile = {
       PrimaryStoreId: gsnApi.getSelectedStoreId(),
@@ -29,27 +29,27 @@
     $scope.isSubmitting = false; // true if we're waiting for result from server
 
     function activate() {
-      gsnProfile.getProfile().then( function ( p ) {
-        if ( p.success ) {
-          $scope.profile = angular.copy( p.response );
+      gsnProfile.getProfile().then(function(p) {
+        if (p.success) {
+          $scope.profile = angular.copy(p.response);
         }
-      } );
+      });
     }
 
-    $scope.changePassword = function () {
+    $scope.changePassword = function() {
       var profile = $scope.profile;
-      if ( $scope.myForm.$valid ) {
+      if ($scope.myForm.$valid) {
 
         // prevent double submit
-        if ( $scope.isSubmitting ) return;
+        if ($scope.isSubmitting) return;
 
         $scope.hasSubmitted = true;
         $scope.isSubmitting = true;
-        gsnProfile.changePassword( profile.UserName, profile.currentPassword, profile.newPassword )
-          .then( function ( result ) {
+        gsnProfile.changePassword(profile.UserName, profile.currentPassword, profile.newPassword)
+          .then(function(result) {
             $scope.isSubmitting = false;
             $scope.isValidSubmit = result.success;
-          } );
+          });
       }
     };
 
@@ -58,4 +58,4 @@
 
     //#endregion
   }
-} )( angular );
+})(angular);

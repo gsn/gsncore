@@ -1,11 +1,11 @@
-( function ( angular, undefined ) {
+(function(angular, undefined) {
   'use strict';
 
   var myDirectiveName = 'ctrlEmail';
 
-  angular.module( 'gsn.core' )
-    .controller( myDirectiveName, [ '$scope', 'gsnStore', 'gsnApi', 'gsnProfile', myController ] )
-    .directive( myDirectiveName, myDirective );
+  angular.module('gsn.core')
+    .controller(myDirectiveName, ['$scope', 'gsnStore', 'gsnApi', 'gsnProfile', myController])
+    .directive(myDirectiveName, myDirective);
 
   function myDirective() {
     var directive = {
@@ -17,7 +17,7 @@
     return directive;
   }
 
-  function myController( $scope, gsnStore, gsnApi, gsnProfile ) {
+  function myController($scope, gsnStore, gsnApi, gsnProfile) {
     $scope.activate = activate;
     $scope.emailShoppingList = doEmailShoppingList;
     $scope.email = {};
@@ -31,22 +31,22 @@
 
     function activate() {
 
-      gsnProfile.getProfile().then( function ( p ) {
-        if ( p.success ) {
-          var profile = gsnApi.isNull( angular.copy( p.response ), {} );
+      gsnProfile.getProfile().then(function(p) {
+        if (p.success) {
+          var profile = gsnApi.isNull(angular.copy(p.response), {});
 
           var email = $scope.email;
           email.FirstName = profile.FirstName;
           email.ChainName = gsnApi.getChainName();
-          email.CopyrightYear = ( new Date() ).getFullYear();
+          email.CopyrightYear = (new Date()).getFullYear();
           email.FromEmail = gsnApi.getRegistrationFromEmailAddress();
 
-          $scope.vm = angular.copy( email, $scope.vm );
+          $scope.vm = angular.copy(email, $scope.vm);
           $scope.vm.Message = '';
-          $scope.vm.Name = ( gsnApi.isNull( profile.FirstName, '' ) + ' ' + gsnApi.isNull( profile.LastName, '' ) ).replace( /^\s+/gi, '' );
-          $scope.vm.EmailFrom = gsnApi.isNull( profile.Email, '' );
+          $scope.vm.Name = (gsnApi.isNull(profile.FirstName, '') + ' ' + gsnApi.isNull(profile.LastName, '')).replace(/^\s+/gi, '');
+          $scope.vm.EmailFrom = gsnApi.isNull(profile.Email, '');
         }
-      } );
+      });
     }
 
     $scope.activate();
@@ -55,16 +55,16 @@
     function doEmailShoppingList() {
       /// <summary>submit handler for sending shopping list email</summary>
 
-      var payload = angular.copy( $scope.vm );
-      if ( $scope.myForm.$valid ) {
+      var payload = angular.copy($scope.vm);
+      if ($scope.myForm.$valid) {
         $scope.hasSubmitted = true;
-        payload.Message = 'You are receiving this message because ' + payload.EmailFrom + ' created a shopping list for you to see.<br/>' + payload.Message.replace( /\n+/gi, '<br/>' );
-        gsnProfile.sendEmail( payload ).then( function ( rsp ) {
+        payload.Message = 'You are receiving this message because ' + payload.EmailFrom + ' created a shopping list for you to see.<br/>' + payload.Message.replace(/\n+/gi, '<br/>');
+        gsnProfile.sendEmail(payload).then(function(rsp) {
           $scope.isValidSubmit = rsp.success;
-        } );
+        });
       }
     }
     //#endregion
   }
 
-} )( angular );
+})(angular);

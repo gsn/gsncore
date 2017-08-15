@@ -1,8 +1,8 @@
-( function ( angular, undefined ) {
+(function(angular, undefined) {
   'use strict';
-  var myModule = angular.module( 'gsn.core' );
+  var myModule = angular.module('gsn.core');
 
-  myModule.directive( 'gsnFlowPlayer', [ '$timeout', 'gsnApi', '$rootScope', '$routeParams', function ( $timeout, gsnApi, $rootScope, $routeParams ) {
+  myModule.directive('gsnFlowPlayer', ['$timeout', 'gsnApi', '$rootScope', '$routeParams', function($timeout, gsnApi, $rootScope, $routeParams) {
     // Usage: add 3rd party videos
     //
     // Creates: 2013-12-12 TomN
@@ -15,32 +15,32 @@
     };
     return directive;
 
-    function link( scope, element, attrs ) {
+    function link(scope, element, attrs) {
 
-      scope.play = function ( url, title ) {
+      scope.play = function(url, title) {
 
         scope.videoTitle = title;
         scope.videoName = name;
 
-        flowplayer( attrs.gsnFlowPlayer, attrs.swf, {
+        flowplayer(attrs.gsnFlowPlayer, attrs.swf, {
           clip: {
             url: url,
             autoPlay: true,
             autoBuffering: true // <- do not place a comma here
           }
-        } );
+        });
 
-        $rootScope.$broadcast( 'gsnevent:loadads' );
+        $rootScope.$broadcast('gsnevent:loadads');
       };
 
-      if ( $routeParams.title ) {
+      if ($routeParams.title) {
         scope.videoTitle = $routeParams.title;
       }
 
-      $timeout( function () {
-        var el = angular.element( 'a[title="' + scope.vm.featuredVideo.Title + '"]' );
+      $timeout(function() {
+        var el = angular.element('a[title="' + scope.vm.featuredVideo.Title + '"]');
         el.click();
-      }, 500 );
+      }, 500);
     }
-  } ] );
-} )( angular );
+  }]);
+})(angular);

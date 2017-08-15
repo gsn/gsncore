@@ -1,4 +1,4 @@
-(function (angular, undefined) {
+(function(angular, undefined) {
   'use strict';
 
   var myDirectiveName = 'ctrlRecovery';
@@ -21,11 +21,14 @@
     $scope.recoverPassword = doRecoveryPassword;
     $scope.recoverUsername = doRecoveryUsername;
     $scope.unsubscribeEmail = doUnsubscribeEmail;
-    $scope.profile = { PrimaryStoreId: gsnApi.getSelectedStoreId(), ReceiveEmail: true };
+    $scope.profile = {
+      PrimaryStoreId: gsnApi.getSelectedStoreId(),
+      ReceiveEmail: true
+    };
 
-    $scope.hasSubmitted = false;    // true when user has click the submit button
-    $scope.isValidSubmit = false;    // true when result of submit is valid
-    $scope.isSubmitting = false;    // true if we're waiting for result from server
+    $scope.hasSubmitted = false; // true when user has click the submit button
+    $scope.isValidSubmit = false; // true when result of submit is valid
+    $scope.isSubmitting = false; // true if we're waiting for result from server
 
     //#region Internal Methods
     function doRecoveryPassword() {
@@ -38,7 +41,7 @@
         payload.Email = $scope.profile.Email;
         $scope.hasSubmitted = true;
         $scope.isSubmitting = true;
-        gsnProfile.recoverPassword(payload).then(function (rsp) {
+        gsnProfile.recoverPassword(payload).then(function(rsp) {
           $scope.isSubmitting = false;
           $scope.isValidSubmit = rsp.success;
         });
@@ -53,7 +56,7 @@
         payload.Email = $scope.profile.Email;
         $scope.hasSubmitted = true;
         $scope.isSubmitting = true;
-        gsnProfile.recoverUsername(payload).then(function (rsp) {
+        gsnProfile.recoverUsername(payload).then(function(rsp) {
           $scope.isSubmitting = false;
           $scope.isValidSubmit = rsp.success;
         });
@@ -66,7 +69,7 @@
       if ($scope.myRecoveryForm.$valid) {
         $scope.hasSubmitted = true;
         $scope.isSubmitting = true;
-        gsnProfile.unsubscribeEmail(profile.Email).then(function (rsp) {
+        gsnProfile.unsubscribeEmail(profile.Email).then(function(rsp) {
           $scope.isSubmitting = false;
           $scope.isValidSubmit = rsp.success;
         });

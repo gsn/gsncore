@@ -1,4 +1,4 @@
-﻿module.exports = function (config) {
+module.exports = function(config) {
   config.set({
 
     // base path, that will be used to resolve files and exclude
@@ -9,22 +9,21 @@
 
     // list of files / patterns to load in the browser
     files: [
-        'bower_components/angular/angular.js',
-        'bower_components/angular-mocks/angular-mocks.js',
-        'bower_components/angular-route/angular-route.js',
-        'bower_components/angular-sanitize/angular-sanitize.js',
-        'src/gsn.js',
-        'src/module.js',
-        'src/directives/**/*.js',
-        'src/filters/**/*.js',
-        'src/services/**/*.js',
-        'test/mock/**/*.js',
-        'test/spec/**/*.js'
+      'bower_components/angular/angular.js',
+      'bower_components/angular-mocks/angular-mocks.js',
+      'bower_components/angular-route/angular-route.js',
+      'bower_components/angular-sanitize/angular-sanitize.js',
+      'src/gsn.js',
+      'src/module.js',
+      'src/directives/**/*.js',
+      'src/filters/**/*.js',
+      'src/services/**/*.js',
+      'test/mock/**/*.js',
+      'test/spec/**/*.js'
     ],
 
     // list of files to exclude
-    exclude: [
-    ],
+    exclude: [],
 
     // test results reporter to use
     reporters: ['progress'],
