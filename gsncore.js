@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.11.4
+ * version 1.11.5
  * gsncore repository
- * Build date: Tue Aug 15 2017 01:35:51 GMT-0500 (CDT)
+ * Build date: Tue Aug 15 2017 08:11:33 GMT-0500 (CDT)
  */
 (function() {
   'use strict';
@@ -6123,9 +6123,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       if (_lc.circularIsLoading) return;
       var config = gsnApi.getConfig();
       if (config.AllContent) {
-        _lc.faArticle.data = config.AllContent.Article;
-        _lc.faRecipe.data = config.AllContent.Recipe;
-        _lc.faVideo.data = config.AllContent.Video;
         _lc.circularIsLoading = true;
         processCircularData(function() {
           _lc.circularIsLoading = false;
@@ -6378,6 +6375,10 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
 
       returnObj.getStores();
       if (config.AllContent) {
+        _lc.faArticle.data = config.AllContent.Article;
+        _lc.faRecipe.data = config.AllContent.Recipe;
+        _lc.faVideo.data = config.AllContent.Video;
+
         config.AllContent.Circularz = config.AllContent.Circulars;
         config.AllContent.Circulars = [];
         angular.forEach(config.AllContent.Circularz, function(circ) {
