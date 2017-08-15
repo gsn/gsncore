@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.10.72
+ * version 1.10.74
  * gsncore repository
- * Build date: Mon Aug 14 2017 17:34:43 GMT-0500 (CDT)
+ * Build date: Mon Aug 14 2017 19:16:52 GMT-0500 (CDT)
  */
 (function() {
   'use strict';
@@ -4308,12 +4308,34 @@
 
     returnObj.getFeaturedArticle = function() {
       var url = gsnApi.getStoreUrl() + '/FeaturedArticle/' + gsnApi.getChainId() + '/2';
-      return gsnApi.http(_lc.faArticle, url);
+      var cacheObject = _lc.faArticle;
+      if (cacheObject.data) {
+        cacheObject.deferred = $q.defer();
+        var successHandler = function(response) {
+          cacheObject.response = {
+            success: true,
+            response: cacheObject.data
+          };
+          cacheObject.deferred.resolve(cacheObject.response);
+        };
+      }
+      return gsnApi.http(cacheObject, url);
     };
 
     returnObj.getFeaturedVideo = function() {
       var url = gsnApi.getStoreUrl() + '/FeaturedVideo/' + gsnApi.getChainId();
-      return gsnApi.http(_lc.faVideo, url);
+      var cacheObject = _lc.faVideo;
+      if (cacheObject.data) {
+        cacheObject.deferred = $q.defer();
+        var successHandler = function(response) {
+          cacheObject.response = {
+            success: true,
+            response: cacheObject.data
+          };
+          cacheObject.deferred.resolve(cacheObject.response);
+        };
+      }
+      return gsnApi.http(cacheObject, url);
     };
 
     returnObj.getRecipeVideos = function() {
@@ -4333,7 +4355,18 @@
 
     returnObj.getFeaturedRecipe = function() {
       var url = gsnApi.getStoreUrl() + '/FeaturedRecipe/' + gsnApi.getChainId();
-      return gsnApi.http(_lc.faRecipe, url);
+      var cacheObject = _lc.faRecipe;
+      if (cacheObject.data) {
+        cacheObject.deferred = $q.defer();
+        var successHandler = function(response) {
+          cacheObject.response = {
+            success: true,
+            response: cacheObject.data
+          };
+          cacheObject.deferred.resolve(cacheObject.response);
+        };
+      }
+      return gsnApi.http(cacheObject, url);
     };
 
     returnObj.getCoupon = function(couponId) {
@@ -4426,9 +4459,9 @@
       if (config.AllContent) {
         config.AllContent.Circularz = config.AllContent.Circulars;
         config.AllContent.Circulars = [];
-        _lc.faArticle.response = config.AllContent.Article;
-        _lc.faRecipe.response = config.AllContent.Recipe;
-        _lc.faVideo.response = config.AllContent.Video;
+        _lc.faArticle.data = config.AllContent.Article;
+        _lc.faRecipe.data = config.AllContent.Recipe;
+        _lc.faVideo.data = config.AllContent.Video;
         angular.forEach(config.AllContent.Circularz, function(circ) {
           circ.Pagez = circ.Pages;
           circ.Pages = [];
