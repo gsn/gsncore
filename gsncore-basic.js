@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.11.3
+ * version 1.11.4
  * gsncore repository
- * Build date: Tue Aug 15 2017 00:44:09 GMT-0500 (CDT)
+ * Build date: Tue Aug 15 2017 01:35:51 GMT-0500 (CDT)
  */
 (function() {
   'use strict';
@@ -2728,6 +2728,7 @@
         }
 
         existingItem.Order = ($mySavedData.itemIdentity++);
+        existingItem.RowKey = returnObj.getItemKey(existingItem);
 
         if (!gsnApi.isNull(deferSync, false)) {
           returnObj.syncItem(existingItem);
@@ -2803,7 +2804,7 @@
             var url = gsnApi.getShoppingListApiUrl() + '/DeleteItems/' + returnObj.ShoppingListId;
             var hPayload = gsnApi.getApiHeaders();
             hPayload['X-SHOPPING-LIST-ID'] = returnObj.ShoppingListId;
-            $http.post(url, [item.Id || item.ItemId], {
+            $http.post(url, [item.Id || item.RowKey], {
               headers: hPayload
             }).success(function(response) {
               $rootScope.$broadcast('gsnevent:shoppinglist-changed', returnObj);
@@ -3051,6 +3052,7 @@
 
         angular.forEach(result, function(item, index) {
           item.Order = index;
+          item.RowKey = returnObj.getItemKey(item);
           $mySavedData.items[returnObj.getItemKey(item)] = item;
         });
 
