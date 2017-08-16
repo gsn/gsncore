@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.11.5
+ * version 1.11.6
  * gsncore repository
- * Build date: Tue Aug 15 2017 08:11:33 GMT-0500 (CDT)
+ * Build date: Wed Aug 16 2017 02:56:19 GMT-0500 (CDT)
  */
 (function() {
   'use strict';
@@ -1158,12 +1158,24 @@
       return returnObj.isNull(accessToken.user_id, 0);
     };
 
+    returnObj.getAnonShoppingListId = function() {
+      return returnObj.isNull(profileStorage.aShoppingListId, 0);
+    };
+
     returnObj.getShoppingListId = function() {
-      return returnObj.isNull(profileStorage.shoppingListId, 0);
+      if (returnObj.isAnonymous()) {
+        return returnObj.isNull(profileStorage.anonShoppingListId, 0);
+      } else {
+        return returnObj.isNull(profileStorage.shoppingListId, 0);
+      }
     };
 
     returnObj.setShoppingListId = function(shoppingListId, dontBroadcast) {
-      profileStorage.shoppingListId = returnObj.isNull(shoppingListId, 0);
+      if (returnObj.isAnonymous()) {
+        profileStorage.anonShoppingListId = returnObj.isNull(shoppingListId, 0);
+      } else {
+        profileStorage.shoppingListId = returnObj.isNull(shoppingListId, 0);
+      }
 
       if (dontBroadcast) return;
 
@@ -2890,13 +2902,6 @@
         return count;
       };
 
-      // clear items
-      returnObj.clearItems = function() {
-        // clear the items
-        $mySavedData.items = {};
-        returnObj.saveChanges();
-      };
-
       returnObj.getTitle = function() {
         return ($mySavedData.list) ? $mySavedData.list.Title : '';
       };
@@ -2925,53 +2930,6 @@
         });
 
         return returnObj;
-      };
-
-      // save changes
-      returnObj.saveChanges = function() {
-        if (returnObj.savingDeferred) return returnObj.savingDeferred.promise;
-        var deferred = $q.defer();
-        returnObj.savingDeferred = deferred;
-
-        $mySavedData.countCache = 0;
-        var syncitems = [];
-
-        // since we immediately update item with server as it get added to list
-        // all we need is to send back the item id to tell server item still on list
-        // this is also how we mass delete items
-        var items = returnObj.allItems();
-        angular.forEach(items, function(item) {
-          syncitems.push(item.ItemId);
-        });
-
-        saveListToSession();
-
-        gsnApi.getAccessToken().then(function() {
-
-          var url = gsnApi.getShoppingListApiUrl() + '/DeleteOtherItems/' + returnObj.ShoppingListId;
-          var hPayload = gsnApi.getApiHeaders();
-          hPayload['X-SHOPPING-LIST-ID'] = returnObj.ShoppingListId;
-          $http.post(url, syncitems, {
-            headers: hPayload
-          }).success(function(response) {
-            deferred.resolve({
-              success: true,
-              response: returnObj
-            });
-            returnObj.savingDeferred = null;
-
-            $rootScope.$broadcast('gsnevent:shoppinglist-changed', returnObj);
-            saveListToSession();
-          }).error(function(response) {
-            deferred.resolve({
-              success: false,
-              response: response
-            });
-            returnObj.savingDeferred = null;
-          });
-        });
-
-        return deferred.promise;
       };
 
       // cause change to shopping list title
@@ -3326,7 +3284,8 @@
       $creatingDefer = null,
       $savedData = {
         allShoppingLists: {},
-        profile: null
+        profile: null,
+        anonShoppingList: null,
       };
 
     $rootScope[serviceId] = returnObj;
@@ -3348,9 +3307,13 @@
           headers: gsnApi.getApiHeaders()
         }).success(function(response) {
           var result = response;
-          $savedData.allShoppingLists[result.Id] = gsnList(result.Id, result);
+          var shoppingList = gsnList(result.Id, result);
+          $savedData.allShoppingLists[result.Id] = shoppingList;
           gsnApi.setShoppingListId(result.Id);
-          $rootScope.$broadcast('gsnevent:shoppinglist-created', $savedData.allShoppingLists[result.Id]);
+          if (gsnApi.isAnonymous()) {
+            $savedData.anonShoppingList = shoppingList;
+          }
+          $rootScope.$broadcast('gsnevent:shoppinglist-created', shoppingList);
           $creatingDefer.resolve({
             success: true,
             response: $savedData.allShoppingLists[result.Id]
@@ -3687,6 +3650,24 @@
       return registerOrUpdateProfile(p, true);
     };
 
+    returnObj.mergeAnonymousShoppingList = function() {
+      // merge only if current shopping list has no item
+      if (!gsnApi.isAnonymous()) {
+        if (!$savedData.anonShoppingList) {
+          return;
+        }
+
+        if ($savedData.anonShoppingList.getCount() <= 0) {
+          return;
+        }
+
+        if (returnObj.getShoppingListCount() <= 0) {
+          var sl = returnObj.getShoppingList();
+          sl.addItems($savedData.anonShoppingList.allItems());
+        }
+      }
+    };
+
     // when user is a registered user
     // allow for shopping lists refresh
     returnObj.refreshShoppingLists = function() {
@@ -3716,6 +3697,12 @@
                 shoppingList.updateShoppingList();
 
                 gsnApi.setShoppingListId(list.ShoppingListId);
+                if (gsnApi.isAnonymous()) {
+                  $savedData.anonShoppingList = shoppingList;
+                } else {
+                  // merge shopping list
+                  $timeout(returnObj.mergeAnonymousShoppingList, 2000);
+                }
               }
             }
           } else {

@@ -299,13 +299,6 @@
         return count;
       };
 
-      // clear items
-      returnObj.clearItems = function() {
-        // clear the items
-        $mySavedData.items = {};
-        returnObj.saveChanges();
-      };
-
       returnObj.getTitle = function() {
         return ($mySavedData.list) ? $mySavedData.list.Title : '';
       };
@@ -334,53 +327,6 @@
         });
 
         return returnObj;
-      };
-
-      // save changes
-      returnObj.saveChanges = function() {
-        if (returnObj.savingDeferred) return returnObj.savingDeferred.promise;
-        var deferred = $q.defer();
-        returnObj.savingDeferred = deferred;
-
-        $mySavedData.countCache = 0;
-        var syncitems = [];
-
-        // since we immediately update item with server as it get added to list
-        // all we need is to send back the item id to tell server item still on list
-        // this is also how we mass delete items
-        var items = returnObj.allItems();
-        angular.forEach(items, function(item) {
-          syncitems.push(item.ItemId);
-        });
-
-        saveListToSession();
-
-        gsnApi.getAccessToken().then(function() {
-
-          var url = gsnApi.getShoppingListApiUrl() + '/DeleteOtherItems/' + returnObj.ShoppingListId;
-          var hPayload = gsnApi.getApiHeaders();
-          hPayload['X-SHOPPING-LIST-ID'] = returnObj.ShoppingListId;
-          $http.post(url, syncitems, {
-            headers: hPayload
-          }).success(function(response) {
-            deferred.resolve({
-              success: true,
-              response: returnObj
-            });
-            returnObj.savingDeferred = null;
-
-            $rootScope.$broadcast('gsnevent:shoppinglist-changed', returnObj);
-            saveListToSession();
-          }).error(function(response) {
-            deferred.resolve({
-              success: false,
-              response: response
-            });
-            returnObj.savingDeferred = null;
-          });
-        });
-
-        return deferred.promise;
       };
 
       // cause change to shopping list title

@@ -10,7 +10,8 @@
       $creatingDefer = null,
       $savedData = {
         allShoppingLists: {},
-        profile: null
+        profile: null,
+        anonShoppingList: null,
       };
 
     $rootScope[serviceId] = returnObj;
@@ -32,9 +33,13 @@
           headers: gsnApi.getApiHeaders()
         }).success(function(response) {
           var result = response;
-          $savedData.allShoppingLists[result.Id] = gsnList(result.Id, result);
+          var shoppingList = gsnList(result.Id, result);
+          $savedData.allShoppingLists[result.Id] = shoppingList;
           gsnApi.setShoppingListId(result.Id);
-          $rootScope.$broadcast('gsnevent:shoppinglist-created', $savedData.allShoppingLists[result.Id]);
+          if (gsnApi.isAnonymous()) {
+            $savedData.anonShoppingList = shoppingList;
+          }
+          $rootScope.$broadcast('gsnevent:shoppinglist-created', shoppingList);
           $creatingDefer.resolve({
             success: true,
             response: $savedData.allShoppingLists[result.Id]
@@ -371,6 +376,24 @@
       return registerOrUpdateProfile(p, true);
     };
 
+    returnObj.mergeAnonymousShoppingList = function() {
+      // merge only if current shopping list has no item
+      if (!gsnApi.isAnonymous()) {
+        if (!$savedData.anonShoppingList) {
+          return;
+        }
+
+        if ($savedData.anonShoppingList.getCount() <= 0) {
+          return;
+        }
+
+        if (returnObj.getShoppingListCount() <= 0) {
+          var sl = returnObj.getShoppingList();
+          sl.addItems($savedData.anonShoppingList.allItems());
+        }
+      }
+    };
+
     // when user is a registered user
     // allow for shopping lists refresh
     returnObj.refreshShoppingLists = function() {
@@ -400,6 +423,12 @@
                 shoppingList.updateShoppingList();
 
                 gsnApi.setShoppingListId(list.ShoppingListId);
+                if (gsnApi.isAnonymous()) {
+                  $savedData.anonShoppingList = shoppingList;
+                } else {
+                  // merge shopping list
+                  $timeout(returnObj.mergeAnonymousShoppingList, 2000);
+                }
               }
             }
           } else {

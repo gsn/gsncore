@@ -464,12 +464,24 @@
       return returnObj.isNull(accessToken.user_id, 0);
     };
 
+    returnObj.getAnonShoppingListId = function() {
+      return returnObj.isNull(profileStorage.aShoppingListId, 0);
+    };
+
     returnObj.getShoppingListId = function() {
-      return returnObj.isNull(profileStorage.shoppingListId, 0);
+      if (returnObj.isAnonymous()) {
+        return returnObj.isNull(profileStorage.anonShoppingListId, 0);
+      } else {
+        return returnObj.isNull(profileStorage.shoppingListId, 0);
+      }
     };
 
     returnObj.setShoppingListId = function(shoppingListId, dontBroadcast) {
-      profileStorage.shoppingListId = returnObj.isNull(shoppingListId, 0);
+      if (returnObj.isAnonymous()) {
+        profileStorage.anonShoppingListId = returnObj.isNull(shoppingListId, 0);
+      } else {
+        profileStorage.shoppingListId = returnObj.isNull(shoppingListId, 0);
+      }
 
       if (dontBroadcast) return;
 
