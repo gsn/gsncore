@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.11.6
+ * version 1.11.7
  * gsncore repository
- * Build date: Wed Aug 16 2017 02:56:19 GMT-0500 (CDT)
+ * Build date: Fri Aug 18 2017 12:53:13 GMT-0500 (CDT)
  */
 (function() {
   'use strict';
@@ -258,6 +258,11 @@
   gsn.isNaN = function(obj, defaultValue) {
     return (isNaN(obj)) ? defaultValue : obj;
   };
+
+  // return v4 uuid
+  gsn.uuid = function(a) {
+    return a ? (a ^ Math.random() * 16 >> a / 4).toString(16) : ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, gsn.uuid);
+  }
 
   // sort a collection base on a field name
   gsn.sortOn = function(collection, name) {
@@ -4963,46 +4968,45 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         var deferred = $q.defer();
         returnObj.deferred = deferred;
 
-        if (returnObj.ShoppingListId > 0) {
-          if ($mySavedData.hasLoaded) {
-            $rootScope.$broadcast('gsnevent:shoppinglist-loaded', returnObj, $mySavedData.items);
-            deferred.resolve({
-              success: true,
-              response: returnObj
-            });
-            returnObj.deferred = null;
-          } else {
+        if ($mySavedData.hasLoaded) {
+          $rootScope.$broadcast('gsnevent:shoppinglist-loaded', returnObj, $mySavedData.items);
+          deferred.resolve({
+            success: true,
+            response: returnObj
+          });
+          returnObj.deferred = null;
+        } else {
 
-            $mySavedData.items = {};
-            $mySavedData.countCache = 0;
+          $mySavedData.items = {};
+          $mySavedData.countCache = 0;
 
-            gsnApi.getAccessToken().then(function() {
-              // call GetShoppingList(int shoppinglistid, int profileid)
-              var url = gsnApi.getShoppingListApiUrl() + '/ItemsBy/' + returnObj.ShoppingListId + '?nocache=' + (new Date()).getTime();
+          gsnApi.getAccessToken().then(function() {
+            // call GetShoppingList(int shoppinglistid, int profileid)
+            var url = gsnApi.getShoppingListApiUrl() + '/ItemsBy/' + returnObj.ShoppingListId + '?nocache=' + (new Date()).getTime();
 
-              var hPayload = gsnApi.getApiHeaders();
-              hPayload['X-SHOPPING-LIST-ID'] = returnObj.ShoppingListId;
-              $http.get(url, {
-                headers: hPayload
-              }).success(function(response) {
-                processShoppingList(response);
-                $rootScope.$broadcast('gsnevent:shoppinglist-loaded', returnObj, $mySavedData.items);
-                deferred.resolve({
-                  success: true,
-                  response: returnObj
-                });
-                returnObj.deferred = null;
-              }).error(function(response) {
-                $rootScope.$broadcast('gsnevent:shoppinglist-loadfail', response);
-                deferred.resolve({
-                  success: false,
-                  response: response
-                });
-                returnObj.deferred = null;
+            var hPayload = gsnApi.getApiHeaders();
+            hPayload['X-SHOPPING-LIST-ID'] = returnObj.ShoppingListId;
+            $http.get(url, {
+              headers: hPayload
+            }).success(function(response) {
+              processShoppingList(response);
+              $rootScope.$broadcast('gsnevent:shoppinglist-loaded', returnObj, $mySavedData.items);
+              deferred.resolve({
+                success: true,
+                response: returnObj
               });
+              returnObj.deferred = null;
+            }).error(function(response) {
+              $rootScope.$broadcast('gsnevent:shoppinglist-loadfail', response);
+              deferred.resolve({
+                success: false,
+                response: response
+              });
+              returnObj.deferred = null;
             });
-          }
+          });
         }
+
 
         return deferred.promise;
       };

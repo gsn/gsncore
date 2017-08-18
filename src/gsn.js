@@ -253,6 +253,11 @@
     return (isNaN(obj)) ? defaultValue : obj;
   };
 
+  // return v4 uuid
+  gsn.uuid = function(a) {
+    return a ? (a ^ Math.random() * 16 >> a / 4).toString(16) : ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, gsn.uuid);
+  }
+
   // sort a collection base on a field name
   gsn.sortOn = function(collection, name) {
     if (gsn.isNull(collection, null) === null) return null;
