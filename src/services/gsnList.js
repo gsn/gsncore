@@ -299,13 +299,6 @@
         return count;
       };
 
-      // clear items
-      returnObj.clearItems = function() {
-        // clear the items
-        $mySavedData.items = {};
-        returnObj.saveChanges();
-      };
-
       returnObj.getTitle = function() {
         return ($mySavedData.list) ? $mySavedData.list.Title : '';
       };
@@ -334,53 +327,6 @@
         });
 
         return returnObj;
-      };
-
-      // save changes
-      returnObj.saveChanges = function() {
-        if (returnObj.savingDeferred) return returnObj.savingDeferred.promise;
-        var deferred = $q.defer();
-        returnObj.savingDeferred = deferred;
-
-        $mySavedData.countCache = 0;
-        var syncitems = [];
-
-        // since we immediately update item with server as it get added to list
-        // all we need is to send back the item id to tell server item still on list
-        // this is also how we mass delete items
-        var items = returnObj.allItems();
-        angular.forEach(items, function(item) {
-          syncitems.push(item.ItemId);
-        });
-
-        saveListToSession();
-
-        gsnApi.getAccessToken().then(function() {
-
-          var url = gsnApi.getShoppingListApiUrl() + '/DeleteOtherItems/' + returnObj.ShoppingListId;
-          var hPayload = gsnApi.getApiHeaders();
-          hPayload['X-SHOPPING-LIST-ID'] = returnObj.ShoppingListId;
-          $http.post(url, syncitems, {
-            headers: hPayload
-          }).success(function(response) {
-            deferred.resolve({
-              success: true,
-              response: returnObj
-            });
-            returnObj.savingDeferred = null;
-
-            $rootScope.$broadcast('gsnevent:shoppinglist-changed', returnObj);
-            saveListToSession();
-          }).error(function(response) {
-            deferred.resolve({
-              success: false,
-              response: response
-            });
-            returnObj.savingDeferred = null;
-          });
-        });
-
-        return deferred.promise;
       };
 
       // cause change to shopping list title
@@ -477,46 +423,45 @@
         var deferred = $q.defer();
         returnObj.deferred = deferred;
 
-        if (returnObj.ShoppingListId > 0) {
-          if ($mySavedData.hasLoaded) {
-            $rootScope.$broadcast('gsnevent:shoppinglist-loaded', returnObj, $mySavedData.items);
-            deferred.resolve({
-              success: true,
-              response: returnObj
-            });
-            returnObj.deferred = null;
-          } else {
+        if ($mySavedData.hasLoaded) {
+          $rootScope.$broadcast('gsnevent:shoppinglist-loaded', returnObj, $mySavedData.items);
+          deferred.resolve({
+            success: true,
+            response: returnObj
+          });
+          returnObj.deferred = null;
+        } else {
 
-            $mySavedData.items = {};
-            $mySavedData.countCache = 0;
+          $mySavedData.items = {};
+          $mySavedData.countCache = 0;
 
-            gsnApi.getAccessToken().then(function() {
-              // call GetShoppingList(int shoppinglistid, int profileid)
-              var url = gsnApi.getShoppingListApiUrl() + '/ItemsBy/' + returnObj.ShoppingListId + '?nocache=' + (new Date()).getTime();
+          gsnApi.getAccessToken().then(function() {
+            // call GetShoppingList(int shoppinglistid, int profileid)
+            var url = gsnApi.getShoppingListApiUrl() + '/ItemsBy/' + returnObj.ShoppingListId + '?nocache=' + (new Date()).getTime();
 
-              var hPayload = gsnApi.getApiHeaders();
-              hPayload['X-SHOPPING-LIST-ID'] = returnObj.ShoppingListId;
-              $http.get(url, {
-                headers: hPayload
-              }).success(function(response) {
-                processShoppingList(response);
-                $rootScope.$broadcast('gsnevent:shoppinglist-loaded', returnObj, $mySavedData.items);
-                deferred.resolve({
-                  success: true,
-                  response: returnObj
-                });
-                returnObj.deferred = null;
-              }).error(function(response) {
-                $rootScope.$broadcast('gsnevent:shoppinglist-loadfail', response);
-                deferred.resolve({
-                  success: false,
-                  response: response
-                });
-                returnObj.deferred = null;
+            var hPayload = gsnApi.getApiHeaders();
+            hPayload['X-SHOPPING-LIST-ID'] = returnObj.ShoppingListId;
+            $http.get(url, {
+              headers: hPayload
+            }).success(function(response) {
+              processShoppingList(response);
+              $rootScope.$broadcast('gsnevent:shoppinglist-loaded', returnObj, $mySavedData.items);
+              deferred.resolve({
+                success: true,
+                response: returnObj
               });
+              returnObj.deferred = null;
+            }).error(function(response) {
+              $rootScope.$broadcast('gsnevent:shoppinglist-loadfail', response);
+              deferred.resolve({
+                success: false,
+                response: response
+              });
+              returnObj.deferred = null;
             });
-          }
+          });
         }
+
 
         return deferred.promise;
       };
