@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.11.7
+ * version 1.11.8
  * gsncore repository
- * Build date: Fri Aug 18 2017 12:53:13 GMT-0500 (CDT)
+ * Build date: Mon Aug 21 2017 09:11:33 GMT-0500 (CDT)
  */
 (function() {
   'use strict';
@@ -258,11 +258,6 @@
   gsn.isNaN = function(obj, defaultValue) {
     return (isNaN(obj)) ? defaultValue : obj;
   };
-
-  // return v4 uuid
-  gsn.uuid = function(a) {
-    return a ? (a ^ Math.random() * 16 >> a / 4).toString(16) : ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, gsn.uuid);
-  }
 
   // sort a collection base on a field name
   gsn.sortOn = function(collection, name) {
@@ -3657,11 +3652,13 @@
     returnObj.mergeAnonymousShoppingList = function() {
       // merge only if current shopping list has no item
       if (!gsnApi.isAnonymous()) {
-        if (!$savedData.anonShoppingList) {
+        // if not anonymous list or it has item, return
+        if (!$savedData.anonShoppingList || $savedData.anonShoppingList.getCount() <= 0) {
           return;
         }
 
-        if ($savedData.anonShoppingList.getCount() <= 0) {
+        // only transfer new shopping list
+        if (($savedData.anonShoppingList.ShoppingListId + '').indexOf('_') < 0) {
           return;
         }
 

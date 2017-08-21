@@ -379,11 +379,13 @@
     returnObj.mergeAnonymousShoppingList = function() {
       // merge only if current shopping list has no item
       if (!gsnApi.isAnonymous()) {
-        if (!$savedData.anonShoppingList) {
+        // if not anonymous list or it has item, return
+        if (!$savedData.anonShoppingList || $savedData.anonShoppingList.getCount() <= 0) {
           return;
         }
 
-        if ($savedData.anonShoppingList.getCount() <= 0) {
+        // only transfer new shopping list
+        if (($savedData.anonShoppingList.ShoppingListId + '').indexOf('_') < 0) {
           return;
         }
 
