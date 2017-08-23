@@ -57,7 +57,7 @@
     AuthServiceUrl: '/proxy/auth',
     StoreServiceUrl: '/proxy/store',
     ProfileServiceUrl: '/proxy/profile',
-    ShoppingListServiceUrl: '/proxy/shoppinglist',
+    ShoppingListServiceUrl: '/proxy/shoppinglisttwo',
     ApiUrl: '',
 
     // global config
