@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.11.8
+ * version 1.11.9
  * gsncore repository
- * Build date: Mon Aug 21 2017 09:11:33 GMT-0500 (CDT)
+ * Build date: Wed Aug 23 2017 14:14:51 GMT-0500 (CDT)
  */
 (function() {
   'use strict';
@@ -63,7 +63,7 @@
     AuthServiceUrl: '/proxy/auth',
     StoreServiceUrl: '/proxy/store',
     ProfileServiceUrl: '/proxy/profile',
-    ShoppingListServiceUrl: '/proxy/shoppinglist',
+    ShoppingListServiceUrl: '/proxy/shoppinglisttwo',
     ApiUrl: '',
 
     // global config
