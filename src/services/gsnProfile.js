@@ -91,16 +91,10 @@
       // get profile
       var profileId = gsnApi.isNull(returnObj.getProfileId(), 0);
       if (profileId !== 0) {
+        // getProfile also refresh shoppinglist
         returnObj.getProfile(true);
       }
 
-      $timeout(function() {
-        if (!returnObj.getShoppingList()) {
-          // load shopping lists
-          returnObj.refreshShoppingLists();
-        }
-
-      }, 200);
       gsnStore.initialize();
     };
 

@@ -283,7 +283,7 @@
           $scope.gvm.currentStore = store;
           gsnProfile.getProfile().then(function(rst) {
             if (rst.success) {
-              if (rst.response.PrimaryStoreId !== store.StoreId) {
+              if (rst.response.PrimaryStoreId !== store.StoreId && !gsnApi.isAnonymous()) {
                 // save selected store
                 gsnProfile.selectStore(store.StoreId).then(function() {
                   // broadcast persisted on server response
