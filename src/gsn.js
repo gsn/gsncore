@@ -245,7 +245,7 @@
 
   // return defaultValue if null
   gsn.isNull = function(obj, defaultValue) {
-    return (typeof(obj) === 'undefined' || obj === null) ? defaultValue : obj;
+    return (typeof(obj) === 'undefined' || obj === null || obj === 'null') ? defaultValue : obj;
   };
 
   // return defaultValue if NaN
