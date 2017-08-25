@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.11.9
+ * version 1.11.10
  * gsncore repository
- * Build date: Wed Aug 23 2017 14:14:51 GMT-0500 (CDT)
+ * Build date: Fri Aug 25 2017 09:12:52 GMT-0500 (CDT)
  */
 (function() {
   'use strict';
@@ -2465,7 +2465,7 @@
           $scope.gvm.currentStore = store;
           gsnProfile.getProfile().then(function(rst) {
             if (rst.success) {
-              if (rst.response.PrimaryStoreId !== store.StoreId) {
+              if (rst.response.PrimaryStoreId !== store.StoreId && !gsnApi.isAnonymous()) {
                 // save selected store
                 gsnProfile.selectStore(store.StoreId).then(function() {
                   // broadcast persisted on server response
@@ -3364,16 +3364,10 @@
       // get profile
       var profileId = gsnApi.isNull(returnObj.getProfileId(), 0);
       if (profileId !== 0) {
+        // getProfile also refresh shoppinglist
         returnObj.getProfile(true);
       }
 
-      $timeout(function() {
-        if (!returnObj.getShoppingList()) {
-          // load shopping lists
-          returnObj.refreshShoppingLists();
-        }
-
-      }, 200);
       gsnStore.initialize();
     };
 
