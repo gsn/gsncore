@@ -444,7 +444,9 @@
             $http.get(url, {
               headers: hPayload
             }).success(function(response) {
+              response = gsnApi.isNull(response, []);
               processShoppingList(response);
+
               $rootScope.$broadcast('gsnevent:shoppinglist-loaded', returnObj, $mySavedData.items);
               deferred.resolve({
                 success: true,

@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.11.10
+ * version 1.11.11
  * gsncore repository
- * Build date: Fri Aug 25 2017 09:12:52 GMT-0500 (CDT)
+ * Build date: Fri Aug 25 2017 17:39:29 GMT-0500 (CDT)
  */
 (function() {
   'use strict';
@@ -251,7 +251,7 @@
 
   // return defaultValue if null
   gsn.isNull = function(obj, defaultValue) {
-    return (typeof(obj) === 'undefined' || obj === null) ? defaultValue : obj;
+    return (typeof(obj) === 'undefined' || obj === null || obj === 'null') ? defaultValue : obj;
   };
 
   // return defaultValue if NaN
@@ -4984,7 +4984,9 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
             $http.get(url, {
               headers: hPayload
             }).success(function(response) {
+              response = gsnApi.isNull(response, []);
               processShoppingList(response);
+
               $rootScope.$broadcast('gsnevent:shoppinglist-loaded', returnObj, $mySavedData.items);
               deferred.resolve({
                 success: true,
