@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.11.11
+ * version 1.11.12
  * gsncore repository
- * Build date: Fri Aug 25 2017 17:39:29 GMT-0500 (CDT)
+ * Build date: Mon Aug 28 2017 12:05:58 GMT-0500 (CDT)
  */
 (function() {
   'use strict';
@@ -9603,12 +9603,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       }
     };
 
-    $scope.$on('gsnevent:store-persisted', function(evt, store) {
-      if ($scope.gvm.reloadOnStoreSelection) {
-        $scope.goUrl($scope.currentPath, '_reload');
-      }
-    });
-
     // wait until map has been created, then add markers
     // since map must be there and center must be set before markers show up on map
     $scope.$watch('myMap', function(newValue) {
@@ -9630,6 +9624,14 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
 
     $scope.$on('gsnevent:store-setid', function(event, result) {
       $scope.currentStoreId = gsnApi.getSelectedStoreId();
+
+      $timeout(function() {
+        // cause a reload
+        if ($scope.gvm.reloadOnStoreSelection) {
+          $scope.gvm.reloadOnStoreSelection = false;
+          $scope.goUrl($scope.currentPath, '_reload');
+        }
+      }, 500);
     });
 
     $scope.$watch('pharmacyOnly', function(event, result) {
