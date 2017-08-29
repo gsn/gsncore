@@ -23,6 +23,8 @@
         currentPath = '/article';
       } else if (currentPath.indexOf('/recipevideo/') > -1) {
         currentPath = '/recipevideo';
+      } else if (currentPath.indexOf('/registration/') > -1) {
+        currentPath = '/registration';
       } else if (currentPath.indexOf('/store/') > -1) {
         currentPath = '/store';
       }
