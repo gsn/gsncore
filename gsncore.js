@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.11.14
+ * version 1.11.15
  * gsncore repository
- * Build date: Tue Aug 29 2017 01:19:44 GMT-0500 (CDT)
+ * Build date: Tue Aug 29 2017 01:25:36 GMT-0500 (CDT)
  */
 (function() {
   'use strict';
@@ -6300,7 +6300,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       url += '?name=' + encodeURIComponent(contentName) + '&nocache=' + nocache;
       var cacheObject = {};
 
-      if (contentName === 'Home Slideshow') {
+      if (contentName === 'home slideshow') {
         var slides = gsnApi.getConfig().Slides;
         if (slides) {
           cacheObject.deferred = $q.defer();
