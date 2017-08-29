@@ -252,7 +252,7 @@
       url += '?name=' + encodeURIComponent(contentName) + '&nocache=' + nocache;
       var cacheObject = {};
 
-      if (contentName === 'Home Slideshow') {
+      if (contentName === 'home slideshow') {
         var slides = gsnApi.getConfig().Slides;
         if (slides) {
           cacheObject.deferred = $q.defer();
