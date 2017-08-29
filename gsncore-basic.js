@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.11.15
+ * version 1.11.16
  * gsncore repository
- * Build date: Tue Aug 29 2017 01:25:36 GMT-0500 (CDT)
+ * Build date: Tue Aug 29 2017 10:11:57 GMT-0500 (CDT)
  */
 (function() {
   'use strict';
@@ -6693,8 +6693,6 @@
         }
       } else if (currentPath.indexOf('/article/') > -1) {
         currentPath = '/article';
-      } else if (currentPath.indexOf('/recipevideo/') > -1) {
-        currentPath = '/recipevideo';
       } else if (currentPath.indexOf('/recipevideo/') > -1) {
         currentPath = '/recipevideo';
       } else if (currentPath.indexOf('/store/') > -1) {
