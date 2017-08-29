@@ -82,20 +82,26 @@
       }
     });
 
-    $scope.selectStore = function(storeId) {
+    $scope.selectStore = function(storeId, reload) {
       var currentStore = $scope.vm.currentStore || {};
       if (!storeId || (currentStore.StoreId === storeId)) {
         return;
       }
 
-      $scope.gvm.reloadOnStoreSelection = true;
+      $scope.gvm.reloadOnStoreSelection = reload;
       gsnApi.setSelectedStoreId(storeId);
     };
 
-    $scope.$on('gsnevent:store-persisted', function(evt, store) {
-      if ($scope.gvm.reloadOnStoreSelection) {
-        $scope.goUrl($scope.currentPath, '_reload');
-      }
+    $scope.$on('gsnevent:store-setid', function(event, result) {
+      $scope.currentStoreId = gsnApi.getSelectedStoreId();
+
+      $timeout(function() {
+        // cause a reload
+        if ($scope.gvm.reloadOnStoreSelection) {
+          $scope.gvm.reloadOnStoreSelection = false;
+          $scope.goUrl($scope.currentPath, '_reload');
+        }
+      }, 500);
     });
     $scope.activate();
   }

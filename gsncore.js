@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.11.11
+ * version 1.11.16
  * gsncore repository
- * Build date: Fri Aug 25 2017 17:39:29 GMT-0500 (CDT)
+ * Build date: Tue Aug 29 2017 10:11:57 GMT-0500 (CDT)
  */
 (function() {
   'use strict';
@@ -6298,8 +6298,20 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       var today = new Date();
       var nocache = today.getFullYear() + '' + today.getMonth() + '' + today.getDate() + '' + today.getHours();
       url += '?name=' + encodeURIComponent(contentName) + '&nocache=' + nocache;
+      var cacheObject = {};
 
-      return gsnApi.http({}, url);
+      if (contentName === 'home slideshow') {
+        var slides = gsnApi.getConfig().Slides;
+        if (slides) {
+          cacheObject.deferred = $q.defer();
+          cacheObject.response = {
+            success: true,
+            response: slides
+          };
+        }
+      }
+
+      return gsnApi.http(cacheObject, url);
     };
 
     returnObj.getArticle = function(articleId) {
@@ -9603,12 +9615,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       }
     };
 
-    $scope.$on('gsnevent:store-persisted', function(evt, store) {
-      if ($scope.gvm.reloadOnStoreSelection) {
-        $scope.goUrl($scope.currentPath, '_reload');
-      }
-    });
-
     // wait until map has been created, then add markers
     // since map must be there and center must be set before markers show up on map
     $scope.$watch('myMap', function(newValue) {
@@ -9630,6 +9636,14 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
 
     $scope.$on('gsnevent:store-setid', function(event, result) {
       $scope.currentStoreId = gsnApi.getSelectedStoreId();
+
+      $timeout(function() {
+        // cause a reload
+        if ($scope.gvm.reloadOnStoreSelection) {
+          $scope.gvm.reloadOnStoreSelection = false;
+          $scope.goUrl($scope.currentPath, '_reload');
+        }
+      }, 500);
     });
 
     $scope.$watch('pharmacyOnly', function(event, result) {
@@ -9757,20 +9771,26 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       }
     });
 
-    $scope.selectStore = function(storeId) {
+    $scope.selectStore = function(storeId, reload) {
       var currentStore = $scope.vm.currentStore || {};
       if (!storeId || (currentStore.StoreId === storeId)) {
         return;
       }
 
-      $scope.gvm.reloadOnStoreSelection = true;
+      $scope.gvm.reloadOnStoreSelection = reload;
       gsnApi.setSelectedStoreId(storeId);
     };
 
-    $scope.$on('gsnevent:store-persisted', function(evt, store) {
-      if ($scope.gvm.reloadOnStoreSelection) {
-        $scope.goUrl($scope.currentPath, '_reload');
-      }
+    $scope.$on('gsnevent:store-setid', function(event, result) {
+      $scope.currentStoreId = gsnApi.getSelectedStoreId();
+
+      $timeout(function() {
+        // cause a reload
+        if ($scope.gvm.reloadOnStoreSelection) {
+          $scope.gvm.reloadOnStoreSelection = false;
+          $scope.goUrl($scope.currentPath, '_reload');
+        }
+      }, 500);
     });
     $scope.activate();
   }
@@ -10732,6 +10752,18 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
 
     function link(scope, element, attrs) {
       var currentPath = gsnApi.isNull($location.path(), '');
+      if (currentPath.indexOf('/recipe/') > -1) {
+        if (currentPath !== '/recipe/search') {
+          currentPath = '/recipe';
+        }
+      } else if (currentPath.indexOf('/article/') > -1) {
+        currentPath = '/article';
+      } else if (currentPath.indexOf('/recipevideo/') > -1) {
+        currentPath = '/recipevideo';
+      } else if (currentPath.indexOf('/store/') > -1) {
+        currentPath = '/store';
+      }
+
       attrs.gsnPartialContent = angular.lowercase(attrs.gsnPartialContent || currentPath).replace(/^\/+|\/+$/, '').replace(/[\-\/]/gi, ' ');
       scope.activate = activate;
       scope.pcvm = {

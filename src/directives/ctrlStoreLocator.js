@@ -348,12 +348,6 @@
       }
     };
 
-    $scope.$on('gsnevent:store-persisted', function(evt, store) {
-      if ($scope.gvm.reloadOnStoreSelection) {
-        $scope.goUrl($scope.currentPath, '_reload');
-      }
-    });
-
     // wait until map has been created, then add markers
     // since map must be there and center must be set before markers show up on map
     $scope.$watch('myMap', function(newValue) {
@@ -375,6 +369,14 @@
 
     $scope.$on('gsnevent:store-setid', function(event, result) {
       $scope.currentStoreId = gsnApi.getSelectedStoreId();
+
+      $timeout(function() {
+        // cause a reload
+        if ($scope.gvm.reloadOnStoreSelection) {
+          $scope.gvm.reloadOnStoreSelection = false;
+          $scope.goUrl($scope.currentPath, '_reload');
+        }
+      }, 500);
     });
 
     $scope.$watch('pharmacyOnly', function(event, result) {

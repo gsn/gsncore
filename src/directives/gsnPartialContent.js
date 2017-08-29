@@ -15,6 +15,18 @@
 
     function link(scope, element, attrs) {
       var currentPath = gsnApi.isNull($location.path(), '');
+      if (currentPath.indexOf('/recipe/') > -1) {
+        if (currentPath !== '/recipe/search') {
+          currentPath = '/recipe';
+        }
+      } else if (currentPath.indexOf('/article/') > -1) {
+        currentPath = '/article';
+      } else if (currentPath.indexOf('/recipevideo/') > -1) {
+        currentPath = '/recipevideo';
+      } else if (currentPath.indexOf('/store/') > -1) {
+        currentPath = '/store';
+      }
+
       attrs.gsnPartialContent = angular.lowercase(attrs.gsnPartialContent || currentPath).replace(/^\/+|\/+$/, '').replace(/[\-\/]/gi, ' ');
       scope.activate = activate;
       scope.pcvm = {
