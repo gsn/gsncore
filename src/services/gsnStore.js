@@ -250,8 +250,20 @@
       var today = new Date();
       var nocache = today.getFullYear() + '' + today.getMonth() + '' + today.getDate() + '' + today.getHours();
       url += '?name=' + encodeURIComponent(contentName) + '&nocache=' + nocache;
+      var cacheObject = {};
 
-      return gsnApi.http({}, url);
+      if (contentName === 'Home Slideshow') {
+        var slides = gsnApi.getConfig().Slides;
+        if (slides) {
+          cacheObject.deferred = $q.defer();
+          cacheObject.response = {
+            success: true,
+            response: slides
+          };
+        }
+      }
+
+      return gsnApi.http(cacheObject, url);
     };
 
     returnObj.getArticle = function(articleId) {

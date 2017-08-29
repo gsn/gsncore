@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.11.13
+ * version 1.11.14
  * gsncore repository
- * Build date: Mon Aug 28 2017 12:47:09 GMT-0500 (CDT)
+ * Build date: Tue Aug 29 2017 01:19:44 GMT-0500 (CDT)
  */
 (function() {
   'use strict';
@@ -6298,8 +6298,20 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       var today = new Date();
       var nocache = today.getFullYear() + '' + today.getMonth() + '' + today.getDate() + '' + today.getHours();
       url += '?name=' + encodeURIComponent(contentName) + '&nocache=' + nocache;
+      var cacheObject = {};
 
-      return gsnApi.http({}, url);
+      if (contentName === 'Home Slideshow') {
+        var slides = gsnApi.getConfig().Slides;
+        if (slides) {
+          cacheObject.deferred = $q.defer();
+          cacheObject.response = {
+            success: true,
+            response: slides
+          };
+        }
+      }
+
+      return gsnApi.http(cacheObject, url);
     };
 
     returnObj.getArticle = function(articleId) {
@@ -10742,16 +10754,16 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       var currentPath = gsnApi.isNull($location.path(), '');
       if (currentPath.indexOf('/recipe/') > -1) {
         if (currentPath !== '/recipe/search') {
-          currentPath = '/recipe'
+          currentPath = '/recipe';
         }
       } else if (currentPath.indexOf('/article/') > -1) {
-        currentPath = '/article'
+        currentPath = '/article';
       } else if (currentPath.indexOf('/recipevideo/') > -1) {
-        currentPath = '/recipevideo'
+        currentPath = '/recipevideo';
       } else if (currentPath.indexOf('/recipevideo/') > -1) {
-        currentPath = '/recipevideo'
+        currentPath = '/recipevideo';
       } else if (currentPath.indexOf('/store/') > -1) {
-        currentPath = '/store'
+        currentPath = '/store';
       }
 
       attrs.gsnPartialContent = angular.lowercase(attrs.gsnPartialContent || currentPath).replace(/^\/+|\/+$/, '').replace(/[\-\/]/gi, ' ');
