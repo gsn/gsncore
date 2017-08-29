@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.11.17
+ * version 1.11.18
  * gsncore repository
- * Build date: Tue Aug 29 2017 12:02:09 GMT-0500 (CDT)
+ * Build date: Tue Aug 29 2017 14:29:13 GMT-0500 (CDT)
  */
 (function() {
   'use strict';
@@ -7163,7 +7163,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
 
     $scope.pageId = 99; // it's always all items for desktop
     $scope.loadAll = $scope.loadAll || false;
-    $scope.itemsPerPage = $scope.itemsPerPage || 10;
+    $scope.itemsPerPage = $scope.itemsPerPage || 100;
     $scope.sortBy = $scope.sortBy || 'CategoryName';
     $scope.sortByName = $scope.sortByName || 'Department';
     $scope.actualSortBy = $scope.sortBy;
