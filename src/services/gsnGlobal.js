@@ -212,12 +212,12 @@
         /// <param name="nxt" type="String">next location</param>
         /// <param name="current" type="String">current location</param>
         $scope.currentPath = angular.lowercase(gsnApi.isNull($location.path(), ''));
-        var path = $scope.currentPath;
-        if (/$\/(recipe|circular|store|recipevideo)\//.test(path)) {
-          path = '/' + path.split('/')[1] + '/:id';
+        var next = $route.routes[$scope.currentPath];
+
+        if (!next) {
+          next = $route.routes['/' + $scope.currentPath.split('/')[1] + '/:id'];
         }
 
-        var next = $route.routes[path];
         if (!next) next = {};
         // store the new route location
         $scope.seo = next.seo || {};
