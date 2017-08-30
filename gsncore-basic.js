@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.11.23
+ * version 1.11.24
  * gsncore repository
- * Build date: Wed Aug 30 2017 11:06:13 GMT-0500 (CDT)
+ * Build date: Wed Aug 30 2017 12:00:35 GMT-0500 (CDT)
  */
 (function() {
   'use strict';
@@ -435,12 +435,21 @@
     }
 
     var firstTracker = (gsn.isNull(gsn.config.GoogleAnalyticAccountId1, '').length > 0);
+    var secondTracker = (gsn.isNull(gsn.config.GoogleAnalyticAccountId2, '').length > 0);
 
     if (root.ga) {
       // creating google analytic object
       if (firstTracker) {
         root.ga('create', gsn.config.GoogleAnalyticAccountId1, 'auto');
 
+        if (secondTracker) {
+          root.ga('create', gsn.config.GoogleAnalyticAccountId2, 'auto', {
+            'name': 'trackerTwo'
+          });
+        }
+      } else if (secondTracker) {
+        secondTracker = false;
+        root.ga('create', gsn.config.GoogleAnalyticAccountId2, 'auto');
       }
 
       // enable demographic
@@ -454,6 +463,10 @@
       // begin tracking
       if (root.ga) {
         root.ga('send', 'pageview', path);
+
+        if (secondTracker) {
+          root.ga('trackerTwo.send', 'pageview', path);
+        }
       }
     });
 
@@ -481,6 +494,10 @@
         root.ga('send', 'event', properties.category, action, properties.label, properties.value, {
           nonInteraction: 1
         });
+
+        if (secondTracker) {
+          root.ga('trackerTwo.send', 'event', properties.category, action, properties.label, properties.value);
+        }
       }
     });
   };
