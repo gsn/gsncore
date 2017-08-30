@@ -211,11 +211,15 @@
         /// <param name="evt" type="Object">Event object</param>
         /// <param name="nxt" type="String">next location</param>
         /// <param name="current" type="String">current location</param>
-        var next = $route.routes[$location.path()];
-        if (!next) next = {};
+        $scope.currentPath = angular.lowercase(gsnApi.isNull($location.path(), ''));
+        var next = $route.routes[$scope.currentPath];
+
+        if (!next) {
+          next = $route.routes['/' + $scope.currentPath.split('/')[1] + '/:id'] || {};
+        }
+
         // store the new route location
         $scope.seo = next.seo || {};
-        $scope.currentPath = angular.lowercase(gsnApi.isNull($location.path(), ''));
         $scope.friendlyPath = $scope.currentPath.replace('/', '').replace(/\/+/gi, '-');
         $scope.gvm.search = $location.search();
         $scope.gvm.menuInactive = false;
