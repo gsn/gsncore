@@ -215,10 +215,9 @@
         var next = $route.routes[$scope.currentPath];
 
         if (!next) {
-          next = $route.routes['/' + $scope.currentPath.split('/')[1] + '/:id'];
+          next = $route.routes['/' + $scope.currentPath.split('/')[1] + '/:id'] || {};
         }
 
-        if (!next) next = {};
         // store the new route location
         $scope.seo = next.seo || {};
         $scope.friendlyPath = $scope.currentPath.replace('/', '').replace(/\/+/gi, '-');

@@ -2,7 +2,7 @@
  * gsncore
  * version 1.11.23
  * gsncore repository
- * Build date: Wed Aug 30 2017 11:05:42 GMT-0500 (CDT)
+ * Build date: Wed Aug 30 2017 11:06:13 GMT-0500 (CDT)
  */
 (function() {
   'use strict';
@@ -4334,10 +4334,9 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         var next = $route.routes[$scope.currentPath];
 
         if (!next) {
-          next = $route.routes['/' + $scope.currentPath.split('/')[1] + '/:id'];
+          next = $route.routes['/' + $scope.currentPath.split('/')[1] + '/:id'] || {};
         }
 
-        if (!next) next = {};
         // store the new route location
         $scope.seo = next.seo || {};
         $scope.friendlyPath = $scope.currentPath.replace('/', '').replace(/\/+/gi, '-');
