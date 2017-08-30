@@ -90,7 +90,7 @@
       function processData(data) {
         partialData = gsnApi.parsePartialContentData(data);
         scope.partialContents = scope.getContentList();
-        scope.pcvm.layout = scope.getConfig('layout').Description || 'default';
+        scope.pcvm.layout = scope.getConfig('layout').Description || scope.gvm.layout || 'default';
         if ($location.hash()) {
           $timeout(function() {
             $anchorScroll();

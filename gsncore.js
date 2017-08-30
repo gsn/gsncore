@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.11.18
+ * version 1.11.19
  * gsncore repository
- * Build date: Tue Aug 29 2017 14:29:13 GMT-0500 (CDT)
+ * Build date: Wed Aug 30 2017 09:41:08 GMT-0500 (CDT)
  */
 (function() {
   'use strict';
@@ -4155,7 +4155,8 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         noCircular: true,
         reloadOnStoreSelection: false,
         currentStore: {},
-        adsCollapsed: false
+        adsCollapsed: false,
+        layoutName: null
       };
       $scope.search = {
         site: '',
@@ -4353,8 +4354,12 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         }
 
         $scope.currentLayout = $scope.defaultLayout;
+        $scope.gvm.layout = null;
         if (gsnApi.isNull(next.layout, '').length > 0) {
           $scope.currentLayout = next.layout;
+        }
+        if (gsnApi.isNull(next.layout2, '').length > 0) {
+          $scope.gvm.layout = next.layout2;
         }
 
         $scope.notFoundLayout = $scope.notFoundDefaultLayout;
@@ -10827,7 +10832,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       function processData(data) {
         partialData = gsnApi.parsePartialContentData(data);
         scope.partialContents = scope.getContentList();
-        scope.pcvm.layout = scope.getConfig('layout').Description || 'default';
+        scope.pcvm.layout = scope.getConfig('layout').Description || scope.gvm.layout || 'default';
         if ($location.hash()) {
           $timeout(function() {
             $anchorScroll();

@@ -36,7 +36,8 @@
         noCircular: true,
         reloadOnStoreSelection: false,
         currentStore: {},
-        adsCollapsed: false
+        adsCollapsed: false,
+        layoutName: null
       };
       $scope.search = {
         site: '',
@@ -234,8 +235,12 @@
         }
 
         $scope.currentLayout = $scope.defaultLayout;
+        $scope.gvm.layout = null;
         if (gsnApi.isNull(next.layout, '').length > 0) {
           $scope.currentLayout = next.layout;
+        }
+        if (gsnApi.isNull(next.layout2, '').length > 0) {
+          $scope.gvm.layout = next.layout2;
         }
 
         $scope.notFoundLayout = $scope.notFoundDefaultLayout;
