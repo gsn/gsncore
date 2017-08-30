@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.11.20
+ * version 1.11.22
  * gsncore repository
- * Build date: Wed Aug 30 2017 10:52:13 GMT-0500 (CDT)
+ * Build date: Wed Aug 30 2017 11:03:07 GMT-0500 (CDT)
  */
 (function() {
   'use strict';
@@ -2393,11 +2393,16 @@
         /// <param name="evt" type="Object">Event object</param>
         /// <param name="nxt" type="String">next location</param>
         /// <param name="current" type="String">current location</param>
-        var next = $route.routes[$location.path()];
+        $scope.currentPath = angular.lowercase(gsnApi.isNull($location.path(), ''));
+        var path = $scope.currentPath;
+        if (/$\/(recipe|circular|store|recipevideo)\//.test(path)) {
+          path = '/' + path.split('/')[1] + '/:id';
+        }
+
+        var next = $route.routes[path];
         if (!next) next = {};
         // store the new route location
         $scope.seo = next.seo || {};
-        $scope.currentPath = angular.lowercase(gsnApi.isNull($location.path(), ''));
         $scope.friendlyPath = $scope.currentPath.replace('/', '').replace(/\/+/gi, '-');
         $scope.gvm.search = $location.search();
         $scope.gvm.menuInactive = false;
