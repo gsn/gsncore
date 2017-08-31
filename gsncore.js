@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.11.26
+ * version 1.11.27
  * gsncore repository
- * Build date: Thu Aug 31 2017 14:50:23 GMT-0500 (CDT)
+ * Build date: Thu Aug 31 2017 14:57:42 GMT-0500 (CDT)
  */
 (function() {
   'use strict';
@@ -4674,7 +4674,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
           item.ShoppingListItemId = undefined;
           item.ShoppingListId = returnObj.ShoppingListId;
           item.CategoryId = item.CategoryId || -1;
-          item.Quantity = gsnApi.isNaN(parseInt(item.Quantity), item.NewQuantity || 1)
+          item.Quantity = gsnApi.isNaN(parseInt(item.Quantity || item.NewQuantity), 1);
 
           existingItem = item;
           $mySavedData.items[returnObj.getItemKey(existingItem)] = existingItem;
