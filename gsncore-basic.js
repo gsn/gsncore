@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.11.25
+ * version 1.11.26
  * gsncore repository
- * Build date: Wed Aug 30 2017 12:01:30 GMT-0500 (CDT)
+ * Build date: Thu Aug 31 2017 14:50:23 GMT-0500 (CDT)
  */
 (function() {
   'use strict';
@@ -2737,6 +2737,7 @@
           item.ShoppingListItemId = undefined;
           item.ShoppingListId = returnObj.ShoppingListId;
           item.CategoryId = item.CategoryId || -1;
+          item.Quantity = gsnApi.isNaN(parseInt(item.Quantity), item.NewQuantity || 1)
 
           existingItem = item;
           $mySavedData.items[returnObj.getItemKey(existingItem)] = existingItem;
