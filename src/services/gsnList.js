@@ -113,6 +113,7 @@
           item.ShoppingListItemId = undefined;
           item.ShoppingListId = returnObj.ShoppingListId;
           item.CategoryId = item.CategoryId || -1;
+          item.Quantity = gsnApi.isNaN(parseInt(item.Quantity || item.NewQuantity), 1);
 
           existingItem = item;
           $mySavedData.items[returnObj.getItemKey(existingItem)] = existingItem;
