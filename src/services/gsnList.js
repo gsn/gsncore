@@ -62,6 +62,8 @@
           itemToPost.PageNumber = undefined;
           itemToPost.rect = undefined;
           itemToPost.LinkedItem = undefined;
+          itemToPost.selected = undefined;
+          itemToPost.zIndex = undefined;
 
           $rootScope.$broadcast('gsnevent:shoppinglistitem-updating', returnObj, existingItem, $mySavedData);
 
