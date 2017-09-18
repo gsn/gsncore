@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.11.27
+ * version 1.11.28
  * gsncore repository
- * Build date: Thu Aug 31 2017 14:57:42 GMT-0500 (CDT)
+ * Build date: Mon Sep 18 2017 17:03:54 GMT-0500 (CDT)
  */
 (function() {
   'use strict';
@@ -2686,6 +2686,8 @@
           itemToPost.PageNumber = undefined;
           itemToPost.rect = undefined;
           itemToPost.LinkedItem = undefined;
+          itemToPost.selected = undefined;
+          itemToPost.zIndex = undefined;
 
           $rootScope.$broadcast('gsnevent:shoppinglistitem-updating', returnObj, existingItem, $mySavedData);
 
@@ -4683,7 +4685,7 @@
       gsnApi.sortOn(pages, 'PageNumber');
       circ.pages = pages;
       circ.CircularType = circularTypes[circ.CircularTypeId].Name;
-      circ.ImageUrl = gsnApi.isNull(circ.ImageUrl, {}).replace('http://', '//');
+      circ.ImageUrl = gsnApi.isNull(circ.ImageUrl, '').replace('http://', '//');
       var circularMaster = {
         CircularPageId: pages[0].CircularPageId,
         CircularType: circ.CircularType,
@@ -6195,16 +6197,16 @@
           if (name === 'gsnFtArticle') {
             gsnStore.getFeaturedArticle().then(function(result) {
               if (result.success) {
-                result.response.ImageUrl = gsnApi.isNull(result.response.ImageUrl, {}).replace('http://', '//');
+                result.response.ImageUrl = gsnApi.isNull(result.response.ImageUrl, '').replace('http://', '//');
                 scope.item = result.response;
               }
             });
           } else if (name === 'gsnFtRecipe') {
             gsnStore.getFeaturedRecipe().then(function(result) {
               if (result.success) {
-                result.response.ImageUrl = gsnApi.isNull(result.response.ImageUrl, {}).replace('http://', '//');
+                result.response.ImageUrl = gsnApi.isNull(result.response.ImageUrl, '').replace('http://', '//');
                 angular.forEach(result.response.Images, function(item) {
-                  item.RecipeImageUrl = (item.RecipeImageUrl || {}).replace('http://', '//');
+                  item.RecipeImageUrl = gsnApi.isNull(item.RecipeImageUrl, '').replace('http://', '//');
                 });
                 scope.item = result.response;
               }
@@ -6212,21 +6214,21 @@
           } else if (name === 'gsnFtAskthechef') {
             gsnStore.getAskTheChef().then(function(result) {
               if (result.success) {
-                result.response.ImageUrl = gsnApi.isNull(result.response.ImageUrl, {}).replace('http://', '//');
+                result.response.ImageUrl = gsnApi.isNull(result.response.ImageUrl, '').replace('http://', '//');
                 scope.item = result.response;
               }
             });
           } else if (name === 'gsnFtVideo') {
             gsnStore.getFeaturedVideo().then(function(result) {
               if (result.success) {
-                result.response.Thumbnail = gsnApi.isNull(result.response.Thumbnail, {}).replace('http://', '//');
+                result.response.Thumbnail = gsnApi.isNull(result.response.Thumbnail, '').replace('http://', '//');
                 scope.item = result.response;
               }
             });
           } else if (name === 'gsnFtCookingtip') {
             gsnStore.getCookingTip().then(function(result) {
               if (result.success) {
-                result.response.ImageUrl = gsnApi.isNull(result.response.ImageUrl, {}).replace('http://', '//');
+                result.response.ImageUrl = gsnApi.isNull(result.response.ImageUrl, '').replace('http://', '//');
                 scope.item = result.response;
               }
             });
