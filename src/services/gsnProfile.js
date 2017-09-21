@@ -123,6 +123,13 @@
             }
           }, 200);
         });
+
+        // force item to be on list
+        $timeout(function() {
+          if (!returnObj.isOnList(item)) {
+            returnObj.addItem(item);
+          }
+        }, 1000);
       }
     };
 
