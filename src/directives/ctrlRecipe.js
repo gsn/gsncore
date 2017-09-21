@@ -56,7 +56,7 @@
         if (result.success) {
           result.response.ImageUrl = gsnApi.isNull(result.response.ImageUrl, '').replace('http://', '//');
           angular.forEach(result.response.Images, function(item) {
-            item.RecipeImageUrl = (item.RecipeImageUrl || {}).replace('http://', '//');
+            item.RecipeImageUrl = gsnApi.isNull(item.RecipeImageUrl, '').replace('http://', '//');
           });
           $scope.vm.recipe = result.response;
 
