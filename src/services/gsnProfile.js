@@ -116,11 +116,13 @@
       } else {
         // at this point, something is wrong
         // get new lists from API
-        $timeout(function() {
-          returnObj.refreshShoppingLists().then(function() {
-            returnObj.addItem(item);
-          });
-        }, 200);
+        returnObj.refreshShoppingLists().then(function() {
+          $timeout(function() {
+            if (!returnObj.isOnList(item)) {
+              returnObj.addItem(item);
+            }
+          }, 200);
+        });
       }
     };
 
