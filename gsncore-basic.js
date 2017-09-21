@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.11.29
+ * version 1.11.31
  * gsncore repository
- * Build date: Thu Sep 21 2017 14:56:48 GMT-0500 (CDT)
+ * Build date: Thu Sep 21 2017 16:39:59 GMT-0500 (CDT)
  */
 (function() {
   'use strict';
@@ -3415,11 +3415,13 @@
       } else {
         // at this point, something is wrong
         // get new lists from API
-        $timeout(function() {
-          returnObj.refreshShoppingLists().then(function() {
-            returnObj.addItem(item);
-          });
-        }, 200);
+        returnObj.refreshShoppingLists().then(function() {
+          $timeout(function() {
+            if (!returnObj.isOnList(item)) {
+              returnObj.addItem(item);
+            }
+          }, 200);
+        });
       }
     };
 
