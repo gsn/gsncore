@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.11.32
+ * version 1.11.33
  * gsncore repository
- * Build date: Thu Sep 21 2017 16:48:45 GMT-0500 (CDT)
+ * Build date: Thu Sep 21 2017 16:53:43 GMT-0500 (CDT)
  */
 (function() {
   'use strict';
@@ -5357,7 +5357,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
             if (!returnObj.isOnList(item)) {
               returnObj.addItem(item);
             }
-          }, 200);
+          }, 2000);
         });
 
         // force item to be on list
@@ -5365,7 +5365,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
           if (!returnObj.isOnList(item)) {
             returnObj.addItem(item);
           }
-        }, 1000);
+        }, 2000);
       }
     };
 

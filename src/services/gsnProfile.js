@@ -121,7 +121,7 @@
             if (!returnObj.isOnList(item)) {
               returnObj.addItem(item);
             }
-          }, 200);
+          }, 2000);
         });
 
         // force item to be on list
@@ -129,7 +129,7 @@
           if (!returnObj.isOnList(item)) {
             returnObj.addItem(item);
           }
-        }, 1000);
+        }, 2000);
       }
     };
 
