@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.11.31
+ * version 1.11.32
  * gsncore repository
- * Build date: Thu Sep 21 2017 16:39:59 GMT-0500 (CDT)
+ * Build date: Thu Sep 21 2017 16:48:45 GMT-0500 (CDT)
  */
 (function() {
   'use strict';
@@ -3422,6 +3422,13 @@
             }
           }, 200);
         });
+
+        // force item to be on list
+        $timeout(function() {
+          if (!returnObj.isOnList(item)) {
+            returnObj.addItem(item);
+          }
+        }, 1000);
       }
     };
 
