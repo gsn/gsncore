@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.11.28
+ * version 1.11.29
  * gsncore repository
- * Build date: Mon Sep 18 2017 17:03:54 GMT-0500 (CDT)
+ * Build date: Thu Sep 21 2017 14:56:48 GMT-0500 (CDT)
  */
 (function() {
   'use strict';
@@ -5349,6 +5349,14 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         }
 
         shoppingList.addItem(item);
+      } else {
+        // at this point, something is wrong
+        // get new lists from API
+        $timeout(function() {
+          returnObj.refreshShoppingLists().then(function() {
+            returnObj.addItem(item);
+          });
+        }, 200);
       }
     };
 
