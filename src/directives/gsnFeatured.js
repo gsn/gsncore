@@ -4,7 +4,7 @@
   module = angular.module('gsn.core');
 
   createDirective = function(name) {
-    return module.directive(name, ['gsnStore', 'gsnApi', function(gsnStore, gsnApi) {
+    return module.directive(name, ['gsnStore', 'gsnApi', 'lazyload', function(gsnStore, gsnApi, lazyload) {
       return {
         restrict: 'AC',
         scope: true,
@@ -14,8 +14,14 @@
           if (attrs.contentPosition) {
             var dynamicData = gsnApi.parseStoreSpecificContent(gsnApi.getHomeData().ContentData[attrs.contentPosition]);
             if (dynamicData && dynamicData.Description) {
-              element.html(dynamicData.Description);
-              return;
+              if (!attrs.lazyload) {
+                element.html(dynamicData.Description);
+                return;
+              }
+              else {
+                lazyload(element[0], dynamicData.Description, {}, 2000);
+                return;
+              }
             }
           }
 

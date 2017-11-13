@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.11.33
+ * version 1.11.34
  * gsncore repository
- * Build date: Thu Sep 21 2017 16:53:43 GMT-0500 (CDT)
+ * Build date: Mon Nov 13 2017 17:12:22 GMT-0600 (CST)
  */
 (function() {
   'use strict';
@@ -5115,6 +5115,72 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         timeout = setTimeout(later, wait);
         if (callNow) func.apply(context, args);
       };
+    };
+  }]);
+  // lazyload: lazyload content service
+  myModule.factory('lazyload', ['$timeout', '$window', '$rootScope', 'debounce', function($timeout, $window, $rootScope, debounce) {
+    var defaults = {
+      // If the image gets within 10px in the Y axis, trigger the event.
+      rootMargin: '10px 0px',
+      threshold: 0
+    };
+
+    // The service is actually this function, which we call with the func
+    // that should be debounced and how long to wait in between calls
+    return function lazyload(el, html, config, interval) {
+      config = config || {};
+      config.rootMargin = config.rootMargin || defaults.rootMargin;
+      config.threshold = config.threshold || defaults.threshold;
+
+      var rst = {
+        el: el[0] || el,
+        html: html,
+        config: config,
+        interval: interval || 2000,
+        enabled: true
+      };
+
+      function onIntersection (entries, observer) {
+        angular.forEach(entries, function(entry) {
+          // Are we in viewport?
+          if (rst.enabled && entry.intersectionRatio > 0) {
+            rst.enabled = false;
+
+            // trigger the event
+            $rootScope.$broadcast('gsnevent:lazyloading', rst);
+
+            // lazy load the content
+            angular.element(el).html(rst.html);
+
+            // trigger the event
+            $rootScope.$broadcast('gsnevent:lazyloaded', rst);
+
+            // wait x before watches again
+            $timeout(function() {
+              rst.enabled = true;
+            }, rst.interval);
+          }
+        });
+      }
+
+      if ($window.IntersectionObserver) {
+        var callback = debounce(onIntersection, 50);
+        var observer = new $window.IntersectionObserver(callback, rst.config);
+        observer.observe(el);
+        rst.observer = observer;
+      }
+
+      rst.destroy = function() {
+        try {
+          if (rst.observer) {
+            rst.observer.unobserve(rst.el);
+          }
+          rst.observer = null;
+          rst.el = null;
+        } catch (e) { }
+      };
+
+      return rst;
     };
   }]);
   // FeedService: google feed
@@ -10260,7 +10326,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
   module = angular.module('gsn.core');
 
   createDirective = function(name) {
-    return module.directive(name, ['gsnStore', 'gsnApi', function(gsnStore, gsnApi) {
+    return module.directive(name, ['gsnStore', 'gsnApi', 'lazyload', function(gsnStore, gsnApi, lazyload) {
       return {
         restrict: 'AC',
         scope: true,
@@ -10270,8 +10336,14 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
           if (attrs.contentPosition) {
             var dynamicData = gsnApi.parseStoreSpecificContent(gsnApi.getHomeData().ContentData[attrs.contentPosition]);
             if (dynamicData && dynamicData.Description) {
-              element.html(dynamicData.Description);
-              return;
+              if (!attrs.lazyload) {
+                element.html(dynamicData.Description);
+                return;
+              }
+              else {
+                lazyload(element[0], dynamicData.Description, {}, 2000);
+                return;
+              }
             }
           }
 
