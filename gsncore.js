@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.11.34
+ * version 1.11.35
  * gsncore repository
- * Build date: Mon Nov 13 2017 17:12:22 GMT-0600 (CST)
+ * Build date: Wed Nov 15 2017 13:38:20 GMT-0600 (CST)
  */
 (function() {
   'use strict';
@@ -749,6 +749,19 @@
 
       $rootScope.siteMenu = gsnApi.getConfig().SiteMenu;
       $rootScope.win = $window;
+
+      // track element inview
+      angular.element('body').on('inview', '.inview', function(event, isInView) {
+        var $this = angular.element(this);
+        $this.removeClass('inview-yes');
+
+        // add class
+        if (isInView) {
+          $this.addClass('inview-yes');
+        }
+
+        $rootScope.$broadcast('gsnevent:inview', $this[0], isInView, event);
+      });
       gsnGlobal.init(true);
     }]);
 
@@ -1519,6 +1532,15 @@
 
       returnObj.logOut();
       returnObj.reload();
+    });
+
+    $rootScope.$on('gsnevent:inview', function() {
+      angular.forEach(angular.element('.inview'), function(value){
+        var item = angular.element(value);
+        if (item.hasClass('.inview-yes') && typeof(item[0].doRefresh) === 'function') {
+          item[0].doRefresh();
+        }
+      });
     });
     //#endregion
 
@@ -5115,72 +5137,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         timeout = setTimeout(later, wait);
         if (callNow) func.apply(context, args);
       };
-    };
-  }]);
-  // lazyload: lazyload content service
-  myModule.factory('lazyload', ['$timeout', '$window', '$rootScope', 'debounce', function($timeout, $window, $rootScope, debounce) {
-    var defaults = {
-      // If the image gets within 10px in the Y axis, trigger the event.
-      rootMargin: '10px 0px',
-      threshold: 0
-    };
-
-    // The service is actually this function, which we call with the func
-    // that should be debounced and how long to wait in between calls
-    return function lazyload(el, html, config, interval) {
-      config = config || {};
-      config.rootMargin = config.rootMargin || defaults.rootMargin;
-      config.threshold = config.threshold || defaults.threshold;
-
-      var rst = {
-        el: el[0] || el,
-        html: html,
-        config: config,
-        interval: interval || 2000,
-        enabled: true
-      };
-
-      function onIntersection (entries, observer) {
-        angular.forEach(entries, function(entry) {
-          // Are we in viewport?
-          if (rst.enabled && entry.intersectionRatio > 0) {
-            rst.enabled = false;
-
-            // trigger the event
-            $rootScope.$broadcast('gsnevent:lazyloading', rst);
-
-            // lazy load the content
-            angular.element(el).html(rst.html);
-
-            // trigger the event
-            $rootScope.$broadcast('gsnevent:lazyloaded', rst);
-
-            // wait x before watches again
-            $timeout(function() {
-              rst.enabled = true;
-            }, rst.interval);
-          }
-        });
-      }
-
-      if ($window.IntersectionObserver) {
-        var callback = debounce(onIntersection, 50);
-        var observer = new $window.IntersectionObserver(callback, rst.config);
-        observer.observe(el);
-        rst.observer = observer;
-      }
-
-      rst.destroy = function() {
-        try {
-          if (rst.observer) {
-            rst.observer.unobserve(rst.el);
-          }
-          rst.observer = null;
-          rst.el = null;
-        } catch (e) { }
-      };
-
-      return rst;
     };
   }]);
   // FeedService: google feed
@@ -10326,7 +10282,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
   module = angular.module('gsn.core');
 
   createDirective = function(name) {
-    return module.directive(name, ['gsnStore', 'gsnApi', 'lazyload', function(gsnStore, gsnApi, lazyload) {
+    return module.directive(name, ['gsnStore', 'gsnApi', 'debounce', function(gsnStore, gsnApi, debounce) {
       return {
         restrict: 'AC',
         scope: true,
@@ -10341,7 +10297,9 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
                 return;
               }
               else {
-                lazyload(element[0], dynamicData.Description, {}, 2000);
+                element[0].doRefresh = debounce(function() {
+                  element.html(dynamicData.Description);
+                }, 2000, true);
                 return;
               }
             }

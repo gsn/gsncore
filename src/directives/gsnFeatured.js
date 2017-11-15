@@ -4,7 +4,7 @@
   module = angular.module('gsn.core');
 
   createDirective = function(name) {
-    return module.directive(name, ['gsnStore', 'gsnApi', 'lazyload', function(gsnStore, gsnApi, lazyload) {
+    return module.directive(name, ['gsnStore', 'gsnApi', 'debounce', function(gsnStore, gsnApi, debounce) {
       return {
         restrict: 'AC',
         scope: true,
@@ -19,7 +19,9 @@
                 return;
               }
               else {
-                lazyload(element[0], dynamicData.Description, {}, 2000);
+                element[0].doRefresh = debounce(function() {
+                  element.html(dynamicData.Description);
+                }, 2000, true);
                 return;
               }
             }

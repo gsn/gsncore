@@ -38,6 +38,19 @@
 
       $rootScope.siteMenu = gsnApi.getConfig().SiteMenu;
       $rootScope.win = $window;
+
+      // track element inview
+      angular.element('body').on('inview', '.inview', function(event, isInView) {
+        var $this = angular.element(this);
+        $this.removeClass('inview-yes');
+
+        // add class
+        if (isInView) {
+          $this.addClass('inview-yes');
+        }
+
+        $rootScope.$broadcast('gsnevent:inview', $this[0], isInView, event);
+      });
       gsnGlobal.init(true);
     }]);
 
@@ -808,6 +821,15 @@
 
       returnObj.logOut();
       returnObj.reload();
+    });
+
+    $rootScope.$on('gsnevent:inview', function() {
+      angular.forEach(angular.element('.inview'), function(value){
+        var item = angular.element(value);
+        if (item.hasClass('.inview-yes') && typeof(item[0].doRefresh) === 'function') {
+          item[0].doRefresh();
+        }
+      });
     });
     //#endregion
 
