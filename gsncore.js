@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.11.35
+ * version 1.11.36
  * gsncore repository
- * Build date: Wed Nov 15 2017 13:38:20 GMT-0600 (CST)
+ * Build date: Thu Nov 16 2017 10:48:19 GMT-0600 (CST)
  */
 (function() {
   'use strict';
@@ -10292,7 +10292,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
           if (attrs.contentPosition) {
             var dynamicData = gsnApi.parseStoreSpecificContent(gsnApi.getHomeData().ContentData[attrs.contentPosition]);
             if (dynamicData && dynamicData.Description) {
-              if (!attrs.lazyload) {
+              if (!attrs.inview) {
                 element.html(dynamicData.Description);
                 return;
               }
@@ -12080,9 +12080,11 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     selector: 'meta[itemprop="description"]',
     html: '<meta itemprop="description" name="twitter:description" property="og:description"/>',
     get: function(e) {
+      angular.element('head > meta[name="description"]').attr('content');
       return e.attr('content');
     },
     set: function(e, v) {
+      angular.element('head > meta[name="description"]').attr('content', v);
       return e.attr('content', v);
     }
   });

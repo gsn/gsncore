@@ -14,7 +14,7 @@
           if (attrs.contentPosition) {
             var dynamicData = gsnApi.parseStoreSpecificContent(gsnApi.getHomeData().ContentData[attrs.contentPosition]);
             if (dynamicData && dynamicData.Description) {
-              if (!attrs.lazyload) {
+              if (!attrs.inview) {
                 element.html(dynamicData.Description);
                 return;
               }
