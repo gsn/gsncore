@@ -195,6 +195,20 @@
             $anchorScroll();
           }, 1000);
         }
+        $timeout(function() {
+          // track element inview
+          angular.element('.inview').on('inview', function(event, isInView) {
+            var $this = angular.element(this);
+            $this.removeClass('inview-yes');
+
+            // add class
+            if (isInView) {
+              $this.addClass('inview-yes');
+            }
+
+            $rootScope.$broadcast('gsnevent:inview', $this[0], isInView, event);
+          });
+        }, 500);
         var url = $window.location.href;
         url = url.replace('sfs=true', '')
           .replace('siteid=' + gsnApi.getChainId(), '')

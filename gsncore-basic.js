@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.11.36
+ * version 1.11.37
  * gsncore repository
- * Build date: Thu Nov 16 2017 10:48:18 GMT-0600 (CST)
+ * Build date: Thu Nov 16 2017 17:00:26 GMT-0600 (CST)
  */
 (function() {
   'use strict';
@@ -750,18 +750,6 @@
       $rootScope.siteMenu = gsnApi.getConfig().SiteMenu;
       $rootScope.win = $window;
 
-      // track element inview
-      angular.element('body').on('inview', '.inview', function(event, isInView) {
-        var $this = angular.element(this);
-        $this.removeClass('inview-yes');
-
-        // add class
-        if (isInView) {
-          $this.addClass('inview-yes');
-        }
-
-        $rootScope.$broadcast('gsnevent:inview', $this[0], isInView, event);
-      });
       gsnGlobal.init(true);
     }]);
 
@@ -2416,6 +2404,20 @@
             $anchorScroll();
           }, 1000);
         }
+        $timeout(function() {
+          // track element inview
+          angular.element('.inview').on('inview', function(event, isInView) {
+            var $this = angular.element(this);
+            $this.removeClass('inview-yes');
+
+            // add class
+            if (isInView) {
+              $this.addClass('inview-yes');
+            }
+
+            $rootScope.$broadcast('gsnevent:inview', $this[0], isInView, event);
+          });
+        }, 500);
         var url = $window.location.href;
         url = url.replace('sfs=true', '')
           .replace('siteid=' + gsnApi.getChainId(), '')

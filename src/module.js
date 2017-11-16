@@ -39,18 +39,6 @@
       $rootScope.siteMenu = gsnApi.getConfig().SiteMenu;
       $rootScope.win = $window;
 
-      // track element inview
-      angular.element('body').on('inview', '.inview', function(event, isInView) {
-        var $this = angular.element(this);
-        $this.removeClass('inview-yes');
-
-        // add class
-        if (isInView) {
-          $this.addClass('inview-yes');
-        }
-
-        $rootScope.$broadcast('gsnevent:inview', $this[0], isInView, event);
-      });
       gsnGlobal.init(true);
     }]);
 
