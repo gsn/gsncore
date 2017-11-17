@@ -2,7 +2,7 @@
  * gsncore
  * version 1.11.41
  * gsncore repository
- * Build date: Fri Nov 17 2017 14:17:52 GMT-0600 (CST)
+ * Build date: Fri Nov 17 2017 14:19:15 GMT-0600 (CST)
  */
 (function() {
   'use strict';
@@ -2244,7 +2244,7 @@
           }, 50);
         });
       }, 500);
-      $window.on('scroll resize scrollstop orientationchange', myInViewHandler);
+      angular.element($window).on('scroll resize scrollstop orientationchange', myInViewHandler);
       gsnApi.gsn.$rootScope = $rootScope;
       $scope = $scope || $rootScope;
       $scope.defaultLayout = gsnApi.getDefaultLayout(gsnApi.getThemeUrl('/views/layout.html'));

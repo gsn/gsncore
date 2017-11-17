@@ -33,7 +33,7 @@
           }, 50);
         });
       }, 500);
-      $window.on('scroll resize scrollstop orientationchange', myInViewHandler);
+      angular.element($window).on('scroll resize scrollstop orientationchange', myInViewHandler);
       gsnApi.gsn.$rootScope = $rootScope;
       $scope = $scope || $rootScope;
       $scope.defaultLayout = gsnApi.getDefaultLayout(gsnApi.getThemeUrl('/views/layout.html'));
