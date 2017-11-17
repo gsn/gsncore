@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.11.41
+ * version 1.11.42
  * gsncore repository
- * Build date: Fri Nov 17 2017 14:24:50 GMT-0600 (CST)
+ * Build date: Fri Nov 17 2017 15:31:30 GMT-0600 (CST)
  */
 (function() {
   'use strict';
@@ -4371,7 +4371,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
             $anchorScroll();
           }, 1000);
         }
-
+        myInViewHandler();
         var url = $window.location.href;
         url = url.replace('sfs=true', '')
           .replace('siteid=' + gsnApi.getChainId(), '')

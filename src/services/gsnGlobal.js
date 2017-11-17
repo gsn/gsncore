@@ -221,7 +221,7 @@
             $anchorScroll();
           }, 1000);
         }
-
+        myInViewHandler();
         var url = $window.location.href;
         url = url.replace('sfs=true', '')
           .replace('siteid=' + gsnApi.getChainId(), '')
