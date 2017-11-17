@@ -2,7 +2,7 @@
  * gsncore
  * version 1.11.41
  * gsncore repository
- * Build date: Fri Nov 17 2017 14:19:15 GMT-0600 (CST)
+ * Build date: Fri Nov 17 2017 14:24:50 GMT-0600 (CST)
  */
 (function() {
   'use strict';
@@ -2203,6 +2203,8 @@
       ($rootScope.gvm || {}).adsCollapsed = false;
       bricktag.refresh(service.actionParam, service.forceRefresh);
       service.forceRefresh = false;
+
+      $rootScope.$broadcast('gsnevent:inview');
     }
 
     return service;
