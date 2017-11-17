@@ -20,6 +20,20 @@
       if (initProfile) {
         gsnProfile.initialize();
       }
+      $timeout(function() {
+        // track element inview
+        angular.element('body').on('inview', '*[data-inview]', function(event, isInView) {
+          var $this = angular.element(this);
+          $this.removeClass('inview-yes');
+
+          // add class
+          if (isInView) {
+            $this.addClass('inview-yes');
+          }
+
+          $rootScope.$broadcast('gsnevent:inview', $this[0], isInView, event);
+        });
+      }, 500);
       gsnApi.gsn.$rootScope = $rootScope;
       $scope = $scope || $rootScope;
       $scope.defaultLayout = gsnApi.getDefaultLayout(gsnApi.getThemeUrl('/views/layout.html'));
@@ -195,20 +209,7 @@
             $anchorScroll();
           }, 1000);
         }
-        $timeout(function() {
-          // track element inview
-          angular.element('.inview').on('inview', function(event, isInView) {
-            var $this = angular.element(this);
-            $this.removeClass('inview-yes');
 
-            // add class
-            if (isInView) {
-              $this.addClass('inview-yes');
-            }
-
-            $rootScope.$broadcast('gsnevent:inview', $this[0], isInView, event);
-          });
-        }, 500);
         var url = $window.location.href;
         url = url.replace('sfs=true', '')
           .replace('siteid=' + gsnApi.getChainId(), '')

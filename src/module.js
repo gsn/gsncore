@@ -812,9 +812,9 @@
     });
 
     $rootScope.$on('gsnevent:inview', function() {
-      angular.forEach(angular.element('.inview'), function(value){
+      angular.forEach(angular.element('.inview-yes'), function(value){
         var item = angular.element(value);
-        if (item.hasClass('.inview-yes') && typeof(item[0].doRefresh) === 'function') {
+        if (item[0] && typeof(item[0].doRefresh) === 'function') {
           item[0].doRefresh();
         }
       });

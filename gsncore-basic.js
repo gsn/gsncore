@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.11.37
+ * version 1.11.39
  * gsncore repository
- * Build date: Thu Nov 16 2017 17:00:26 GMT-0600 (CST)
+ * Build date: Fri Nov 17 2017 10:11:05 GMT-0600 (CST)
  */
 (function() {
   'use strict';
@@ -1523,9 +1523,9 @@
     });
 
     $rootScope.$on('gsnevent:inview', function() {
-      angular.forEach(angular.element('.inview'), function(value){
+      angular.forEach(angular.element('.inview-yes'), function(value){
         var item = angular.element(value);
-        if (item.hasClass('.inview-yes') && typeof(item[0].doRefresh) === 'function') {
+        if (item[0] && typeof(item[0].doRefresh) === 'function') {
           item[0].doRefresh();
         }
       });
@@ -2229,6 +2229,20 @@
       if (initProfile) {
         gsnProfile.initialize();
       }
+      $timeout(function() {
+        // track element inview
+        angular.element('body').on('inview', '*[data-inview]', function(event, isInView) {
+          var $this = angular.element(this);
+          $this.removeClass('inview-yes');
+
+          // add class
+          if (isInView) {
+            $this.addClass('inview-yes');
+          }
+
+          $rootScope.$broadcast('gsnevent:inview', $this[0], isInView, event);
+        });
+      }, 500);
       gsnApi.gsn.$rootScope = $rootScope;
       $scope = $scope || $rootScope;
       $scope.defaultLayout = gsnApi.getDefaultLayout(gsnApi.getThemeUrl('/views/layout.html'));
@@ -2404,20 +2418,7 @@
             $anchorScroll();
           }, 1000);
         }
-        $timeout(function() {
-          // track element inview
-          angular.element('.inview').on('inview', function(event, isInView) {
-            var $this = angular.element(this);
-            $this.removeClass('inview-yes');
 
-            // add class
-            if (isInView) {
-              $this.addClass('inview-yes');
-            }
-
-            $rootScope.$broadcast('gsnevent:inview', $this[0], isInView, event);
-          });
-        }, 500);
         var url = $window.location.href;
         url = url.replace('sfs=true', '')
           .replace('siteid=' + gsnApi.getChainId(), '')
