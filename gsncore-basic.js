@@ -2,7 +2,7 @@
  * gsncore
  * version 1.11.41
  * gsncore repository
- * Build date: Fri Nov 17 2017 12:19:26 GMT-0600 (CST)
+ * Build date: Fri Nov 17 2017 12:20:30 GMT-0600 (CST)
  */
 (function() {
   'use strict';
@@ -1523,12 +1523,14 @@
     });
 
     $rootScope.$on('gsnevent:inview', function() {
-      angular.forEach(angular.element('.inview-yes'), function(value){
-        var item = angular.element(value);
-        if (item[0] && typeof(item[0].doRefresh) === 'function') {
-          item[0].doRefresh();
-        }
-      });
+      $timeout(function() {
+        angular.forEach(angular.element('.inview-yes'), function(value){
+          var item = angular.element(value);
+          if (item[0] && typeof(item[0].doRefresh) === 'function') {
+            item[0].doRefresh();
+          }
+        });
+      }, 50);
     });
     //#endregion
 
