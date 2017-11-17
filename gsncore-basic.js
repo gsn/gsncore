@@ -2,7 +2,7 @@
  * gsncore
  * version 1.11.41
  * gsncore repository
- * Build date: Fri Nov 17 2017 12:20:30 GMT-0600 (CST)
+ * Build date: Fri Nov 17 2017 14:13:54 GMT-0600 (CST)
  */
 (function() {
   'use strict';
@@ -2213,9 +2213,9 @@
 (function(angular, undefined) {
   'use strict';
   var serviceId = 'gsnGlobal';
-  angular.module('gsn.core').service(serviceId, ['$window', '$location', '$timeout', '$route', 'gsnApi', 'gsnProfile', 'gsnStore', '$rootScope', 'Facebook', '$analytics', 'gsnAdvertising', '$anchorScroll', gsnGlobal]);
+  angular.module('gsn.core').service(serviceId, ['$window', '$location', '$timeout', '$route', 'gsnApi', 'gsnProfile', 'gsnStore', '$rootScope', 'Facebook', '$analytics', 'gsnAdvertising', '$anchorScroll', 'debounce', gsnGlobal]);
 
-  function gsnGlobal($window, $location, $timeout, $route, gsnApi, gsnProfile, gsnStore, $rootScope, Facebook, $analytics, gsnAdvertising, $anchorScroll) {
+  function gsnGlobal($window, $location, $timeout, $route, gsnApi, gsnProfile, gsnStore, $rootScope, Facebook, $analytics, gsnAdvertising, $anchorScroll, debounce) {
     var returnObj = {
       init: init,
       hasInit: false
@@ -2231,21 +2231,20 @@
       if (initProfile) {
         gsnProfile.initialize();
       }
-      $timeout(function() {
-        // track element inview
-        angular.element('body').on('inview', '*[data-inview]', function(event, isInView) {
-          var $this = angular.element(this);
+      var myInViewHandler = debounce(function() {
+        angular.forEach(angular.element('*[data-inview]'), function(item) {
+          var $this = angular.element(item);
           $this.removeClass('inview-yes');
 
-          // add class
-          if (isInView) {
+          if ($scope.isInView(item)) {
             $this.addClass('inview-yes');
           }
           $timeout(function() {
-            $rootScope.$broadcast('gsnevent:inview', $this[0], isInView, event);
+            $rootScope.$broadcast('gsnevent:inview', $this[0]);
           }, 50);
         });
       }, 500);
+      $window.on('scroll resize scrollstop orientationchange', myInViewHandler);
       gsnApi.gsn.$rootScope = $rootScope;
       $scope = $scope || $rootScope;
       $scope.defaultLayout = gsnApi.getDefaultLayout(gsnApi.getThemeUrl('/views/layout.html'));
@@ -2286,6 +2285,16 @@
       // $scope._tk = $window._tk;
       $scope.newDate = function(dateArg1) {
         return dateArg1 ? new Date(dateArg1) : new Date();
+      };
+      $scope.isInView = function(el) {
+          var rect = [el[0] || el].getBoundingClientRect();
+
+          return (
+              rect.top >= 0 &&
+              rect.left >= 0 &&
+              rect.bottom <= ($scope.$win.document.innerHeight || $scope.$win.document.documentElement.clientHeight) &&
+              rect.right <= ($scope.$win.document.innerWidth || $scope.$win.document.documentElement.clientWidth)
+          );
       };
       $scope.validateRegistration = function(rsp) {
         // don't be annoying
