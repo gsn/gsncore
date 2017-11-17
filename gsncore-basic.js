@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.11.39
+ * version 1.11.40
  * gsncore repository
- * Build date: Fri Nov 17 2017 10:11:05 GMT-0600 (CST)
+ * Build date: Fri Nov 17 2017 12:10:55 GMT-0600 (CST)
  */
 (function() {
   'use strict';
@@ -6220,7 +6220,7 @@
   module = angular.module('gsn.core');
 
   createDirective = function(name) {
-    return module.directive(name, ['gsnStore', 'gsnApi', 'debounce', function(gsnStore, gsnApi, debounce) {
+    return module.directive(name, ['gsnStore', 'gsnApi', 'debounce', '$compile', function(gsnStore, gsnApi, debounce, $compile) {
       return {
         restrict: 'AC',
         scope: true,
@@ -6232,11 +6232,13 @@
             if (dynamicData && dynamicData.Description) {
               if (!attrs.inview) {
                 element.html(dynamicData.Description);
+                $compile(element.contents())(scope);
                 return;
               }
               else {
                 element[0].doRefresh = debounce(function() {
                   element.html(dynamicData.Description);
+                  $compile(element.contents())(scope);
                 }, 2000, true);
                 return;
               }

@@ -4,7 +4,7 @@
   module = angular.module('gsn.core');
 
   createDirective = function(name) {
-    return module.directive(name, ['gsnStore', 'gsnApi', 'debounce', function(gsnStore, gsnApi, debounce) {
+    return module.directive(name, ['gsnStore', 'gsnApi', 'debounce', '$compile', function(gsnStore, gsnApi, debounce, $compile) {
       return {
         restrict: 'AC',
         scope: true,
@@ -16,11 +16,13 @@
             if (dynamicData && dynamicData.Description) {
               if (!attrs.inview) {
                 element.html(dynamicData.Description);
+                $compile(element.contents())(scope);
                 return;
               }
               else {
                 element[0].doRefresh = debounce(function() {
                   element.html(dynamicData.Description);
+                  $compile(element.contents())(scope);
                 }, 2000, true);
                 return;
               }
