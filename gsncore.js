@@ -2,7 +2,7 @@
  * gsncore
  * version 1.11.41
  * gsncore repository
- * Build date: Fri Nov 17 2017 14:13:54 GMT-0600 (CST)
+ * Build date: Fri Nov 17 2017 14:17:52 GMT-0600 (CST)
  */
 (function() {
   'use strict';
@@ -4223,15 +4223,17 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       $scope.newDate = function(dateArg1) {
         return dateArg1 ? new Date(dateArg1) : new Date();
       };
-      $scope.isInView = function(el) {
-          var rect = [el[0] || el].getBoundingClientRect();
-
-          return (
-              rect.top >= 0 &&
-              rect.left >= 0 &&
-              rect.bottom <= ($scope.$win.document.innerHeight || $scope.$win.document.documentElement.clientHeight) &&
-              rect.right <= ($scope.$win.document.innerWidth || $scope.$win.document.documentElement.clientWidth)
-          );
+      $scope.isInView = function(element) {
+        var r, html, doc = $window.document, el = element[0] || element;
+        if ( !el || 1 !== el.nodeType || !el.getBoundingClientRect) { return false; }
+        html = doc.documentElement;
+        r = el.getBoundingClientRect();
+        return (
+            r.top >= 0 &&
+            r.left >= 0 &&
+            r.bottom <= (doc.innerHeight || html.clientHeight) &&
+            r.right <= (doc.innerWidth || html.clientWidth)
+        );
       };
       $scope.validateRegistration = function(rsp) {
         // don't be annoying
