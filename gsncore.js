@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.11.40
+ * version 1.11.41
  * gsncore repository
- * Build date: Fri Nov 17 2017 12:10:56 GMT-0600 (CST)
+ * Build date: Fri Nov 17 2017 12:19:26 GMT-0600 (CST)
  */
 (function() {
   'use strict';
@@ -4176,8 +4176,9 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
           if (isInView) {
             $this.addClass('inview-yes');
           }
-
-          $rootScope.$broadcast('gsnevent:inview', $this[0], isInView, event);
+          $timeout(function() {
+            $rootScope.$broadcast('gsnevent:inview', $this[0], isInView, event);
+          }, 50);
         });
       }, 500);
       gsnApi.gsn.$rootScope = $rootScope;

@@ -30,8 +30,9 @@
           if (isInView) {
             $this.addClass('inview-yes');
           }
-
-          $rootScope.$broadcast('gsnevent:inview', $this[0], isInView, event);
+          $timeout(function() {
+            $rootScope.$broadcast('gsnevent:inview', $this[0], isInView, event);
+          }, 50);
         });
       }, 500);
       gsnApi.gsn.$rootScope = $rootScope;

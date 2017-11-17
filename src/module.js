@@ -812,12 +812,14 @@
     });
 
     $rootScope.$on('gsnevent:inview', function() {
-      angular.forEach(angular.element('.inview-yes'), function(value){
-        var item = angular.element(value);
-        if (item[0] && typeof(item[0].doRefresh) === 'function') {
-          item[0].doRefresh();
-        }
-      });
+      $timeout(function() {
+        angular.forEach(angular.element('.inview-yes'), function(value){
+          var item = angular.element(value);
+          if (item[0] && typeof(item[0].doRefresh) === 'function') {
+            item[0].doRefresh();
+          }
+        });
+      }, 50);
     });
     //#endregion
 
