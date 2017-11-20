@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.11.33
+ * version 1.11.42
  * gsncore repository
- * Build date: Thu Sep 21 2017 16:53:43 GMT-0500 (CDT)
+ * Build date: Fri Nov 17 2017 15:31:30 GMT-0600 (CST)
  */
 (function() {
   'use strict';
@@ -749,6 +749,7 @@
 
       $rootScope.siteMenu = gsnApi.getConfig().SiteMenu;
       $rootScope.win = $window;
+
       gsnGlobal.init(true);
     }]);
 
@@ -1519,6 +1520,17 @@
 
       returnObj.logOut();
       returnObj.reload();
+    });
+
+    $rootScope.$on('gsnevent:inview', function() {
+      $timeout(function() {
+        angular.forEach(angular.element('.inview-yes'), function(value){
+          var item = angular.element(value);
+          if (item[0] && typeof(item[0].doRefresh) === 'function') {
+            item[0].doRefresh();
+          }
+        });
+      }, 50);
     });
     //#endregion
 
@@ -4128,6 +4140,8 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       ($rootScope.gvm || {}).adsCollapsed = false;
       bricktag.refresh(service.actionParam, service.forceRefresh);
       service.forceRefresh = false;
+
+      $rootScope.$broadcast('gsnevent:inview');
     }
 
     return service;
@@ -4138,9 +4152,9 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
 (function(angular, undefined) {
   'use strict';
   var serviceId = 'gsnGlobal';
-  angular.module('gsn.core').service(serviceId, ['$window', '$location', '$timeout', '$route', 'gsnApi', 'gsnProfile', 'gsnStore', '$rootScope', 'Facebook', '$analytics', 'gsnAdvertising', '$anchorScroll', gsnGlobal]);
+  angular.module('gsn.core').service(serviceId, ['$window', '$location', '$timeout', '$route', 'gsnApi', 'gsnProfile', 'gsnStore', '$rootScope', 'Facebook', '$analytics', 'gsnAdvertising', '$anchorScroll', 'debounce', gsnGlobal]);
 
-  function gsnGlobal($window, $location, $timeout, $route, gsnApi, gsnProfile, gsnStore, $rootScope, Facebook, $analytics, gsnAdvertising, $anchorScroll) {
+  function gsnGlobal($window, $location, $timeout, $route, gsnApi, gsnProfile, gsnStore, $rootScope, Facebook, $analytics, gsnAdvertising, $anchorScroll, debounce) {
     var returnObj = {
       init: init,
       hasInit: false
@@ -4156,6 +4170,20 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       if (initProfile) {
         gsnProfile.initialize();
       }
+      var myInViewHandler = debounce(function() {
+        angular.forEach(angular.element('*[data-inview]'), function(item) {
+          var $this = angular.element(item);
+          $this.removeClass('inview-yes');
+
+          if ($scope.isInView(item)) {
+            $this.addClass('inview-yes');
+          }
+          $timeout(function() {
+            $rootScope.$broadcast('gsnevent:inview', $this[0]);
+          }, 50);
+        });
+      }, 500);
+      angular.element($window).on('scroll resize scrollstop orientationchange', myInViewHandler);
       gsnApi.gsn.$rootScope = $rootScope;
       $scope = $scope || $rootScope;
       $scope.defaultLayout = gsnApi.getDefaultLayout(gsnApi.getThemeUrl('/views/layout.html'));
@@ -4196,6 +4224,18 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       // $scope._tk = $window._tk;
       $scope.newDate = function(dateArg1) {
         return dateArg1 ? new Date(dateArg1) : new Date();
+      };
+      $scope.isInView = function(element) {
+        var r, html, doc = $window.document, el = element[0] || element;
+        if ( !el || 1 !== el.nodeType || !el.getBoundingClientRect) { return false; }
+        html = doc.documentElement;
+        r = el.getBoundingClientRect();
+        return (
+            r.top >= 0 &&
+            r.left >= 0 &&
+            r.bottom <= (doc.innerHeight || html.clientHeight) &&
+            r.right <= (doc.innerWidth || html.clientWidth)
+        );
       };
       $scope.validateRegistration = function(rsp) {
         // don't be annoying
@@ -4331,6 +4371,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
             $anchorScroll();
           }, 1000);
         }
+        myInViewHandler();
         var url = $window.location.href;
         url = url.replace('sfs=true', '')
           .replace('siteid=' + gsnApi.getChainId(), '')
@@ -10260,7 +10301,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
   module = angular.module('gsn.core');
 
   createDirective = function(name) {
-    return module.directive(name, ['gsnStore', 'gsnApi', function(gsnStore, gsnApi) {
+    return module.directive(name, ['gsnStore', 'gsnApi', 'debounce', '$compile', function(gsnStore, gsnApi, debounce, $compile) {
       return {
         restrict: 'AC',
         scope: true,
@@ -10270,8 +10311,18 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
           if (attrs.contentPosition) {
             var dynamicData = gsnApi.parseStoreSpecificContent(gsnApi.getHomeData().ContentData[attrs.contentPosition]);
             if (dynamicData && dynamicData.Description) {
-              element.html(dynamicData.Description);
-              return;
+              if (!attrs.inview) {
+                element.html(dynamicData.Description);
+                $compile(element.contents())(scope);
+                return;
+              }
+              else {
+                element[0].doRefresh = debounce(function() {
+                  element.html(dynamicData.Description);
+                  $compile(element.contents())(scope);
+                }, 2000, true);
+                return;
+              }
             }
           }
 
@@ -12050,9 +12101,11 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     selector: 'meta[itemprop="description"]',
     html: '<meta itemprop="description" name="twitter:description" property="og:description"/>',
     get: function(e) {
+      angular.element('head > meta[name="description"]').attr('content');
       return e.attr('content');
     },
     set: function(e, v) {
+      angular.element('head > meta[name="description"]').attr('content', v);
       return e.attr('content', v);
     }
   });

@@ -2,9 +2,9 @@
 (function(angular, undefined) {
   'use strict';
   var serviceId = 'gsnGlobal';
-  angular.module('gsn.core').service(serviceId, ['$window', '$location', '$timeout', '$route', 'gsnApi', 'gsnProfile', 'gsnStore', '$rootScope', 'Facebook', '$analytics', 'gsnAdvertising', '$anchorScroll', gsnGlobal]);
+  angular.module('gsn.core').service(serviceId, ['$window', '$location', '$timeout', '$route', 'gsnApi', 'gsnProfile', 'gsnStore', '$rootScope', 'Facebook', '$analytics', 'gsnAdvertising', '$anchorScroll', 'debounce', gsnGlobal]);
 
-  function gsnGlobal($window, $location, $timeout, $route, gsnApi, gsnProfile, gsnStore, $rootScope, Facebook, $analytics, gsnAdvertising, $anchorScroll) {
+  function gsnGlobal($window, $location, $timeout, $route, gsnApi, gsnProfile, gsnStore, $rootScope, Facebook, $analytics, gsnAdvertising, $anchorScroll, debounce) {
     var returnObj = {
       init: init,
       hasInit: false
@@ -20,6 +20,20 @@
       if (initProfile) {
         gsnProfile.initialize();
       }
+      var myInViewHandler = debounce(function() {
+        angular.forEach(angular.element('*[data-inview]'), function(item) {
+          var $this = angular.element(item);
+          $this.removeClass('inview-yes');
+
+          if ($scope.isInView(item)) {
+            $this.addClass('inview-yes');
+          }
+          $timeout(function() {
+            $rootScope.$broadcast('gsnevent:inview', $this[0]);
+          }, 50);
+        });
+      }, 500);
+      angular.element($window).on('scroll resize scrollstop orientationchange', myInViewHandler);
       gsnApi.gsn.$rootScope = $rootScope;
       $scope = $scope || $rootScope;
       $scope.defaultLayout = gsnApi.getDefaultLayout(gsnApi.getThemeUrl('/views/layout.html'));
@@ -60,6 +74,18 @@
       // $scope._tk = $window._tk;
       $scope.newDate = function(dateArg1) {
         return dateArg1 ? new Date(dateArg1) : new Date();
+      };
+      $scope.isInView = function(element) {
+        var r, html, doc = $window.document, el = element[0] || element;
+        if ( !el || 1 !== el.nodeType || !el.getBoundingClientRect) { return false; }
+        html = doc.documentElement;
+        r = el.getBoundingClientRect();
+        return (
+            r.top >= 0 &&
+            r.left >= 0 &&
+            r.bottom <= (doc.innerHeight || html.clientHeight) &&
+            r.right <= (doc.innerWidth || html.clientWidth)
+        );
       };
       $scope.validateRegistration = function(rsp) {
         // don't be annoying
@@ -195,6 +221,7 @@
             $anchorScroll();
           }, 1000);
         }
+        myInViewHandler();
         var url = $window.location.href;
         url = url.replace('sfs=true', '')
           .replace('siteid=' + gsnApi.getChainId(), '')

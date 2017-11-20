@@ -113,9 +113,11 @@
     selector: 'meta[itemprop="description"]',
     html: '<meta itemprop="description" name="twitter:description" property="og:description"/>',
     get: function(e) {
+      angular.element('head > meta[name="description"]').attr('content');
       return e.attr('content');
     },
     set: function(e, v) {
+      angular.element('head > meta[name="description"]').attr('content', v);
       return e.attr('content', v);
     }
   });

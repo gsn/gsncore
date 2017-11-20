@@ -138,6 +138,8 @@
       ($rootScope.gvm || {}).adsCollapsed = false;
       bricktag.refresh(service.actionParam, service.forceRefresh);
       service.forceRefresh = false;
+
+      $rootScope.$broadcast('gsnevent:inview');
     }
 
     return service;

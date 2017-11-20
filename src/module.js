@@ -38,6 +38,7 @@
 
       $rootScope.siteMenu = gsnApi.getConfig().SiteMenu;
       $rootScope.win = $window;
+
       gsnGlobal.init(true);
     }]);
 
@@ -808,6 +809,17 @@
 
       returnObj.logOut();
       returnObj.reload();
+    });
+
+    $rootScope.$on('gsnevent:inview', function() {
+      $timeout(function() {
+        angular.forEach(angular.element('.inview-yes'), function(value){
+          var item = angular.element(value);
+          if (item[0] && typeof(item[0].doRefresh) === 'function') {
+            item[0].doRefresh();
+          }
+        });
+      }, 50);
     });
     //#endregion
 
