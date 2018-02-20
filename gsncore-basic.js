@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.11.44
+ * version 1.11.45
  * gsncore repository
- * Build date: Tue Feb 20 2018 14:53:57 GMT-0600 (CST)
+ * Build date: Tue Feb 20 2018 14:54:50 GMT-0600 (CST)
  */
 (function() {
   'use strict';
