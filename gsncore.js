@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.11.50
+ * version 1.11.54
  * gsncore repository
- * Build date: Tue Feb 20 2018 15:54:59 GMT-0600 (CST)
+ * Build date: Tue Feb 20 2018 16:34:20 GMT-0600 (CST)
  */
 (function() {
   'use strict';
@@ -6522,24 +6522,28 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
           betterStorage.storeList = stores;
         }
       }
-      var search = $location.search();
-      var selectFirstStore = gsnApi.getConfig().isPrerender || search.sfs || search.selectFirstStore || search.selectfirststore;
       storeList = gsnApi.isNull(storeList, []);
-      var storeByNumber = gsnApi.mapObject(storeList, 'StoreNumber');
-      if (storeList.length === 1 || selectFirstStore) {
-        if (storeList[0].StoreId !== gsnApi.isNull(gsnApi.getSelectedStoreId(), 0)) {
-          gsnApi.setSelectedStoreId(storeList[0].StoreId);
-        }
-      } else if (search.storeid) {
+      var search = $location.search(),
+        storeByNumber = gsnApi.mapObject(storeList, 'StoreNumber'),
+        storeSelected = false;
+
+      if (search.storeid) {
         var storeById = gsnApi.mapObject(storeList, 'StoreId');
         gsnApi.setSelectedStoreId(storeById[search.storeid].StoreId);
+        storeSelected = true;
       } else if (search.storenbr) {
         gsnApi.setSelectedStoreId(storeByNumber[search.storenbr].StoreId);
+        storeSelected = true;
       } else if (search.store) {
         var storeByUrl = gsnApi.mapObject(storeList, 'StoreUrl');
         if (storeByNumber[search.store]) {
           gsnApi.setSelectedStoreId(storeByNumber[search.store].StoreId);
+          storeSelected = true;
         }
+      }
+
+      if (!storeSelected && storeList.length === 1 && gsnApi.getConfig().isPrerender) {
+        gsnApi.setSelectedStoreId(storeList[0].StoreId);
       }
     }
 
