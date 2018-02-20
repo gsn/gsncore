@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.11.48
+ * version 1.11.50
  * gsncore repository
- * Build date: Tue Feb 20 2018 15:47:28 GMT-0600 (CST)
+ * Build date: Tue Feb 20 2018 15:54:59 GMT-0600 (CST)
  */
 (function() {
   'use strict';
@@ -11834,6 +11834,10 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
           // set viewBox
           img = angular.element(attrs.gsnSvgImage);
           svg = img.parent('svg');
+          if (svg.length <= 0) {
+            return;
+          }
+
           // append Image
           svg[0].setAttributeNS('', 'viewBox', '0 0 ' + width + ' ' + height + '');
           img.attr('width', width).attr('height', height).attr('xlink:href', attrs.src);
