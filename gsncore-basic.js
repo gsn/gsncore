@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.11.45
+ * version 1.11.50
  * gsncore repository
- * Build date: Tue Feb 20 2018 14:54:50 GMT-0600 (CST)
+ * Build date: Tue Feb 20 2018 15:54:59 GMT-0600 (CST)
  */
 (function() {
   'use strict';
@@ -2395,14 +2395,20 @@
       };
       $scope.getSharePath = function(params) {
         var query = $location.search(),
-          storeId = gsnApi.isNull(gsnApi.getSelectedStoreId(), 0);
+          storeId = gsnApi.isNull(gsnApi.getSelectedStoreId(), 0),
+          cpath = $scope.currentPath || '';
         params = params || {};
         angular.copy(query, params);
-        if (storeId > 0)  {
+        if (storeId > 0 && cpath.length > 2 && cpath.indexOf('recipe') < 0)  {
           params.storeid = storeId;
         }
 
-        return gsnApi.getFullPath($scope.currentPath + '?' + gsnApi.params(params));
+        params = gsnApi.params(params) || '';
+        if (params) {
+          params = '?' + params;
+        }
+
+        return gsnApi.getFullPath(cpath + params);
       };
       $scope.doToggleCartItem = function(evt, item, linkedItem) {
         /// <summary>Toggle the shoping list item checked state</summary>
@@ -6243,7 +6249,7 @@
   module = angular.module('gsn.core');
 
   createDirective = function(name) {
-    return module.directive(name, ['gsnStore', 'gsnApi', 'debounce', '$compile', function(gsnStore, gsnApi, debounce, $compile) {
+    return module.directive(name, ['gsnStore', 'gsnApi', 'debounce', '$compile', '$analytics', function(gsnStore, gsnApi, debounce, $compile, $analytics) {
       return {
         restrict: 'AC',
         scope: true,
@@ -6253,15 +6259,33 @@
           if (attrs.contentPosition) {
             var dynamicData = gsnApi.parseStoreSpecificContent(gsnApi.getHomeData().ContentData[attrs.contentPosition]);
             if (dynamicData && dynamicData.Description) {
+              // track click
+              angular.element(element).bind('click', function() {
+                // track content click
+                $analytics.eventTrack('content-click', {
+                  category: 'block-' + attrs.contentPosition,
+                  label: dynamicData.Headline
+                });
+              });
               if (!attrs.inview) {
                 element.html(dynamicData.Description);
                 $compile(element.contents())(scope);
+                // track content refresh
+                $analytics.eventTrack('content-imp', {
+                  category: 'block-' + attrs.contentPosition,
+                  label: dynamicData.Headline
+                });
                 return;
               }
               else {
                 element[0].doRefresh = debounce(function() {
                   element.html(dynamicData.Description);
                   $compile(element.contents())(scope);
+                  // track content refresh
+                  $analytics.eventTrack('content-imp', {
+                    category: 'block-' + attrs.contentPosition,
+                    label: dynamicData.Headline
+                  });
                 }, 2000, true);
                 return;
               }
@@ -7745,6 +7769,10 @@
           // set viewBox
           img = angular.element(attrs.gsnSvgImage);
           svg = img.parent('svg');
+          if (svg.length <= 0) {
+            return;
+          }
+
           // append Image
           svg[0].setAttributeNS('', 'viewBox', '0 0 ' + width + ' ' + height + '');
           img.attr('width', width).attr('height', height).attr('xlink:href', attrs.src);

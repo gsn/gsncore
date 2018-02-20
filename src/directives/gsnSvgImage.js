@@ -31,6 +31,10 @@
           // set viewBox
           img = angular.element(attrs.gsnSvgImage);
           svg = img.parent('svg');
+          if (svg.length <= 0) {
+            return;
+          }
+
           // append Image
           svg[0].setAttributeNS('', 'viewBox', '0 0 ' + width + ' ' + height + '');
           img.attr('width', width).attr('height', height).attr('xlink:href', attrs.src);

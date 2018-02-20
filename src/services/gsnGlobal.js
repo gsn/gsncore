@@ -182,14 +182,20 @@
       };
       $scope.getSharePath = function(params) {
         var query = $location.search(),
-          storeId = gsnApi.isNull(gsnApi.getSelectedStoreId(), 0);
+          storeId = gsnApi.isNull(gsnApi.getSelectedStoreId(), 0),
+          cpath = $scope.currentPath || '';
         params = params || {};
         angular.copy(query, params);
-        if (storeId > 0)  {
+        if (storeId > 0 && cpath.length > 2 && cpath.indexOf('recipe') < 0)  {
           params.storeid = storeId;
         }
 
-        return gsnApi.getFullPath($scope.currentPath + '?' + gsnApi.params(params));
+        params = gsnApi.params(params) || '';
+        if (params) {
+          params = '?' + params;
+        }
+
+        return gsnApi.getFullPath(cpath + params);
       };
       $scope.doToggleCartItem = function(evt, item, linkedItem) {
         /// <summary>Toggle the shoping list item checked state</summary>

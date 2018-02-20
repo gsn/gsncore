@@ -4,7 +4,7 @@
   module = angular.module('gsn.core');
 
   createDirective = function(name) {
-    return module.directive(name, ['gsnStore', 'gsnApi', 'debounce', '$compile', function(gsnStore, gsnApi, debounce, $compile) {
+    return module.directive(name, ['gsnStore', 'gsnApi', 'debounce', '$compile', '$analytics', function(gsnStore, gsnApi, debounce, $compile, $analytics) {
       return {
         restrict: 'AC',
         scope: true,
@@ -14,15 +14,33 @@
           if (attrs.contentPosition) {
             var dynamicData = gsnApi.parseStoreSpecificContent(gsnApi.getHomeData().ContentData[attrs.contentPosition]);
             if (dynamicData && dynamicData.Description) {
+              // track click
+              angular.element(element).bind('click', function() {
+                // track content click
+                $analytics.eventTrack('content-click', {
+                  category: 'block-' + attrs.contentPosition,
+                  label: dynamicData.Headline
+                });
+              });
               if (!attrs.inview) {
                 element.html(dynamicData.Description);
                 $compile(element.contents())(scope);
+                // track content refresh
+                $analytics.eventTrack('content-imp', {
+                  category: 'block-' + attrs.contentPosition,
+                  label: dynamicData.Headline
+                });
                 return;
               }
               else {
                 element[0].doRefresh = debounce(function() {
                   element.html(dynamicData.Description);
                   $compile(element.contents())(scope);
+                  // track content refresh
+                  $analytics.eventTrack('content-imp', {
+                    category: 'block-' + attrs.contentPosition,
+                    label: dynamicData.Headline
+                  });
                 }, 2000, true);
                 return;
               }
