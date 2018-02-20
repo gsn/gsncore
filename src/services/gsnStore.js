@@ -380,23 +380,29 @@
         }
       }
       var search = $location.search();
-      var selectFirstStore = gsnApi.getConfig().isPrerender || search.sfs || search.selectFirstStore || search.selectfirststore;
+      var selectFirstStore = gsnApi.getConfig().isPrerender;
+
       storeList = gsnApi.isNull(storeList, []);
-      var storeByNumber = gsnApi.mapObject(storeList, 'StoreNumber');
-      if (storeList.length === 1 || selectFirstStore) {
-        if (storeList[0].StoreId !== gsnApi.isNull(gsnApi.getSelectedStoreId(), 0)) {
-          gsnApi.setSelectedStoreId(storeList[0].StoreId);
-        }
-      } else if (search.storeid) {
+      var storeByNumber = gsnApi.mapObject(storeList, 'StoreNumber'),
+        storeSelected = false;
+
+      if (search.storeid) {
         var storeById = gsnApi.mapObject(storeList, 'StoreId');
         gsnApi.setSelectedStoreId(storeById[search.storeid].StoreId);
+        storeSelected = true;
       } else if (search.storenbr) {
         gsnApi.setSelectedStoreId(storeByNumber[search.storenbr].StoreId);
+        storeSelected = true;
       } else if (search.store) {
         var storeByUrl = gsnApi.mapObject(storeList, 'StoreUrl');
         if (storeByNumber[search.store]) {
           gsnApi.setSelectedStoreId(storeByNumber[search.store].StoreId);
+          storeSelected = true;
         }
+      }
+
+      if (!storeSelected && storeList.length === 1 && gsnApi.getConfig().isPrerender) {
+        gsnApi.setSelectedStoreId(storeList[0].StoreId);
       }
     }
 
