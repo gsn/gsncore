@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.11.53
+ * version 1.11.54
  * gsncore repository
- * Build date: Tue Feb 20 2018 16:33:31 GMT-0600 (CST)
+ * Build date: Tue Feb 20 2018 16:34:20 GMT-0600 (CST)
  */
 (function() {
   'use strict';
@@ -4585,11 +4585,9 @@
           betterStorage.storeList = stores;
         }
       }
-      var search = $location.search();
-      var selectFirstStore = gsnApi.getConfig().isPrerender;
-
       storeList = gsnApi.isNull(storeList, []);
-      var storeByNumber = gsnApi.mapObject(storeList, 'StoreNumber'),
+      var search = $location.search(),
+        storeByNumber = gsnApi.mapObject(storeList, 'StoreNumber'),
         storeSelected = false;
 
       if (search.storeid) {

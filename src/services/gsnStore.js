@@ -379,11 +379,9 @@
           betterStorage.storeList = stores;
         }
       }
-      var search = $location.search();
-      var selectFirstStore = gsnApi.getConfig().isPrerender;
-
       storeList = gsnApi.isNull(storeList, []);
-      var storeByNumber = gsnApi.mapObject(storeList, 'StoreNumber'),
+      var search = $location.search(),
+        storeByNumber = gsnApi.mapObject(storeList, 'StoreNumber'),
         storeSelected = false;
 
       if (search.storeid) {
