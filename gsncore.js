@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.11.43
+ * version 1.11.44
  * gsncore repository
- * Build date: Tue Feb 20 2018 14:42:57 GMT-0600 (CST)
+ * Build date: Tue Feb 20 2018 14:53:57 GMT-0600 (CST)
  */
 (function() {
   'use strict';
@@ -4601,6 +4601,8 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       $scope.$on('gsnevent:gsnmodal-hide', gsnModalTracking);
       $scope.$on('gsnevent:gsnmodal-show', gsnModalTracking);
       //#endregion
+
+      gsnApi.getSharePath = $scope.getSharePath;
     } // init
   }
 })(angular);

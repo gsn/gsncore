@@ -451,6 +451,8 @@
       $scope.$on('gsnevent:gsnmodal-hide', gsnModalTracking);
       $scope.$on('gsnevent:gsnmodal-show', gsnModalTracking);
       //#endregion
+
+      gsnApi.getSharePath = $scope.getSharePath;
     } // init
   }
 })(angular);
