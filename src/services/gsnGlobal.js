@@ -181,9 +181,14 @@
         return angular.element('title').text();
       };
       $scope.getSharePath = function(params) {
-        var query = $location.search();
+        var query = $location.search(),
+          storeId = gsnApi.isNull(gsnApi.getSelectedStoreId(), 0);
         params = params || {};
         angular.copy(query, params);
+        if (storeId > 0)  {
+          params.storeid = storeId;
+        }
+
         return gsnApi.getFullPath($scope.currentPath + '?' + gsnApi.params(params));
       };
       $scope.doToggleCartItem = function(evt, item, linkedItem) {
@@ -446,6 +451,8 @@
       $scope.$on('gsnevent:gsnmodal-hide', gsnModalTracking);
       $scope.$on('gsnevent:gsnmodal-show', gsnModalTracking);
       //#endregion
+
+      gsnApi.getSharePath = $scope.getSharePath;
     } // init
   }
 })(angular);
