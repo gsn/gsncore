@@ -83,8 +83,7 @@
         return (
             r.top >= 0 &&
             r.left >= 0 &&
-            r.bottom <= (doc.innerHeight || html.clientHeight) &&
-            r.right <= (doc.innerWidth || html.clientWidth)
+            r.bottom <= (doc.innerHeight || html.clientHeight)
         );
       };
       $scope.validateRegistration = function(rsp) {

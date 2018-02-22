@@ -761,7 +761,7 @@
       if (configData) {
         var layoutConfig = configData.layout;
         if (layoutConfig) {
-          $rootScope.defaultLayout = gsn.getThemeUrl('/views/layout' + layoutConfig.Description + '/layout.html');
+          $rootScope.defaultLayout = gsn.getThemeUrl('/views/layouts/' + layoutConfig.Description + '.html');
         }
       }
 

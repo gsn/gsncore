@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.11.54
+ * version 1.11.55
  * gsncore repository
- * Build date: Tue Feb 20 2018 16:34:20 GMT-0600 (CST)
+ * Build date: Thu Feb 22 2018 15:35:06 GMT-0600 (CST)
  */
 (function() {
   'use strict';
@@ -1472,7 +1472,7 @@
       if (configData) {
         var layoutConfig = configData.layout;
         if (layoutConfig) {
-          $rootScope.defaultLayout = gsn.getThemeUrl('/views/layout' + layoutConfig.Description + '/layout.html');
+          $rootScope.defaultLayout = gsn.getThemeUrl('/views/layouts/' + layoutConfig.Description + '.html');
         }
       }
 
@@ -4233,8 +4233,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         return (
             r.top >= 0 &&
             r.left >= 0 &&
-            r.bottom <= (doc.innerHeight || html.clientHeight) &&
-            r.right <= (doc.innerWidth || html.clientWidth)
+            r.bottom <= (doc.innerHeight || html.clientHeight)
         );
       };
       $scope.validateRegistration = function(rsp) {
