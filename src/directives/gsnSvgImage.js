@@ -14,7 +14,9 @@
       var src = attrs.src,
         svg;
       var width = 0,
-        height = 0;
+        height = 0,
+        retryMax = 20,
+        retryCount = 0;
 
       function doLoadImage() {
         var $win = angular.element($window);
@@ -32,8 +34,15 @@
           img = angular.element(attrs.gsnSvgImage);
           svg = img.parent('svg');
           if (svg.length <= 0) {
+            // trigger a wait for load image
+            if (retryCount < retryMax) {
+              retryCount++;
+              $timeout(doLoadImage, 200);
+            }
             return;
           }
+
+          retryCount = 0;
 
           // append Image
           svg[0].setAttributeNS('', 'viewBox', '0 0 ' + width + ' ' + height + '');
