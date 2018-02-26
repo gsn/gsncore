@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.11.56
+ * version 1.11.57
  * gsncore repository
- * Build date: Mon Feb 26 2018 12:13:50 GMT-0600 (CST)
+ * Build date: Mon Feb 26 2018 14:14:23 GMT-0600 (CST)
  */
 (function() {
   'use strict';
@@ -6541,7 +6541,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         }
       }
 
-      if (!storeSelected && storeList.length === 1 && gsnApi.getConfig().isPrerender) {
+      if (!storeSelected && (storeList.length === 1 || gsnApi.getConfig().isPrerender)) {
         gsnApi.setSelectedStoreId(storeList[0].StoreId);
       }
     }

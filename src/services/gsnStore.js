@@ -399,7 +399,7 @@
         }
       }
 
-      if (!storeSelected && storeList.length === 1 && gsnApi.getConfig().isPrerender) {
+      if (!storeSelected && (storeList.length === 1 || gsnApi.getConfig().isPrerender)) {
         gsnApi.setSelectedStoreId(storeList[0].StoreId);
       }
     }
