@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.11.55
+ * version 1.11.56
  * gsncore repository
- * Build date: Thu Feb 22 2018 15:35:06 GMT-0600 (CST)
+ * Build date: Mon Feb 26 2018 12:13:50 GMT-0600 (CST)
  */
 (function() {
   'use strict';
@@ -7755,7 +7755,9 @@
       var src = attrs.src,
         svg;
       var width = 0,
-        height = 0;
+        height = 0,
+        retryMax = 20,
+        retryCount = 0;
 
       function doLoadImage() {
         var $win = angular.element($window);
@@ -7773,8 +7775,15 @@
           img = angular.element(attrs.gsnSvgImage);
           svg = img.parent('svg');
           if (svg.length <= 0) {
+            // trigger a wait for load image
+            if (retryCount < retryMax) {
+              retryCount++;
+              $timeout(doLoadImage, 200);
+            }
             return;
           }
+
+          retryCount = 0;
 
           // append Image
           svg[0].setAttributeNS('', 'viewBox', '0 0 ' + width + ' ' + height + '');
