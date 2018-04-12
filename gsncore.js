@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.11.57
+ * version 1.11.58
  * gsncore repository
- * Build date: Mon Feb 26 2018 14:14:23 GMT-0600 (CST)
+ * Build date: Thu Apr 12 2018 13:26:10 GMT-0500 (Central Daylight Time)
  */
 (function() {
   'use strict';
@@ -7171,8 +7171,35 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       $scope.$emit('gsnevent:closemodal');
       $scope.goUrl('/recipe/search?q=' + encodeURIComponent(resultString));
     };
-  }
+	
+	$scope.doRecipeSearchNew = function() {
+      var search = $scope.recipeSearch,
+        attributes = '',
+        resultString = '';
 
+      if (gsnApi.isNull(search.term, '').length > 0) {
+        resultString += 'SearchTerm:' + gsnApi.isNull(search.term, '') + ';';
+      }
+      if (gsnApi.isNull(search.preptime, '').length > 0) {
+        resultString += 'Time:' + gsnApi.isNull(search.preptime, '') + ';';
+      }
+      if (gsnApi.isNull(search.skilllevel, '').length > 0) {
+        resultString += 'SkillLevelList:|' + gsnApi.isNull(search.skilllevel, '') + '|;';
+      }
+
+      angular.forEach(search.attrib, function(value, key) {
+        if (gsnApi.isNull(value, '').length > 0) {
+          attributes += value + '|';
+        }
+      });
+      if (gsnApi.isNull(attributes, '').length > 0) {
+        resultString += 'AttributeList:|' + gsnApi.isNull(attributes, '') + ';';
+      }
+
+      $scope.$emit('gsnevent:closemodal');
+      $scope.goUrl('/recipesearch?q=' + encodeURIComponent(resultString));
+    };
+  }
 })(angular);
 
 (function(angular, undefined) {
@@ -9931,6 +9958,50 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
   'use strict';
   var myModule = angular.module('gsn.core');
 
+  myModule.directive('gsnAddHead', ['$window', '$timeout', 'gsnApi', function($window, $timeout, gsnApi) {
+    // Usage:   Add element to head
+    //
+    // Creates: 2014-01-06
+    //
+    /* <div gsn-add-head="meta" data-attributes="{'content': ''}"></div>
+     */
+    var directive = {
+      link: link,
+      restrict: 'A',
+      scope: true
+    };
+    return directive;
+
+    function link(scope, element, attrs) {
+      var elId = 'dynamic-' + (new Date().getTime());
+
+      function activate() {
+        var options = attrs.attributes;
+        var el = angular.element('<' + attrs.gsnAddHead + '>');
+        if (options) {
+          var myAttrs = scope.$eval(options);
+          el.attr('id', elId);
+          angular.forEach(myAttrs, function(v, k) {
+            el.attr(k, v);
+          });
+        }
+
+        angular.element('head')[0].appendChild(el[0]);
+
+        scope.$on('$destroy', function() {
+          angular.element('#' + elId).remove();
+        });
+      }
+
+      activate();
+    }
+  }]);
+})(angular);
+
+(function(angular, undefined) {
+  'use strict';
+  var myModule = angular.module('gsn.core');
+
   myModule.directive('gsnAdUnit', ['gsnStore', '$timeout', 'gsnApi', '$rootScope', '$http', '$templateCache', '$interpolate', function(gsnStore, $timeout, gsnApi, $rootScope, $http, $templateCache, $interpolate) {
     // Usage: create an adunit and trigger ad refresh
     //
@@ -9981,50 +10052,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
           $rootScope.$broadcast('gsnevent:loadads');
         }
       }
-    }
-  }]);
-})(angular);
-
-(function(angular, undefined) {
-  'use strict';
-  var myModule = angular.module('gsn.core');
-
-  myModule.directive('gsnAddHead', ['$window', '$timeout', 'gsnApi', function($window, $timeout, gsnApi) {
-    // Usage:   Add element to head
-    //
-    // Creates: 2014-01-06
-    //
-    /* <div gsn-add-head="meta" data-attributes="{'content': ''}"></div>
-     */
-    var directive = {
-      link: link,
-      restrict: 'A',
-      scope: true
-    };
-    return directive;
-
-    function link(scope, element, attrs) {
-      var elId = 'dynamic-' + (new Date().getTime());
-
-      function activate() {
-        var options = attrs.attributes;
-        var el = angular.element('<' + attrs.gsnAddHead + '>');
-        if (options) {
-          var myAttrs = scope.$eval(options);
-          el.attr('id', elId);
-          angular.forEach(myAttrs, function(v, k) {
-            el.attr(k, v);
-          });
-        }
-
-        angular.element('head')[0].appendChild(el[0]);
-
-        scope.$on('$destroy', function() {
-          angular.element('#' + elId).remove();
-        });
-      }
-
-      activate();
     }
   }]);
 })(angular);
