@@ -340,11 +340,10 @@
 
     $scope.selectStore = function(marker, reload) {
       $scope.gvm.reloadOnStoreSelection = reload;
-      gsnApi.setSelectedStoreId(marker.location.StoreId);
       if (gsnApi.isNull($location.search().show, '') === 'event') {
-        $location.url($scope.decodeServerUrl(marker.location.Redirect));
+        gsnApi.setSelectedStoreId(marker.location.StoreId, $scope.decodeServerUrl(marker.location.Redirect));
       } else if (gsnApi.isNull($location.search().fromUrl, '').length > 0) {
-        $location.url($location.search().fromUrl);
+        gsnApi.setSelectedStoreId(marker.location.StoreId, $location.search().fromUrl);
       }
     };
 
