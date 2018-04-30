@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.11.57
+ * version 1.11.58
  * gsncore repository
- * Build date: Mon Feb 26 2018 14:14:23 GMT-0600 (CST)
+ * Build date: Mon Apr 30 2018 10:00:44 GMT-0500 (CDT)
  */
 (function() {
   'use strict';
@@ -7171,8 +7171,35 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       $scope.$emit('gsnevent:closemodal');
       $scope.goUrl('/recipe/search?q=' + encodeURIComponent(resultString));
     };
-  }
+	
+	$scope.doRecipeSearchNew = function() {
+      var search = $scope.recipeSearch,
+        attributes = '',
+        resultString = '';
 
+      if (gsnApi.isNull(search.term, '').length > 0) {
+        resultString += 'SearchTerm:' + gsnApi.isNull(search.term, '') + ';';
+      }
+      if (gsnApi.isNull(search.preptime, '').length > 0) {
+        resultString += 'Time:' + gsnApi.isNull(search.preptime, '') + ';';
+      }
+      if (gsnApi.isNull(search.skilllevel, '').length > 0) {
+        resultString += 'SkillLevelList:|' + gsnApi.isNull(search.skilllevel, '') + '|;';
+      }
+
+      angular.forEach(search.attrib, function(value, key) {
+        if (gsnApi.isNull(value, '').length > 0) {
+          attributes += value + '|';
+        }
+      });
+      if (gsnApi.isNull(attributes, '').length > 0) {
+        resultString += 'AttributeList:|' + gsnApi.isNull(attributes, '') + ';';
+      }
+
+      $scope.$emit('gsnevent:closemodal');
+      $scope.goUrl('/recipesearch?q=' + encodeURIComponent(resultString));
+    };
+  }
 })(angular);
 
 (function(angular, undefined) {
@@ -9705,11 +9732,10 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
 
     $scope.selectStore = function(marker, reload) {
       $scope.gvm.reloadOnStoreSelection = reload;
-      gsnApi.setSelectedStoreId(marker.location.StoreId);
       if (gsnApi.isNull($location.search().show, '') === 'event') {
-        $location.url($scope.decodeServerUrl(marker.location.Redirect));
+        gsnApi.setSelectedStoreId(marker.location.StoreId, $scope.decodeServerUrl(marker.location.Redirect));
       } else if (gsnApi.isNull($location.search().fromUrl, '').length > 0) {
-        $location.url($location.search().fromUrl);
+        gsnApi.setSelectedStoreId(marker.location.StoreId, $location.search().fromUrl);
       }
     };
 
