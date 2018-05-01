@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.11.58
+ * version 1.11.59
  * gsncore repository
- * Build date: Mon Apr 30 2018 10:00:44 GMT-0500 (CDT)
+ * Build date: Tue May 01 2018 09:27:58 GMT-0500 (CDT)
  */
 (function() {
   'use strict';
@@ -9720,14 +9720,8 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       }
     };
 
-    $scope.viewEvents = function(marker) {
-      gsnApi.setSelectedStoreId(marker.location.StoreId);
-      $location.path($scope.decodeServerUrl(marker.location.Redirect));
-    };
-
     $scope.viewSpecials = function(marker) {
-      gsnApi.setSelectedStoreId(marker.location.StoreId);
-      $location.url('/circular');
+      gsnApi.setSelectedStoreId(marker.location.StoreId, '/circular');
     };
 
     $scope.selectStore = function(marker, reload) {
@@ -9736,6 +9730,9 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         gsnApi.setSelectedStoreId(marker.location.StoreId, $scope.decodeServerUrl(marker.location.Redirect));
       } else if (gsnApi.isNull($location.search().fromUrl, '').length > 0) {
         gsnApi.setSelectedStoreId(marker.location.StoreId, $location.search().fromUrl);
+      }
+      else {
+        gsnApi.setSelectedStoreId(marker.location.StoreId);
       }
     };
 
