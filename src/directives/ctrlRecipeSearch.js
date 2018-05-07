@@ -30,7 +30,7 @@
 
     $scope.totalItems = 500;
     $scope.currentPage = 1;
-    $scope.itemsPerPage = 25;
+    $scope.itemsPerPage = 24;
 
     function activate() {
       var search = gsnApi.isNull($routeParams.q, '');
