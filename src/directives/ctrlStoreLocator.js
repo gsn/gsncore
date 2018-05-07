@@ -340,7 +340,7 @@
         gsnApi.setSelectedStoreId(marker.location.StoreId, $location.search().fromUrl);
       }
       else {
-        gsnApi.setSelectedStoreId(marker.location.StoreId);
+        gsnApi.setSelectedStoreId(marker.location.StoreId,'/');
       }
     };
 
