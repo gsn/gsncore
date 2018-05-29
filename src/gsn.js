@@ -440,7 +440,7 @@
       });
 
       // send to all classic analytic named trackers
-      if (typeof (root.ga) !== 'undefined') {
+      if (typeof (root.ga) !== 'undefined' && root.ga.getAll) {
         var trackers = root.ga.getAll();
 
         gsn.forEach(trackers, function(tracker) {
@@ -481,7 +481,7 @@
       });
 
       // send to all classic analytic named trackers
-      if (typeof (root.ga) !== 'undefined') {
+      if (typeof (root.ga) !== 'undefined' && root.ga.getAll) {
         var trackers = root.ga.getAll();
 
         gsn.forEach(trackers, function(tracker) {

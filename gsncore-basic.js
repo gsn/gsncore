@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.12.0
+ * version 1.12.1
  * gsncore repository
- * Build date: Tue May 29 2018 14:31:40 GMT-0500 (CDT)
+ * Build date: Tue May 29 2018 14:38:23 GMT-0500 (CDT)
  */
 (function() {
   'use strict';
@@ -446,7 +446,7 @@
       });
 
       // send to all classic analytic named trackers
-      if (typeof (root.ga) !== 'undefined') {
+      if (typeof (root.ga) !== 'undefined' && root.ga.getAll) {
         var trackers = root.ga.getAll();
 
         gsn.forEach(trackers, function(tracker) {
@@ -487,7 +487,7 @@
       });
 
       // send to all classic analytic named trackers
-      if (typeof (root.ga) !== 'undefined') {
+      if (typeof (root.ga) !== 'undefined' && root.ga.getAll) {
         var trackers = root.ga.getAll();
 
         gsn.forEach(trackers, function(tracker) {
