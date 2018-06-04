@@ -74,6 +74,7 @@
     ChainId: 0,
     ChainName: 'Brick, Inc.',
     GoogleAnalyticAccountId1: null,
+    GoogleAnalyticAccountId2: null,
     RegistrationFromEmailAddress: 'tech@grocerywebsites.com',
     RegistrationEmailLogo: null,
     FacebookAppId: null,
@@ -428,39 +429,32 @@
       $analyticsProvider.settings.trackRelativePath = true;
     }
 
-    var firstTracker = (gsn.isNull(gsn.config.GoogleAnalyticAccountId1, '').length > 0);
-    var secondTracker = (gsn.isNull(gsn.config.GoogleAnalyticAccountId2, '').length > 0);
-
-    if (root.ga) {
-      // creating google analytic object
-      if (firstTracker) {
-        root.ga('create', gsn.config.GoogleAnalyticAccountId1, 'auto');
-
-        if (secondTracker) {
-          root.ga('create', gsn.config.GoogleAnalyticAccountId2, 'auto', {
-            'name': 'trackerTwo'
-          });
-        }
-      } else if (secondTracker) {
-        secondTracker = false;
-        root.ga('create', gsn.config.GoogleAnalyticAccountId2, 'auto');
-      }
-
-      // enable demographic
-      root.ga('require', 'displayfeatures');
-    }
-
     // GA already supports buffered invocations so we don't need
     // to wrap these inside angulartics.waitForVendorApi
-
     $analyticsProvider.registerPageTrack(function(path) {
-      // begin tracking
-      if (root.ga) {
-        root.ga('send', 'pageview', path);
+      var dataLayer = root.dataLayer || [];
+      // use gtag logic allow pushing data to both gtag and GTM
+      var gtag = root.gtag || function () {dataLayer.push(arguments);};
 
-        if (secondTracker) {
-          root.ga('trackerTwo.send', 'pageview', path);
-        }
+      if (gsn.config.GoogleAnalyticAccountId1) {
+        gtag('config', gsn.config.GoogleAnalyticAccountId1, {
+          'page_path': path
+        });
+      }
+
+      if (gsn.config.GoogleAnalyticAccountId2) {
+        gtag('config', gsn.config.GoogleAnalyticAccountId2, {
+          'page_path': path
+        });
+      }
+
+      // send to all classic analytic named trackers
+      if (typeof (root.ga) !== 'undefined' && root.ga.getAll) {
+        var trackers = root.ga.getAll();
+
+        gsn.forEach(trackers, function(tracker) {
+          root.ga(tracker.get('name') + '.send', 'pageview', path);
+        });
       }
     });
 
@@ -484,14 +478,24 @@
         properties.value = isNaN(parsed) ? 0 : parsed;
       }
 
-      if (root.ga) {
-        root.ga('send', 'event', properties.category, action, properties.label, properties.value, {
-          nonInteraction: 1
-        });
+      var evt = properties;
+      var dataLayer = root.dataLayer || [];
+      // use gtag logic allow pushing data to both gtag and GTM
+      var gtag = root.gtag || function () {dataLayer.push(arguments);};
 
-        if (secondTracker) {
-          root.ga('trackerTwo.send', 'event', properties.category, action, properties.label, properties.value);
-        }
+      gtag('event', action, {
+        'event_category': evt.category,
+        'event_label': evt.label,
+        'value': evt.value
+      });
+
+      // send to all classic analytic named trackers
+      if (typeof (root.ga) !== 'undefined' && root.ga.getAll) {
+        var trackers = root.ga.getAll();
+
+        gsn.forEach(trackers, function(tracker) {
+          root.ga(tracker.get('name') + '.send', 'event', evt.category, action, evt.label, evt.value);
+        });
       }
     });
   };

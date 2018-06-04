@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.11.61
+ * version 1.12.2
  * gsncore repository
- * Build date: Mon May 07 2018 12:57:00 GMT-0500 (Central Daylight Time)
+ * Build date: Mon Jun 04 2018 11:20:14 GMT-0500 (CDT)
  */
 (function() {
   'use strict';
@@ -80,6 +80,7 @@
     ChainId: 0,
     ChainName: 'Brick, Inc.',
     GoogleAnalyticAccountId1: null,
+    GoogleAnalyticAccountId2: null,
     RegistrationFromEmailAddress: 'tech@grocerywebsites.com',
     RegistrationEmailLogo: null,
     FacebookAppId: null,
@@ -434,39 +435,32 @@
       $analyticsProvider.settings.trackRelativePath = true;
     }
 
-    var firstTracker = (gsn.isNull(gsn.config.GoogleAnalyticAccountId1, '').length > 0);
-    var secondTracker = (gsn.isNull(gsn.config.GoogleAnalyticAccountId2, '').length > 0);
-
-    if (root.ga) {
-      // creating google analytic object
-      if (firstTracker) {
-        root.ga('create', gsn.config.GoogleAnalyticAccountId1, 'auto');
-
-        if (secondTracker) {
-          root.ga('create', gsn.config.GoogleAnalyticAccountId2, 'auto', {
-            'name': 'trackerTwo'
-          });
-        }
-      } else if (secondTracker) {
-        secondTracker = false;
-        root.ga('create', gsn.config.GoogleAnalyticAccountId2, 'auto');
-      }
-
-      // enable demographic
-      root.ga('require', 'displayfeatures');
-    }
-
     // GA already supports buffered invocations so we don't need
     // to wrap these inside angulartics.waitForVendorApi
-
     $analyticsProvider.registerPageTrack(function(path) {
-      // begin tracking
-      if (root.ga) {
-        root.ga('send', 'pageview', path);
+      var dataLayer = root.dataLayer || [];
+      // use gtag logic allow pushing data to both gtag and GTM
+      var gtag = root.gtag || function () {dataLayer.push(arguments);};
 
-        if (secondTracker) {
-          root.ga('trackerTwo.send', 'pageview', path);
-        }
+      if (gsn.config.GoogleAnalyticAccountId1) {
+        gtag('config', gsn.config.GoogleAnalyticAccountId1, {
+          'page_path': path
+        });
+      }
+
+      if (gsn.config.GoogleAnalyticAccountId2) {
+        gtag('config', gsn.config.GoogleAnalyticAccountId2, {
+          'page_path': path
+        });
+      }
+
+      // send to all classic analytic named trackers
+      if (typeof (root.ga) !== 'undefined' && root.ga.getAll) {
+        var trackers = root.ga.getAll();
+
+        gsn.forEach(trackers, function(tracker) {
+          root.ga(tracker.get('name') + '.send', 'pageview', path);
+        });
       }
     });
 
@@ -490,14 +484,24 @@
         properties.value = isNaN(parsed) ? 0 : parsed;
       }
 
-      if (root.ga) {
-        root.ga('send', 'event', properties.category, action, properties.label, properties.value, {
-          nonInteraction: 1
-        });
+      var evt = properties;
+      var dataLayer = root.dataLayer || [];
+      // use gtag logic allow pushing data to both gtag and GTM
+      var gtag = root.gtag || function () {dataLayer.push(arguments);};
 
-        if (secondTracker) {
-          root.ga('trackerTwo.send', 'event', properties.category, action, properties.label, properties.value);
-        }
+      gtag('event', action, {
+        'event_category': evt.category,
+        'event_label': evt.label,
+        'value': evt.value
+      });
+
+      // send to all classic analytic named trackers
+      if (typeof (root.ga) !== 'undefined' && root.ga.getAll) {
+        var trackers = root.ga.getAll();
+
+        gsn.forEach(trackers, function(tracker) {
+          root.ga(tracker.get('name') + '.send', 'event', evt.category, action, evt.label, evt.value);
+        });
       }
     });
   };
@@ -5866,50 +5870,6 @@
   'use strict';
   var myModule = angular.module('gsn.core');
 
-  myModule.directive('gsnAddHead', ['$window', '$timeout', 'gsnApi', function($window, $timeout, gsnApi) {
-    // Usage:   Add element to head
-    //
-    // Creates: 2014-01-06
-    //
-    /* <div gsn-add-head="meta" data-attributes="{'content': ''}"></div>
-     */
-    var directive = {
-      link: link,
-      restrict: 'A',
-      scope: true
-    };
-    return directive;
-
-    function link(scope, element, attrs) {
-      var elId = 'dynamic-' + (new Date().getTime());
-
-      function activate() {
-        var options = attrs.attributes;
-        var el = angular.element('<' + attrs.gsnAddHead + '>');
-        if (options) {
-          var myAttrs = scope.$eval(options);
-          el.attr('id', elId);
-          angular.forEach(myAttrs, function(v, k) {
-            el.attr(k, v);
-          });
-        }
-
-        angular.element('head')[0].appendChild(el[0]);
-
-        scope.$on('$destroy', function() {
-          angular.element('#' + elId).remove();
-        });
-      }
-
-      activate();
-    }
-  }]);
-})(angular);
-
-(function(angular, undefined) {
-  'use strict';
-  var myModule = angular.module('gsn.core');
-
   myModule.directive('gsnAdUnit', ['gsnStore', '$timeout', 'gsnApi', '$rootScope', '$http', '$templateCache', '$interpolate', function(gsnStore, $timeout, gsnApi, $rootScope, $http, $templateCache, $interpolate) {
     // Usage: create an adunit and trigger ad refresh
     //
@@ -5960,6 +5920,50 @@
           $rootScope.$broadcast('gsnevent:loadads');
         }
       }
+    }
+  }]);
+})(angular);
+
+(function(angular, undefined) {
+  'use strict';
+  var myModule = angular.module('gsn.core');
+
+  myModule.directive('gsnAddHead', ['$window', '$timeout', 'gsnApi', function($window, $timeout, gsnApi) {
+    // Usage:   Add element to head
+    //
+    // Creates: 2014-01-06
+    //
+    /* <div gsn-add-head="meta" data-attributes="{'content': ''}"></div>
+     */
+    var directive = {
+      link: link,
+      restrict: 'A',
+      scope: true
+    };
+    return directive;
+
+    function link(scope, element, attrs) {
+      var elId = 'dynamic-' + (new Date().getTime());
+
+      function activate() {
+        var options = attrs.attributes;
+        var el = angular.element('<' + attrs.gsnAddHead + '>');
+        if (options) {
+          var myAttrs = scope.$eval(options);
+          el.attr('id', elId);
+          angular.forEach(myAttrs, function(v, k) {
+            el.attr(k, v);
+          });
+        }
+
+        angular.element('head')[0].appendChild(el[0]);
+
+        scope.$on('$destroy', function() {
+          angular.element('#' + elId).remove();
+        });
+      }
+
+      activate();
     }
   }]);
 })(angular);
