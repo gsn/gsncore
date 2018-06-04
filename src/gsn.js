@@ -74,6 +74,7 @@
     ChainId: 0,
     ChainName: 'Brick, Inc.',
     GoogleAnalyticAccountId1: null,
+    GoogleAnalyticAccountId2: null,
     RegistrationFromEmailAddress: 'tech@grocerywebsites.com',
     RegistrationEmailLogo: null,
     FacebookAppId: null,
@@ -435,9 +436,17 @@
       // use gtag logic allow pushing data to both gtag and GTM
       var gtag = root.gtag || function () {dataLayer.push(arguments);};
 
-      gtag('config', gsn.config.GoogleAnalyticAccountId1, {
-        'page_path': path
-      });
+      if (gsn.config.GoogleAnalyticAccountId1) {
+        gtag('config', gsn.config.GoogleAnalyticAccountId1, {
+          'page_path': path
+        });
+      }
+
+      if (gsn.config.GoogleAnalyticAccountId2) {
+        gtag('config', gsn.config.GoogleAnalyticAccountId2, {
+          'page_path': path
+        });
+      }
 
       // send to all classic analytic named trackers
       if (typeof (root.ga) !== 'undefined' && root.ga.getAll) {
