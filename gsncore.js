@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.12.2
+ * version 1.12.3
  * gsncore repository
- * Build date: Mon Jun 04 2018 11:20:14 GMT-0500 (CDT)
+ * Build date: Mon Jun 04 2018 21:02:59 GMT-0500 (CDT)
  */
 (function() {
   'use strict';
@@ -9868,8 +9868,8 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       // do nothing
       if ($scope.useBrowserGeo) {
         // Getting User's Location Using HTML 5 Geolocation API
-        if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(function(position) {
+        if ($rootScope.win.navigator.geolocation) {
+          $rootScope.win.navigator.geolocation.getCurrentPosition(function(position) {
             $scope.vm.myIP = position.coords;
             doFilter();
           }, function(err) {
