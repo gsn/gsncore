@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.12.2
+ * version 1.12.4
  * gsncore repository
- * Build date: Mon Jun 04 2018 11:20:14 GMT-0500 (CDT)
+ * Build date: Wed Jun 06 2018 11:46:56 GMT-0500 (CDT)
  */
 (function() {
   'use strict';
@@ -9694,30 +9694,45 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       $scope.fitAllMarkers();
     };
 
+    $scope.doGoogleGeocode = function(newValue) {
+      var geocoder = new google.maps.Geocoder();
+      geocoder.geocode({
+        'address': newValue
+      }, function(results, status) {
+        if (status === google.maps.GeocoderStatus.OK) {
+          var point = new google.maps.LatLng(results[0].geometry.location.lat(), results[0].geometry.location.lng());
+          $scope.geoLocationCache[newValue] = point;
+          $scope.setSearchResult(point);
+        } else {
+          $notification.alert('Error searching for: ' + newValue);
+        }
+      });
+    };
+
     $scope.doSearch = function(isSilent) {
       $scope.searchCompleted = false;
       $scope.searchFailed = false;
-      var newValue = $scope.search.storeLocator;
+      var newValue = ($scope.search.storeLocator || '').replace(/^\s+|\s+$/g, '');
 
       if (gsnApi.isNull(newValue, '').length > 1) {
         var point = $scope.geoLocationCache[newValue];
 
         if (point) {
           $scope.setSearchResult(point);
-        } else {
+        } else if (typeof($rootScope.win.jQuery) !== 'undefined' && /\d{5}/gi.test(newValue)) {
+          $rootScope.win.jQuery.get('https://cdn.brickinc.net/zip/us/' + newValue)
+            .always(function(svresult, status, error) {
+              if (status === 'success') {
+                point = new google.maps.LatLng(svresult.lat, svresult.lng);
+                $scope.geoLocationCache[newValue] = point;
+                $scope.setSearchResult(point);
+                return;
+              }
 
-          var geocoder = new google.maps.Geocoder();
-          geocoder.geocode({
-            'address': newValue
-          }, function(results, status) {
-            if (status === google.maps.GeocoderStatus.OK) {
-              point = new google.maps.LatLng(results[0].geometry.location.lat(), results[0].geometry.location.lng());
-              $scope.geoLocationCache[newValue] = point;
-              $scope.setSearchResult(point);
-            } else {
-              $notification.alert('Error searching for: ' + newValue);
-            }
+              $scope.doGoogleGeocode(newValue);
           });
+        } else {
+          $scope.doGoogleGeocode(newValue);
         }
       } else if (!isSilent) {
         $notification.alert('Zip or City, State is required.');
@@ -9868,8 +9883,8 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       // do nothing
       if ($scope.useBrowserGeo) {
         // Getting User's Location Using HTML 5 Geolocation API
-        if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(function(position) {
+        if ($rootScope.win.navigator.geolocation) {
+          $rootScope.win.navigator.geolocation.getCurrentPosition(function(position) {
             $scope.vm.myIP = position.coords;
             doFilter();
           }, function(err) {
