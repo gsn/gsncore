@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.12.4
+ * version 1.12.5
  * gsncore repository
- * Build date: Wed Jun 06 2018 11:46:56 GMT-0500 (CDT)
+ * Build date: Tue Jun 12 2018 10:07:45 GMT-0500 (CDT)
  */
 (function() {
   'use strict';
@@ -4423,7 +4423,13 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         // handle storeRequired attribute
         if (next.storeRequired) {
           if (gsnApi.isNull(gsnApi.getSelectedStoreId(), 0) <= 0) {
-            $scope.goUrl('/storelocator?fromUrl=' + encodeURIComponent($location.url()));
+            var currentUrl = encodeURIComponent($location.url());
+            if ($scope.$win.customStoreRequired) {
+              $rootScope.$broadcast('gsnevent:store-required', currentUrl);
+            }
+            else {
+              $scope.goUrl('/storelocator?fromUrl=' + currentUrl);
+            }
             return;
           }
         }

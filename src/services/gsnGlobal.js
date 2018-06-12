@@ -269,7 +269,13 @@
         // handle storeRequired attribute
         if (next.storeRequired) {
           if (gsnApi.isNull(gsnApi.getSelectedStoreId(), 0) <= 0) {
-            $scope.goUrl('/storelocator?fromUrl=' + encodeURIComponent($location.url()));
+            var currentUrl = encodeURIComponent($location.url());
+            if ($scope.$win.customStoreRequired) {
+              $rootScope.$broadcast('gsnevent:store-required', currentUrl);
+            }
+            else {
+              $scope.goUrl('/storelocator?fromUrl=' + currentUrl);
+            }
             return;
           }
         }
