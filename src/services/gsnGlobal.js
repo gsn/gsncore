@@ -50,7 +50,8 @@
         noCircular: true,
         reloadOnStoreSelection: false,
         currentStore: {},
-        adsCollapsed: false
+        adsCollapsed: false,
+        showStoreSelectModal: false
       };
       $scope.search = {
         site: '',
@@ -270,8 +271,9 @@
         if (next.storeRequired) {
           if (gsnApi.isNull(gsnApi.getSelectedStoreId(), 0) <= 0) {
             var currentUrl = encodeURIComponent($location.url());
-            if ($scope.$win.customStoreRequired) {
-              $rootScope.$broadcast('gsnevent:store-required', currentUrl);
+            var customModal = angular.element('#storeSelectModal')[0];
+            if (customModal) {
+              $scope.gvm.showStoreSelectModal = true;
             }
             else {
               $scope.goUrl('/storelocator?fromUrl=' + currentUrl);
