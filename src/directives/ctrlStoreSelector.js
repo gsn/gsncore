@@ -82,14 +82,13 @@
       }
     });
 
-    $scope.selectStore = function(storeId, reload) {
+    $scope.selectStore = function(storeId) {
       var currentStore = $scope.vm.currentStore || {};
       if (!storeId || (currentStore.StoreId === storeId)) {
         return;
       }
 
-      $scope.gvm.reloadOnStoreSelection = reload;
-      gsnApi.setSelectedStoreId(storeId);
+      gsnApi.setSelectedStoreId(storeId, $location.url());
     };
 
     $scope.$on('gsnevent:store-setid', function(event, result) {
