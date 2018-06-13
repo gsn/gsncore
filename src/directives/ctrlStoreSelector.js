@@ -33,7 +33,7 @@
       }
 
       if (typeof(Wu) !== 'undefined') {
-        var wu = new Wu();
+        var wu = Wu;
         var myFn = wu.geoOrderByIP;
         var origin = $scope.vm.myIP || ('//cdn2.brickinc.net/geoipme/?cb=' + (new Date().getTime()));
 
