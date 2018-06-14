@@ -56,7 +56,7 @@
         // Getting User's Location Using HTML 5 Geolocation API
         if ($rootScope.win.navigator.geolocation) {
           $rootScope.win.navigator.geolocation.getCurrentPosition(function(position) {
-            $scope.vm.myIP = position.coords;
+            $scope.vm.myIP = { Latitude: position.coords.latitude, Longitude: position.coords.longitude };
             doFilter();
           }, function(err) {
             // do nothing as geoip is done by default
