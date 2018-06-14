@@ -397,6 +397,17 @@
           gsnApi.setSelectedStoreId(storeByNumber[search.store].StoreId);
           storeSelected = true;
         }
+      } else if ($rootScope.win.autoSelectStore) {
+        // select store by geoip
+        if (typeof($rootScope.win.Wu) !== 'undefined') {
+          var wu = new $rootScope.win.Wu();
+          var myFn = wu.geoOrderByIP;
+          var origin = '//cdn2.brickinc.net/geoipme/?cb=' + (new Date().getTime());
+
+          myFn.apply(wu, [storeList, origin, function(rst) {
+            gsnApi.setSelectedStoreId(rst.results[0].StoreId);
+          }]);
+        }
       }
 
       if (!storeSelected && (storeList.length === 1 || gsnApi.getConfig().isPrerender)) {

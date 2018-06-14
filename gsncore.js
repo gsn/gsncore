@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.12.10
+ * version 1.12.11
  * gsncore repository
- * Build date: Thu Jun 14 2018 09:58:53 GMT-0500 (CDT)
+ * Build date: Thu Jun 14 2018 14:51:31 GMT-0500 (CDT)
  */
 (function() {
   'use strict';
@@ -6550,6 +6550,17 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         if (storeByNumber[search.store]) {
           gsnApi.setSelectedStoreId(storeByNumber[search.store].StoreId);
           storeSelected = true;
+        }
+      } else if ($rootScope.win.autoSelectStore) {
+        // select store by geoip
+        if (typeof($rootScope.win.Wu) !== 'undefined') {
+          var wu = new $rootScope.win.Wu();
+          var myFn = wu.geoOrderByIP;
+          var origin = '//cdn2.brickinc.net/geoipme/?cb=' + (new Date().getTime());
+
+          myFn.apply(wu, [storeList, origin, function(rst) {
+            gsnApi.setSelectedStoreId(rst.results[0].StoreId);
+          }]);
         }
       }
 
