@@ -2,7 +2,7 @@
  * gsncore
  * version 1.12.11
  * gsncore repository
- * Build date: Thu Jun 14 2018 14:51:31 GMT-0500 (CDT)
+ * Build date: Thu Jun 14 2018 14:54:47 GMT-0500 (CDT)
  */
 (function() {
   'use strict';
@@ -6551,7 +6551,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
           gsnApi.setSelectedStoreId(storeByNumber[search.store].StoreId);
           storeSelected = true;
         }
-      } else if ($rootScope.win.autoSelectStore) {
+      } else if ((gsnApi.isNull(gsnApi.getSelectedStoreId(), 0) <= 0) && $rootScope.win.autoSelectStore) {
         // select store by geoip
         if (typeof($rootScope.win.Wu) !== 'undefined') {
           var wu = new $rootScope.win.Wu();
@@ -6561,6 +6561,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
           myFn.apply(wu, [storeList, origin, function(rst) {
             gsnApi.setSelectedStoreId(rst.results[0].StoreId);
           }]);
+          storeSelected = true;
         }
       }
 

@@ -397,7 +397,7 @@
           gsnApi.setSelectedStoreId(storeByNumber[search.store].StoreId);
           storeSelected = true;
         }
-      } else if ($rootScope.win.autoSelectStore) {
+      } else if ((gsnApi.isNull(gsnApi.getSelectedStoreId(), 0) <= 0) && $rootScope.win.autoSelectStore) {
         // select store by geoip
         if (typeof($rootScope.win.Wu) !== 'undefined') {
           var wu = new $rootScope.win.Wu();
@@ -407,6 +407,7 @@
           myFn.apply(wu, [storeList, origin, function(rst) {
             gsnApi.setSelectedStoreId(rst.results[0].StoreId);
           }]);
+          storeSelected = true;
         }
       }
 
