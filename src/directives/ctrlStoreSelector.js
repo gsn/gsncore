@@ -22,7 +22,7 @@
     $scope.vm = {
       storeList: [],
       currentStore: null,
-      myIP: null,
+      myIP: $rootScope.win.myGeoIP,
       stores: null
     };
 

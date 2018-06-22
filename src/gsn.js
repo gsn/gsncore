@@ -88,6 +88,22 @@
     isPrerender: /Prerender/.test(root.navigator.userAgent)
   };
 
+  gsn.doGeoIP = function() {
+    if (typeof(root.Wu) !== 'undefined') {
+      var wu = new root.Wu();
+
+      wu.geoByIP(('//cdn2.brickinc.net/geoipme/?cb=' + (new Date().getTime())), function(rst) {
+        if (rst.latitude) {
+          rst.Latitude = rst.latitude;
+          rst.Longitude = rst.longitude;
+          root.myGeoIP = rst;
+        }
+      });
+    }
+  };
+
+  gsn.doGeoIP();
+
   gsn.identity = function(value) {
     return value;
   };

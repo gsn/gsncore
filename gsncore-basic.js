@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.12.11
+ * version 1.12.12
  * gsncore repository
- * Build date: Thu Jun 14 2018 14:54:47 GMT-0500 (CDT)
+ * Build date: Fri Jun 22 2018 17:24:45 GMT-0500 (CDT)
  */
 (function() {
   'use strict';
@@ -93,6 +93,22 @@
     hasInit: false,
     isPrerender: /Prerender/.test(root.navigator.userAgent)
   };
+
+  gsn.doGeoIP = function() {
+    if (typeof(root.Wu) !== 'undefined') {
+      var wu = new root.Wu();
+
+      wu.geoByIP(('//cdn2.brickinc.net/geoipme/?cb=' + (new Date().getTime())), function(rst) {
+        if (rst.latitude) {
+          rst.Latitude = rst.latitude;
+          rst.Longitude = rst.longitude;
+          root.myGeoIP = rst;
+        }
+      });
+    }
+  };
+
+  gsn.doGeoIP();
 
   gsn.identity = function(value) {
     return value;
