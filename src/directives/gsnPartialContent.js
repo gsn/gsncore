@@ -36,7 +36,8 @@
         notFound: false,
         isLoading: true,
         layout: 'default',
-        tab: $location.search().tab || 0
+        tab: $location.search().tab || 0,
+        hasStoreSpecificContent: false
       };
       scope.partialContents = [];
       scope.contentDetail = {
@@ -70,6 +71,10 @@
                 scope.pcvm.hasScript = true;
               }
               result.push(data);
+            }
+
+            if (data.StoreIds && data.StoreIds.length > 0) {
+              $scope.pcvm.hasStoreSpecificContent = true;
             }
           }
         }

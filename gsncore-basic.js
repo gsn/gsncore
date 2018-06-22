@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.12.12
+ * version 1.12.13
  * gsncore repository
- * Build date: Fri Jun 22 2018 17:24:45 GMT-0500 (CDT)
+ * Build date: Fri Jun 22 2018 17:35:56 GMT-0500 (CDT)
  */
 (function() {
   'use strict';
@@ -6874,7 +6874,8 @@
         notFound: false,
         isLoading: true,
         layout: 'default',
-        tab: $location.search().tab || 0
+        tab: $location.search().tab || 0,
+        hasStoreSpecificContent: false
       };
       scope.partialContents = [];
       scope.contentDetail = {
@@ -6908,6 +6909,10 @@
                 scope.pcvm.hasScript = true;
               }
               result.push(data);
+            }
+
+            if (data.StoreIds && data.StoreIds.length > 0) {
+              $scope.pcvm.hasStoreSpecificContent = true;
             }
           }
         }
