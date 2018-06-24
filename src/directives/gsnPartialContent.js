@@ -74,7 +74,7 @@
             }
 
             if (data.StoreIds && data.StoreIds.length > 0) {
-              $scope.pcvm.hasStoreSpecificContent = true;
+              scope.pcvm.hasStoreSpecificContent = true;
             }
           }
         }

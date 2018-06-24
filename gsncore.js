@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.12.14
+ * version 1.12.15
  * gsncore repository
- * Build date: Sun Jun 24 2018 18:09:25 GMT-0500 (CDT)
+ * Build date: Sun Jun 24 2018 18:21:57 GMT-0500 (CDT)
  */
 (function() {
   'use strict';
@@ -11016,7 +11016,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
             }
 
             if (data.StoreIds && data.StoreIds.length > 0) {
-              $scope.pcvm.hasStoreSpecificContent = true;
+              scope.pcvm.hasStoreSpecificContent = true;
             }
           }
         }
