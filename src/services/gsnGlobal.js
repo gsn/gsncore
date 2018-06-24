@@ -51,7 +51,8 @@
         reloadOnStoreSelection: false,
         currentStore: {},
         adsCollapsed: false,
-        showStoreSelectModal: false
+        showStoreSelectModal: false,
+        isLive: gsnApi.getConfig().isLive
       };
       $scope.search = {
         site: '',

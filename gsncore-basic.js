@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.12.13
+ * version 1.12.14
  * gsncore repository
- * Build date: Fri Jun 22 2018 17:35:56 GMT-0500 (CDT)
+ * Build date: Sun Jun 24 2018 18:09:25 GMT-0500 (CDT)
  */
 (function() {
   'use strict';
@@ -91,7 +91,8 @@
     AllContent: null,
     hasStoreCoupon: false,
     hasInit: false,
-    isPrerender: /Prerender/.test(root.navigator.userAgent)
+    isPrerender: /Prerender/.test(root.navigator.userAgent),
+    isLive: ((root.location || {hostname: ''}).hostname + '').indexOf('www.') > -1
   };
 
   gsn.doGeoIP = function() {
@@ -2284,7 +2285,8 @@
         reloadOnStoreSelection: false,
         currentStore: {},
         adsCollapsed: false,
-        showStoreSelectModal: false
+        showStoreSelectModal: false,
+        isLive: gsnApi.getConfig().isLive
       };
       $scope.search = {
         site: '',

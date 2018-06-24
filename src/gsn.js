@@ -85,7 +85,8 @@
     AllContent: null,
     hasStoreCoupon: false,
     hasInit: false,
-    isPrerender: /Prerender/.test(root.navigator.userAgent)
+    isPrerender: /Prerender/.test(root.navigator.userAgent),
+    isLive: ((root.location || {hostname: ''}).hostname + '').indexOf('www.') > -1
   };
 
   gsn.doGeoIP = function() {
