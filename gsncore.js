@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.12.23
+ * version 1.12.24
  * gsncore repository
- * Build date: Mon Jun 25 2018 14:53:19 GMT-0500 (CDT)
+ * Build date: Mon Jun 25 2018 17:08:17 GMT-0500 (CDT)
  */
 (function() {
   'use strict';
@@ -9957,11 +9957,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     });
 
     $scope.selectStore = function(storeId) {
-      var currentStore = $scope.vm.currentStore || {};
-      if (!storeId || (currentStore.StoreId === storeId)) {
-        return;
-      }
-
       gsnApi.setSelectedStoreId(storeId, $location.url());
     };
 

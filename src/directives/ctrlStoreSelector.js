@@ -83,11 +83,6 @@
     });
 
     $scope.selectStore = function(storeId) {
-      var currentStore = $scope.vm.currentStore || {};
-      if (!storeId || (currentStore.StoreId === storeId)) {
-        return;
-      }
-
       gsnApi.setSelectedStoreId(storeId, $location.url());
     };
 
