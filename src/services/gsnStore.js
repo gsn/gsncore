@@ -369,10 +369,6 @@
     return returnObj;
 
     //#region helper methods
-    function autoSelectStore(storeList) {
-
-    }
-
     function parseStoreList(storeList, isRaw) {
       if (isRaw) {
         var stores = storeList;

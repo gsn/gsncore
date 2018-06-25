@@ -278,8 +278,8 @@
             }
             else {
               $scope.goUrl('/storelocator?fromUrl=' + currentUrl);
+              return;
             }
-            return;
           }
         }
 

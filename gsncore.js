@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.12.16
+ * version 1.12.17
  * gsncore repository
- * Build date: Sun Jun 24 2018 21:26:10 GMT-0500 (CDT)
+ * Build date: Mon Jun 25 2018 11:45:47 GMT-0500 (CDT)
  */
 (function() {
   'use strict';
@@ -4449,8 +4449,8 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
             }
             else {
               $scope.goUrl('/storelocator?fromUrl=' + currentUrl);
+              return;
             }
-            return;
           }
         }
 
@@ -6541,10 +6541,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     return returnObj;
 
     //#region helper methods
-    function autoSelectStore(storeList) {
-
-    }
-
     function parseStoreList(storeList, isRaw) {
       if (isRaw) {
         var stores = storeList;
@@ -11028,6 +11024,16 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
 
             if (data.StoreIds && data.StoreIds.length > 0) {
               scope.pcvm.hasStoreSpecificContent = true;
+              if (gsnApi.isNull(gsnApi.getSelectedStoreId(), 0) <= 0) {
+                var currentUrl = encodeURIComponent($location.url());
+                var customModal = angular.element('#storeSelectModal')[0];
+                if (customModal) {
+                  scope.gvm.showStoreSelectModal = true;
+                }
+                else {
+                  $scope.goUrl('/storelocator?fromUrl=' + currentUrl);
+                }
+              }
             }
           }
         }

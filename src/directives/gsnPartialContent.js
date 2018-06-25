@@ -75,6 +75,16 @@
 
             if (data.StoreIds && data.StoreIds.length > 0) {
               scope.pcvm.hasStoreSpecificContent = true;
+              if (gsnApi.isNull(gsnApi.getSelectedStoreId(), 0) <= 0) {
+                var currentUrl = encodeURIComponent($location.url());
+                var customModal = angular.element('#storeSelectModal')[0];
+                if (customModal) {
+                  scope.gvm.showStoreSelectModal = true;
+                }
+                else {
+                  $scope.goUrl('/storelocator?fromUrl=' + currentUrl);
+                }
+              }
             }
           }
         }
