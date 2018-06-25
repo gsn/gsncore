@@ -52,7 +52,7 @@
         currentStore: {},
         adsCollapsed: false,
         showStoreSelectModal: false,
-        isLive: gsnApi.getConfig().isLive
+        env: gsnApi.getConfig().env
       };
       $scope.search = {
         site: '',

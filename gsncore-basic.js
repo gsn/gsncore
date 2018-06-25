@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.12.18
+ * version 1.12.19
  * gsncore repository
- * Build date: Mon Jun 25 2018 11:46:18 GMT-0500 (CDT)
+ * Build date: Mon Jun 25 2018 12:11:15 GMT-0500 (CDT)
  */
 (function() {
   'use strict';
@@ -92,7 +92,7 @@
     hasStoreCoupon: false,
     hasInit: false,
     isPrerender: /Prerender/.test(root.navigator.userAgent),
-    isLive: ((root.location || {hostname: ''}).hostname + '').indexOf('www.') > -1
+    env: ((root.location || {hostname: ''}).hostname + '').indexOf('.brickinc.net') > 0 ? 'stg' : 'prd'
   };
 
   gsn.doGeoIP = function() {
@@ -2286,7 +2286,7 @@
         currentStore: {},
         adsCollapsed: false,
         showStoreSelectModal: false,
-        isLive: gsnApi.getConfig().isLive
+        env: gsnApi.getConfig().env
       };
       $scope.search = {
         site: '',

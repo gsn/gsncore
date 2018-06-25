@@ -86,7 +86,7 @@
     hasStoreCoupon: false,
     hasInit: false,
     isPrerender: /Prerender/.test(root.navigator.userAgent),
-    isLive: ((root.location || {hostname: ''}).hostname + '').indexOf('www.') > -1
+    env: ((root.location || {hostname: ''}).hostname + '').indexOf('.brickinc.net') > 0 ? 'stg' : 'prd'
   };
 
   gsn.doGeoIP = function() {
