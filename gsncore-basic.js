@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.12.22
+ * version 1.12.23
  * gsncore repository
- * Build date: Mon Jun 25 2018 14:11:11 GMT-0500 (CDT)
+ * Build date: Mon Jun 25 2018 14:53:19 GMT-0500 (CDT)
  */
 (function() {
   'use strict';
@@ -6912,7 +6912,7 @@
         if (partialData.ContentList) {
           for (var i = 0; i < partialData.ContentList.length; i++) {
             var data = partialData.ContentList[i];
-            if (data.StoreIds && data.StoreIds.length > 0) {
+            if (currentPath.length > 2 && data.StoreIds && data.StoreIds.length > 0) {
               scope.pcvm.hasStoreSpecificContent = true;
               if (gsnApi.isNull(gsnApi.getSelectedStoreId(), 0) <= 0) {
                 var currentUrl = encodeURIComponent($location.url());
