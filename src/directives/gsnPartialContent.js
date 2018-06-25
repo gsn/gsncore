@@ -82,7 +82,7 @@
                   scope.gvm.showStoreSelectModal = true;
                 }
                 else {
-                  $scope.goUrl('/storelocator?fromUrl=' + currentUrl);
+                  gsnApi.goUrl('/storelocator?fromUrl=' + currentUrl);
                 }
               }
             }

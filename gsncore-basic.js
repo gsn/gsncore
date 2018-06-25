@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.12.19
+ * version 1.12.21
  * gsncore repository
- * Build date: Mon Jun 25 2018 12:11:15 GMT-0500 (CDT)
+ * Build date: Mon Jun 25 2018 13:51:11 GMT-0500 (CDT)
  */
 (function() {
   'use strict';
@@ -4646,7 +4646,7 @@
 
           myFn.apply(wu, [storeList, origin, function(rst) {
             if (rst.results[0]) {
-              gsnApi.setSelectedStoreId(rst.results[0].StoreId);
+              gsnApi.setSelectedStoreId(rst.results[0].point.StoreId);
             }
           }]);
           storeSelected = true;
@@ -6929,7 +6929,7 @@
                   scope.gvm.showStoreSelectModal = true;
                 }
                 else {
-                  $scope.goUrl('/storelocator?fromUrl=' + currentUrl);
+                  gsnApi.goUrl('/storelocator?fromUrl=' + currentUrl);
                 }
               }
             }

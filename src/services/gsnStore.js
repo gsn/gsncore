@@ -411,7 +411,7 @@
 
           myFn.apply(wu, [storeList, origin, function(rst) {
             if (rst.results[0]) {
-              gsnApi.setSelectedStoreId(rst.results[0].StoreId);
+              gsnApi.setSelectedStoreId(rst.results[0].point.StoreId);
             }
           }]);
           storeSelected = true;
