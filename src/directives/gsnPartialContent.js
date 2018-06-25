@@ -64,15 +64,7 @@
         var result = [];
         if (partialData.ContentList) {
           for (var i = 0; i < partialData.ContentList.length; i++) {
-            var data = gsnApi.parseStoreSpecificContent(partialData.ContentList[i]);
-            if (data.Headline || data.SortBy) {
-              // match any script with src
-              if (/<script.+src=/gi.test(data.Description || '')) {
-                scope.pcvm.hasScript = true;
-              }
-              result.push(data);
-            }
-
+            var data = partialData.ContentList[i];
             if (data.StoreIds && data.StoreIds.length > 0) {
               scope.pcvm.hasStoreSpecificContent = true;
               if (gsnApi.isNull(gsnApi.getSelectedStoreId(), 0) <= 0) {
@@ -86,6 +78,17 @@
                 }
               }
             }
+
+            data = gsnApi.parseStoreSpecificContent(data);
+            if (data.Headline || data.SortBy) {
+              // match any script with src
+              if (/<script.+src=/gi.test(data.Description || '')) {
+                scope.pcvm.hasScript = true;
+              }
+              result.push(data);
+            }
+
+
           }
         }
         return result;
