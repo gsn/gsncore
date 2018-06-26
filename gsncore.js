@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.12.24
+ * version 1.12.25
  * gsncore repository
- * Build date: Mon Jun 25 2018 17:08:17 GMT-0500 (CDT)
+ * Build date: Tue Jun 26 2018 09:54:40 GMT-0500 (CDT)
  */
 (function() {
   'use strict';
@@ -10892,7 +10892,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       if (attrs.showIf) {
         scope.$watch(attrs.showIf, function(newValue) {
           if (newValue > 0) {
-            timeoutOfOpen = $timeout(scope.openModal, 1550);
+            timeoutOfOpen = $timeout(scope.openModal, 1050);
           }
         });
       }
@@ -10900,9 +10900,9 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       if (attrs.show) {
         scope.$watch(attrs.show, function(newValue) {
           if (newValue) {
-            timeoutOfOpen = $timeout(scope.openModal, 550);
+            timeoutOfOpen = $timeout(scope.openModal, 50);
           } else {
-            $timeout(scope.closeModal, 550);
+            $timeout(scope.closeModal, 50);
           }
         });
       }

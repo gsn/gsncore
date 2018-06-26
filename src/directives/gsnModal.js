@@ -99,7 +99,7 @@
       if (attrs.showIf) {
         scope.$watch(attrs.showIf, function(newValue) {
           if (newValue > 0) {
-            timeoutOfOpen = $timeout(scope.openModal, 1550);
+            timeoutOfOpen = $timeout(scope.openModal, 1050);
           }
         });
       }
@@ -107,9 +107,9 @@
       if (attrs.show) {
         scope.$watch(attrs.show, function(newValue) {
           if (newValue) {
-            timeoutOfOpen = $timeout(scope.openModal, 550);
+            timeoutOfOpen = $timeout(scope.openModal, 50);
           } else {
-            $timeout(scope.closeModal, 550);
+            $timeout(scope.closeModal, 50);
           }
         });
       }
