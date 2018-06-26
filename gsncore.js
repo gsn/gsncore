@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.12.4
+ * version 1.12.25
  * gsncore repository
- * Build date: Wed Jun 06 2018 11:46:56 GMT-0500 (CDT)
+ * Build date: Tue Jun 26 2018 09:54:40 GMT-0500 (CDT)
  */
 (function() {
   'use strict';
@@ -91,8 +91,25 @@
     AllContent: null,
     hasStoreCoupon: false,
     hasInit: false,
-    isPrerender: /Prerender/.test(root.navigator.userAgent)
+    isPrerender: /Prerender/.test(root.navigator.userAgent),
+    env: ((root.location || {hostname: ''}).hostname + '').indexOf('.brickinc.net') > 0 ? 'stg' : 'prd'
   };
+
+  gsn.doGeoIP = function() {
+    if (typeof(root.Wu) !== 'undefined') {
+      var wu = new root.Wu();
+
+      wu.geoByIP(('//cdn2.brickinc.net/geoipme/?cb=' + (new Date().getTime())), function(rst) {
+        if (rst.latitude) {
+          rst.Latitude = rst.latitude;
+          rst.Longitude = rst.longitude;
+          root.myGeoIP = rst;
+        }
+      });
+    }
+  };
+
+  gsn.doGeoIP();
 
   gsn.identity = function(value) {
     return value;
@@ -4204,7 +4221,9 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         noCircular: true,
         reloadOnStoreSelection: false,
         currentStore: {},
-        adsCollapsed: false
+        adsCollapsed: false,
+        showStoreSelectModal: false,
+        env: gsnApi.getConfig().env
       };
       $scope.search = {
         site: '',
@@ -4423,8 +4442,15 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         // handle storeRequired attribute
         if (next.storeRequired) {
           if (gsnApi.isNull(gsnApi.getSelectedStoreId(), 0) <= 0) {
-            $scope.goUrl('/storelocator?fromUrl=' + encodeURIComponent($location.url()));
-            return;
+            var currentUrl = encodeURIComponent($location.url());
+            var customModal = angular.element('#storeSelectModal')[0];
+            if (customModal) {
+              $scope.gvm.showStoreSelectModal = true;
+            }
+            else {
+              $scope.goUrl('/storelocator?fromUrl=' + currentUrl);
+              return;
+            }
           }
         }
 
@@ -6511,6 +6537,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       }
     });
 
+
     return returnObj;
 
     //#region helper methods
@@ -6541,6 +6568,24 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         var storeByUrl = gsnApi.mapObject(storeList, 'StoreUrl');
         if (storeByNumber[search.store]) {
           gsnApi.setSelectedStoreId(storeByNumber[search.store].StoreId);
+          storeSelected = true;
+        }
+      } else if ((gsnApi.isNull(gsnApi.getSelectedStoreId(), 0) <= 0) && $rootScope.win.autoSelectStore) {
+        // select store by geoip
+        if (typeof($rootScope.win.Wu) !== 'undefined') {
+          var wu = new $rootScope.win.Wu();
+          var myFn = wu.geoOrderByIP;
+          var origin = $rootScope.win.myGeoIP || '//cdn2.brickinc.net/geoipme/?cb=' + (new Date().getTime());
+
+          if ($rootScope.win.myGeoIP) {
+            myFn = wu.geoOrderByOrigin;
+          }
+
+          myFn.apply(wu, [storeList, origin, function(rst) {
+            if (rst.results[0]) {
+              gsnApi.setSelectedStoreId(rst.results[0].point.StoreId);
+            }
+          }]);
           storeSelected = true;
         }
       }
@@ -9851,7 +9896,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     $scope.vm = {
       storeList: [],
       currentStore: null,
-      myIP: null,
+      myIP: $rootScope.win.myGeoIP,
       stores: null
     };
 
@@ -9861,8 +9906,8 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         return;
       }
 
-      if (typeof(Wu) !== 'undefined') {
-        var wu = new Wu();
+      if (typeof($rootScope.win.Wu) !== 'undefined') {
+        var wu = new $rootScope.win.Wu();
         var myFn = wu.geoOrderByIP;
         var origin = $scope.vm.myIP || ('//cdn2.brickinc.net/geoipme/?cb=' + (new Date().getTime()));
 
@@ -9885,7 +9930,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         // Getting User's Location Using HTML 5 Geolocation API
         if ($rootScope.win.navigator.geolocation) {
           $rootScope.win.navigator.geolocation.getCurrentPosition(function(position) {
-            $scope.vm.myIP = position.coords;
+            $scope.vm.myIP = { Latitude: position.coords.latitude, Longitude: position.coords.longitude };
             doFilter();
           }, function(err) {
             // do nothing as geoip is done by default
@@ -9911,14 +9956,8 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       }
     });
 
-    $scope.selectStore = function(storeId, reload) {
-      var currentStore = $scope.vm.currentStore || {};
-      if (!storeId || (currentStore.StoreId === storeId)) {
-        return;
-      }
-
-      $scope.gvm.reloadOnStoreSelection = reload;
-      gsnApi.setSelectedStoreId(storeId);
+    $scope.selectStore = function(storeId) {
+      gsnApi.setSelectedStoreId(storeId, $location.url());
     };
 
     $scope.$on('gsnevent:store-setid', function(event, result) {
@@ -10853,7 +10892,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       if (attrs.showIf) {
         scope.$watch(attrs.showIf, function(newValue) {
           if (newValue > 0) {
-            timeoutOfOpen = $timeout(scope.openModal, 1550);
+            timeoutOfOpen = $timeout(scope.openModal, 1050);
           }
         });
       }
@@ -10861,9 +10900,9 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       if (attrs.show) {
         scope.$watch(attrs.show, function(newValue) {
           if (newValue) {
-            timeoutOfOpen = $timeout(scope.openModal, 550);
+            timeoutOfOpen = $timeout(scope.openModal, 50);
           } else {
-            $timeout(scope.closeModal, 550);
+            $timeout(scope.closeModal, 50);
           }
         });
       }
@@ -10941,7 +10980,8 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         notFound: false,
         isLoading: true,
         layout: 'default',
-        tab: $location.search().tab || 0
+        tab: $location.search().tab || 0,
+        hasStoreSpecificContent: false
       };
       scope.partialContents = [];
       scope.contentDetail = {
@@ -10968,7 +11008,22 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         var result = [];
         if (partialData.ContentList) {
           for (var i = 0; i < partialData.ContentList.length; i++) {
-            var data = gsnApi.parseStoreSpecificContent(partialData.ContentList[i]);
+            var data = partialData.ContentList[i];
+            if (currentPath.length > 2 && data.StoreIds && data.StoreIds.length > 0) {
+              scope.pcvm.hasStoreSpecificContent = true;
+              if (gsnApi.isNull(gsnApi.getSelectedStoreId(), 0) <= 0) {
+                var currentUrl = encodeURIComponent($location.url());
+                var customModal = angular.element('#storeSelectModal')[0];
+                if (customModal) {
+                  scope.gvm.showStoreSelectModal = true;
+                }
+                else {
+                  gsnApi.goUrl('/storelocator?fromUrl=' + currentUrl);
+                }
+              }
+            }
+
+            data = gsnApi.parseStoreSpecificContent(data);
             if (data.Headline || data.SortBy) {
               // match any script with src
               if (/<script.+src=/gi.test(data.Description || '')) {
@@ -10976,6 +11031,8 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
               }
               result.push(data);
             }
+
+
           }
         }
         return result;

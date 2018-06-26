@@ -22,7 +22,7 @@
     $scope.vm = {
       storeList: [],
       currentStore: null,
-      myIP: null,
+      myIP: $rootScope.win.myGeoIP,
       stores: null
     };
 
@@ -32,8 +32,8 @@
         return;
       }
 
-      if (typeof(Wu) !== 'undefined') {
-        var wu = new Wu();
+      if (typeof($rootScope.win.Wu) !== 'undefined') {
+        var wu = new $rootScope.win.Wu();
         var myFn = wu.geoOrderByIP;
         var origin = $scope.vm.myIP || ('//cdn2.brickinc.net/geoipme/?cb=' + (new Date().getTime()));
 
@@ -56,7 +56,7 @@
         // Getting User's Location Using HTML 5 Geolocation API
         if ($rootScope.win.navigator.geolocation) {
           $rootScope.win.navigator.geolocation.getCurrentPosition(function(position) {
-            $scope.vm.myIP = position.coords;
+            $scope.vm.myIP = { Latitude: position.coords.latitude, Longitude: position.coords.longitude };
             doFilter();
           }, function(err) {
             // do nothing as geoip is done by default
@@ -82,14 +82,8 @@
       }
     });
 
-    $scope.selectStore = function(storeId, reload) {
-      var currentStore = $scope.vm.currentStore || {};
-      if (!storeId || (currentStore.StoreId === storeId)) {
-        return;
-      }
-
-      $scope.gvm.reloadOnStoreSelection = reload;
-      gsnApi.setSelectedStoreId(storeId);
+    $scope.selectStore = function(storeId) {
+      gsnApi.setSelectedStoreId(storeId, $location.url());
     };
 
     $scope.$on('gsnevent:store-setid', function(event, result) {

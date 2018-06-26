@@ -50,7 +50,9 @@
         noCircular: true,
         reloadOnStoreSelection: false,
         currentStore: {},
-        adsCollapsed: false
+        adsCollapsed: false,
+        showStoreSelectModal: false,
+        env: gsnApi.getConfig().env
       };
       $scope.search = {
         site: '',
@@ -269,8 +271,15 @@
         // handle storeRequired attribute
         if (next.storeRequired) {
           if (gsnApi.isNull(gsnApi.getSelectedStoreId(), 0) <= 0) {
-            $scope.goUrl('/storelocator?fromUrl=' + encodeURIComponent($location.url()));
-            return;
+            var currentUrl = encodeURIComponent($location.url());
+            var customModal = angular.element('#storeSelectModal')[0];
+            if (customModal) {
+              $scope.gvm.showStoreSelectModal = true;
+            }
+            else {
+              $scope.goUrl('/storelocator?fromUrl=' + currentUrl);
+              return;
+            }
           }
         }
 

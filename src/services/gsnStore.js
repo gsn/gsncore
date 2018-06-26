@@ -365,6 +365,7 @@
       }
     });
 
+
     return returnObj;
 
     //#region helper methods
@@ -395,6 +396,24 @@
         var storeByUrl = gsnApi.mapObject(storeList, 'StoreUrl');
         if (storeByNumber[search.store]) {
           gsnApi.setSelectedStoreId(storeByNumber[search.store].StoreId);
+          storeSelected = true;
+        }
+      } else if ((gsnApi.isNull(gsnApi.getSelectedStoreId(), 0) <= 0) && $rootScope.win.autoSelectStore) {
+        // select store by geoip
+        if (typeof($rootScope.win.Wu) !== 'undefined') {
+          var wu = new $rootScope.win.Wu();
+          var myFn = wu.geoOrderByIP;
+          var origin = $rootScope.win.myGeoIP || '//cdn2.brickinc.net/geoipme/?cb=' + (new Date().getTime());
+
+          if ($rootScope.win.myGeoIP) {
+            myFn = wu.geoOrderByOrigin;
+          }
+
+          myFn.apply(wu, [storeList, origin, function(rst) {
+            if (rst.results[0]) {
+              gsnApi.setSelectedStoreId(rst.results[0].point.StoreId);
+            }
+          }]);
           storeSelected = true;
         }
       }

@@ -36,7 +36,8 @@
         notFound: false,
         isLoading: true,
         layout: 'default',
-        tab: $location.search().tab || 0
+        tab: $location.search().tab || 0,
+        hasStoreSpecificContent: false
       };
       scope.partialContents = [];
       scope.contentDetail = {
@@ -63,7 +64,22 @@
         var result = [];
         if (partialData.ContentList) {
           for (var i = 0; i < partialData.ContentList.length; i++) {
-            var data = gsnApi.parseStoreSpecificContent(partialData.ContentList[i]);
+            var data = partialData.ContentList[i];
+            if (currentPath.length > 2 && data.StoreIds && data.StoreIds.length > 0) {
+              scope.pcvm.hasStoreSpecificContent = true;
+              if (gsnApi.isNull(gsnApi.getSelectedStoreId(), 0) <= 0) {
+                var currentUrl = encodeURIComponent($location.url());
+                var customModal = angular.element('#storeSelectModal')[0];
+                if (customModal) {
+                  scope.gvm.showStoreSelectModal = true;
+                }
+                else {
+                  gsnApi.goUrl('/storelocator?fromUrl=' + currentUrl);
+                }
+              }
+            }
+
+            data = gsnApi.parseStoreSpecificContent(data);
             if (data.Headline || data.SortBy) {
               // match any script with src
               if (/<script.+src=/gi.test(data.Description || '')) {
@@ -71,6 +87,8 @@
               }
               result.push(data);
             }
+
+
           }
         }
         return result;

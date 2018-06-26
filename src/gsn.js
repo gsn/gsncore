@@ -85,8 +85,25 @@
     AllContent: null,
     hasStoreCoupon: false,
     hasInit: false,
-    isPrerender: /Prerender/.test(root.navigator.userAgent)
+    isPrerender: /Prerender/.test(root.navigator.userAgent),
+    env: ((root.location || {hostname: ''}).hostname + '').indexOf('.brickinc.net') > 0 ? 'stg' : 'prd'
   };
+
+  gsn.doGeoIP = function() {
+    if (typeof(root.Wu) !== 'undefined') {
+      var wu = new root.Wu();
+
+      wu.geoByIP(('//cdn2.brickinc.net/geoipme/?cb=' + (new Date().getTime())), function(rst) {
+        if (rst.latitude) {
+          rst.Latitude = rst.latitude;
+          rst.Longitude = rst.longitude;
+          root.myGeoIP = rst;
+        }
+      });
+    }
+  };
+
+  gsn.doGeoIP();
 
   gsn.identity = function(value) {
     return value;
