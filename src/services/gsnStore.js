@@ -383,6 +383,7 @@
       storeList = gsnApi.isNull(storeList, []);
       var search = $location.search(),
         storeByNumber = gsnApi.mapObject(storeList, 'StoreNumber'),
+		storeByName = gsnApi.mapObject(storeList, 'StoreName'),  //Store Name added
         storeSelected = false;
 
       if (search.storeid) {
@@ -391,6 +392,9 @@
         storeSelected = true;
       } else if (search.storenbr) {
         gsnApi.setSelectedStoreId(storeByNumber[search.storenbr].StoreId);
+        storeSelected = true;
+      } else if (search.storename) { // Store Name added
+        gsnApi.setSelectedStoreId(storeByName[search.storename].StoreId);
         storeSelected = true;
       } else if (search.store) {
         var storeByUrl = gsnApi.mapObject(storeList, 'StoreUrl');
