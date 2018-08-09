@@ -2,7 +2,7 @@
  * gsncore
  * version 1.12.26
  * gsncore repository
- * Build date: Mon Jul 23 2018 13:54:51 GMT-0500 (Central Daylight Time)
+ * Build date: Thu Aug 09 2018 10:49:05 GMT-0500 (CDT)
  */
 (function() {
   'use strict';
@@ -9951,6 +9951,15 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     gsnStore.getStores().then(function(rsp) {
       var storeList = rsp.response;
       $scope.vm.storeList = storeList;
+      var stores = [];
+      angular.forEach(storeList, function(v, k) {
+        stores.push({
+          distance: -1,
+          point: v
+        });
+      });
+      $scope.vm.stores = stores;
+
       doFilter();
     });
 
@@ -10016,50 +10025,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
   'use strict';
   var myModule = angular.module('gsn.core');
 
-  myModule.directive('gsnAddHead', ['$window', '$timeout', 'gsnApi', function($window, $timeout, gsnApi) {
-    // Usage:   Add element to head
-    //
-    // Creates: 2014-01-06
-    //
-    /* <div gsn-add-head="meta" data-attributes="{'content': ''}"></div>
-     */
-    var directive = {
-      link: link,
-      restrict: 'A',
-      scope: true
-    };
-    return directive;
-
-    function link(scope, element, attrs) {
-      var elId = 'dynamic-' + (new Date().getTime());
-
-      function activate() {
-        var options = attrs.attributes;
-        var el = angular.element('<' + attrs.gsnAddHead + '>');
-        if (options) {
-          var myAttrs = scope.$eval(options);
-          el.attr('id', elId);
-          angular.forEach(myAttrs, function(v, k) {
-            el.attr(k, v);
-          });
-        }
-
-        angular.element('head')[0].appendChild(el[0]);
-
-        scope.$on('$destroy', function() {
-          angular.element('#' + elId).remove();
-        });
-      }
-
-      activate();
-    }
-  }]);
-})(angular);
-
-(function(angular, undefined) {
-  'use strict';
-  var myModule = angular.module('gsn.core');
-
   myModule.directive('gsnAdUnit', ['gsnStore', '$timeout', 'gsnApi', '$rootScope', '$http', '$templateCache', '$interpolate', function(gsnStore, $timeout, gsnApi, $rootScope, $http, $templateCache, $interpolate) {
     // Usage: create an adunit and trigger ad refresh
     //
@@ -10110,6 +10075,50 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
           $rootScope.$broadcast('gsnevent:loadads');
         }
       }
+    }
+  }]);
+})(angular);
+
+(function(angular, undefined) {
+  'use strict';
+  var myModule = angular.module('gsn.core');
+
+  myModule.directive('gsnAddHead', ['$window', '$timeout', 'gsnApi', function($window, $timeout, gsnApi) {
+    // Usage:   Add element to head
+    //
+    // Creates: 2014-01-06
+    //
+    /* <div gsn-add-head="meta" data-attributes="{'content': ''}"></div>
+     */
+    var directive = {
+      link: link,
+      restrict: 'A',
+      scope: true
+    };
+    return directive;
+
+    function link(scope, element, attrs) {
+      var elId = 'dynamic-' + (new Date().getTime());
+
+      function activate() {
+        var options = attrs.attributes;
+        var el = angular.element('<' + attrs.gsnAddHead + '>');
+        if (options) {
+          var myAttrs = scope.$eval(options);
+          el.attr('id', elId);
+          angular.forEach(myAttrs, function(v, k) {
+            el.attr(k, v);
+          });
+        }
+
+        angular.element('head')[0].appendChild(el[0]);
+
+        scope.$on('$destroy', function() {
+          angular.element('#' + elId).remove();
+        });
+      }
+
+      activate();
     }
   }]);
 })(angular);

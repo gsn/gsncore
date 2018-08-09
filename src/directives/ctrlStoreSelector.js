@@ -73,6 +73,15 @@
     gsnStore.getStores().then(function(rsp) {
       var storeList = rsp.response;
       $scope.vm.storeList = storeList;
+      var stores = [];
+      angular.forEach(storeList, function(v, k) {
+        stores.push({
+          distance: -1,
+          point: v
+        });
+      });
+      $scope.vm.stores = stores;
+
       doFilter();
     });
 
