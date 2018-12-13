@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.12.26
+ * version 1.12.28
  * gsncore repository
- * Build date: Thu Aug 09 2018 10:49:05 GMT-0500 (CDT)
+ * Build date: Thu Dec 13 2018 15:43:14 GMT-0600 (CST)
  */
 (function() {
   'use strict';
@@ -7868,9 +7868,13 @@
               var ratio = actualWidth / (width || actualWidth || 1);
               var newHeight = ratio * height;
 
-              angular.element(attrs.syncHeight).height(newHeight);
+              if (newHeight) {
+                angular.element(attrs.syncHeight).height(newHeight);
+              } else {
+                angular.element(attrs.syncHeight).height(angular.element('image.circImage').height());
+              }
 
-            }, 200);
+            }, 500);
 
             resizer();
             $win.on('resize', resizer);
