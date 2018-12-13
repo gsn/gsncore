@@ -1,7 +1,7 @@
 {
   "name": "gsncore",
   "description": "gsncore repository",
-  "version": "1.12.26",
+  "version": "1.12.28",
   "homepage": "https://github.com/gsn/gsncore",
   "author": {
     "name": "Brick, Inc.",
@@ -36,17 +36,13 @@
     "gulp": "^4.0.0",
     "gulp-bump": "*",
     "gulp-concat": "*",
-    "gulp-header": "*",
-    "gulp-inject": "*",
-    "gulp-jshint": "~1.9.0",
+    "gulp-header": "^2.0.7",
+    "gulp-inject": "^5.0.2",
     "gulp-load-plugins": "*",
-    "gulp-rename": "*",
+    "gulp-rename": "^1.4.0",
     "gulp-sourcemaps": "*",
-    "gulp-uglify": "*",
+    "gulp-uglify": "^3.0.1",
     "gulp-util": "*"
-  },
-  "resolutions": {
-    "natives": "1.1.3"
   },
   "engines": {
     "node": ">= 10"

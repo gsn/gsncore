@@ -56,9 +56,13 @@
               var ratio = actualWidth / (width || actualWidth || 1);
               var newHeight = ratio * height;
 
-              angular.element(attrs.syncHeight).height(newHeight);
+              if (newHeight) {
+                angular.element(attrs.syncHeight).height(newHeight);
+              } else {
+                angular.element(attrs.syncHeight).height(angular.element('image.circImage').height());
+              }
 
-            }, 200);
+            }, 500);
 
             resizer();
             $win.on('resize', resizer);

@@ -14,11 +14,6 @@ var banner = [
 ].join('\n');
 var allSources = ['src/gsn.js', 'src/module.js', 'src/gsn-ui-map.js', 'src/angular-recaptcha.js', 'vendor/*.js', 'src/services/*.js', 'src/filters/*.js', 'src/directives/*.js'];
 var t = {
-  lint: () => {
-    return gulp.src('./src/**/*.js')
-      .pipe($.jshint())
-      .pipe($.jshint.reporter('default'));
-  },
   build: () => {
     return gulp.src(allSources)
       .pipe($.concat('gsncore.js'))
@@ -58,7 +53,7 @@ var t = {
   }
 }
 
-const defaultTasks = gulp.series(t.lint, t.build, t.build_basic, () => {
+const defaultTasks = gulp.series(t.build, t.build_basic, () => {
   gulp.src('./gsncore-basic.js')
     .pipe(sourcemaps.init())
     .pipe($.uglify({
@@ -89,7 +84,6 @@ const defaultTasks = gulp.series(t.lint, t.build, t.build_basic, () => {
 gulp.task('bump', t.bump);
 gulp.task('bump:minor', t.bump_minor);
 gulp.task('bump:major', t.bump_major);
-gulp.task('lint', t.lint);
 gulp.task('build', t.build);
 gulp.task('build:basic', t.build_basic);
 gulp.task('default', defaultTasks);
