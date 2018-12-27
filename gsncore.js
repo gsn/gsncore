@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.12.29
+ * version 1.12.30
  * gsncore repository
- * Build date: Thu Dec 27 2018 10:32:50 GMT-0600 (CST)
+ * Build date: Thu Dec 27 2018 10:36:59 GMT-0600 (CST)
  */
 (function() {
   'use strict';
@@ -7201,8 +7201,8 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       var search = $scope.recipeSearch,
         resultString = '';
 
-      if (gsnApi.isNull(recipeSearch.course, '').length > 0) {
-        resultString = recipeSearch.course + ' ' + resultString;
+      if (gsnApi.isNull(search.course, '').length > 0) {
+        resultString = search.course + ' ' + resultString;
       }
 
       $scope.$emit('gsnevent:closemodal');
@@ -7213,8 +7213,8 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       var search = $scope.recipeSearch,
         resultString = '';
 
-      if (gsnApi.isNull(recipeSearch.course, '').length > 0) {
-        resultString = recipeSearch.course + ' ' + resultString;
+      if (gsnApi.isNull(search.course, '').length > 0) {
+        resultString = search.course + ' ' + resultString;
       }
 
       $scope.$emit('gsnevent:closemodal');

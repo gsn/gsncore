@@ -26,8 +26,8 @@
       var search = $scope.recipeSearch,
         resultString = '';
 
-      if (gsnApi.isNull(recipeSearch.course, '').length > 0) {
-        resultString = recipeSearch.course + ' ' + resultString;
+      if (gsnApi.isNull(search.course, '').length > 0) {
+        resultString = search.course + ' ' + resultString;
       }
 
       $scope.$emit('gsnevent:closemodal');
@@ -38,8 +38,8 @@
       var search = $scope.recipeSearch,
         resultString = '';
 
-      if (gsnApi.isNull(recipeSearch.course, '').length > 0) {
-        resultString = recipeSearch.course + ' ' + resultString;
+      if (gsnApi.isNull(search.course, '').length > 0) {
+        resultString = search.course + ' ' + resultString;
       }
 
       $scope.$emit('gsnevent:closemodal');
