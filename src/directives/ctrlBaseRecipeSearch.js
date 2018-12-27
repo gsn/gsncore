@@ -23,7 +23,7 @@
     };
 
     $scope.doRecipeSearch = function() {
-      var search = $scope.recipeSearch,
+      var search = gsnApi.isNull(search.term, ''),
         resultString = '';
 
       if (gsnApi.isNull(search.course, '').length > 0) {
@@ -31,11 +31,11 @@
       }
 
       $scope.$emit('gsnevent:closemodal');
-      $scope.goUrl('/recipe/search?q=' + encodeURIComponent(resultString));
+      $scope.goUrl('/recipe/search?q=' + encodeURIComponent(resultString.replace(/\s+$/, '')));
     };
 
 	$scope.doRecipeSearchNew = function() {
-      var search = $scope.recipeSearch,
+      var search = gsnApi.isNull(search.term, ''),
         resultString = '';
 
       if (gsnApi.isNull(search.course, '').length > 0) {
@@ -43,7 +43,7 @@
       }
 
       $scope.$emit('gsnevent:closemodal');
-      $scope.goUrl('/recipesearch?q=' + encodeURIComponent(resultString));
+      $scope.goUrl('/recipesearch?q=' + encodeURIComponent(resultString.replace(/\s+$/, '')));
     };
   }
 })(angular);

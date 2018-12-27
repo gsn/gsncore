@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.12.30
+ * version 1.12.31
  * gsncore repository
- * Build date: Thu Dec 27 2018 10:36:59 GMT-0600 (CST)
+ * Build date: Thu Dec 27 2018 11:16:00 GMT-0600 (CST)
  */
 (function() {
   'use strict';
@@ -7198,7 +7198,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     };
 
     $scope.doRecipeSearch = function() {
-      var search = $scope.recipeSearch,
+      var search = gsnApi.isNull(search.term, ''),
         resultString = '';
 
       if (gsnApi.isNull(search.course, '').length > 0) {
@@ -7206,11 +7206,11 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       }
 
       $scope.$emit('gsnevent:closemodal');
-      $scope.goUrl('/recipe/search?q=' + encodeURIComponent(resultString));
+      $scope.goUrl('/recipe/search?q=' + encodeURIComponent(resultString.replace(/\s+$/, '')));
     };
 
 	$scope.doRecipeSearchNew = function() {
-      var search = $scope.recipeSearch,
+      var search = gsnApi.isNull(search.term, ''),
         resultString = '';
 
       if (gsnApi.isNull(search.course, '').length > 0) {
@@ -7218,7 +7218,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       }
 
       $scope.$emit('gsnevent:closemodal');
-      $scope.goUrl('/recipesearch?q=' + encodeURIComponent(resultString));
+      $scope.goUrl('/recipesearch?q=' + encodeURIComponent(resultString.replace(/\s+$/, '')));
     };
   }
 })(angular);
