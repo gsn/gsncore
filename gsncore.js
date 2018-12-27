@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.12.28
+ * version 1.12.30
  * gsncore repository
- * Build date: Thu Dec 13 2018 15:43:14 GMT-0600 (CST)
+ * Build date: Thu Dec 27 2018 10:36:59 GMT-0600 (CST)
  */
 (function() {
   'use strict';
@@ -7199,54 +7199,22 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
 
     $scope.doRecipeSearch = function() {
       var search = $scope.recipeSearch,
-        attributes = '',
         resultString = '';
 
-      if (gsnApi.isNull(search.term, '').length > 0) {
-        resultString += 'SearchTerm:' + gsnApi.isNull(search.term, '') + ';';
-      }
-      if (gsnApi.isNull(search.preptime, '').length > 0) {
-        resultString += 'Time:' + gsnApi.isNull(search.preptime, '') + ';';
-      }
-      if (gsnApi.isNull(search.skilllevel, '').length > 0) {
-        resultString += 'SkillLevelList:|' + gsnApi.isNull(search.skilllevel, '') + '|;';
-      }
-
-      angular.forEach(search.attrib, function(value, key) {
-        if (gsnApi.isNull(value, '').length > 0) {
-          attributes += value + '|';
-        }
-      });
-      if (gsnApi.isNull(attributes, '').length > 0) {
-        resultString += 'AttributeList:|' + gsnApi.isNull(attributes, '') + ';';
+      if (gsnApi.isNull(search.course, '').length > 0) {
+        resultString = search.course + ' ' + resultString;
       }
 
       $scope.$emit('gsnevent:closemodal');
       $scope.goUrl('/recipe/search?q=' + encodeURIComponent(resultString));
     };
-	
+
 	$scope.doRecipeSearchNew = function() {
       var search = $scope.recipeSearch,
-        attributes = '',
         resultString = '';
 
-      if (gsnApi.isNull(search.term, '').length > 0) {
-        resultString += 'SearchTerm:' + gsnApi.isNull(search.term, '') + ';';
-      }
-      if (gsnApi.isNull(search.preptime, '').length > 0) {
-        resultString += 'Time:' + gsnApi.isNull(search.preptime, '') + ';';
-      }
-      if (gsnApi.isNull(search.skilllevel, '').length > 0) {
-        resultString += 'SkillLevelList:|' + gsnApi.isNull(search.skilllevel, '') + '|;';
-      }
-
-      angular.forEach(search.attrib, function(value, key) {
-        if (gsnApi.isNull(value, '').length > 0) {
-          attributes += value + '|';
-        }
-      });
-      if (gsnApi.isNull(attributes, '').length > 0) {
-        resultString += 'AttributeList:|' + gsnApi.isNull(attributes, '') + ';';
+      if (gsnApi.isNull(search.course, '').length > 0) {
+        resultString = search.course + ' ' + resultString;
       }
 
       $scope.$emit('gsnevent:closemodal');
