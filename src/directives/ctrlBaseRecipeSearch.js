@@ -23,8 +23,8 @@
     };
 
     $scope.doRecipeSearch = function() {
-      var search = gsnApi.isNull(search.term, ''),
-        resultString = '';
+      var search = $scope.recipeSearch,
+        resultString = gsnApi.isNull($scope.recipeSearch.term, '');
 
       if (gsnApi.isNull(search.course, '').length > 0) {
         resultString = search.course + ' ' + resultString;
@@ -35,8 +35,8 @@
     };
 
 	$scope.doRecipeSearchNew = function() {
-      var search = gsnApi.isNull(search.term, ''),
-        resultString = '';
+      var search = $scope.recipeSearch,
+        resultString = gsnApi.isNull($scope.recipeSearch.term, '');
 
       if (gsnApi.isNull(search.course, '').length > 0) {
         resultString = search.course + ' ' + resultString;
