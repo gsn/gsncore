@@ -23,11 +23,11 @@
     };
 
     $scope.doRecipeSearch = function() {
-      var search = gsnApi.isNull(search.term, ''),
+      var search = gsnApi.isNull($scope.recipeSearch.term, ''),
         resultString = '';
 
-      if (gsnApi.isNull(search.course, '').length > 0) {
-        resultString = search.course + ' ' + resultString;
+      if (gsnApi.isNull($scope.recipeSearch.course, '').length > 0) {
+        resultString = $scope.recipeSearch.course + ' ' + resultString;
       }
 
       $scope.$emit('gsnevent:closemodal');
@@ -35,11 +35,11 @@
     };
 
 	$scope.doRecipeSearchNew = function() {
-      var search = gsnApi.isNull(search.term, ''),
+      var search = gsnApi.isNull($scope.recipeSearch.term, ''),
         resultString = '';
 
-      if (gsnApi.isNull(search.course, '').length > 0) {
-        resultString = search.course + ' ' + resultString;
+      if (gsnApi.isNull($scope.recipeSearch.course, '').length > 0) {
+        resultString = $scope.recipeSearch.course + ' ' + resultString;
       }
 
       $scope.$emit('gsnevent:closemodal');
