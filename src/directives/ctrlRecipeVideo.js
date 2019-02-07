@@ -28,20 +28,20 @@
     $scope.id = ($location.search().id || pathId || 'featured');
 
     function activate() {
-      if ($scope.id === 'featured' || $scope.id === '') {
+      /*if ($scope.id === 'featured' || $scope.id === '') {
         if ($scope.currentPath.indexOf('featured') < 0) {
           $scope.goUrl($scope.featuredVideoUrl || '/recipevideo/featured');
           return;
         }
-      }
+      }*/
 
       gsnStore.getRecipeVideos().then(function(result) {
         if (result.success) {
-          $scope.vm.videos = result.response;
-          $scope.vm.videoById = gsnApi.mapObject(result.response, 'VideoId');
-          if ($scope.id !== 'featured') {
-            $scope.vm.video = $scope.vm.videoById[$scope.id];
-          }
+            $scope.vm.videos = result.response;
+            $scope.vm.videoById = gsnApi.mapObject(result.response, 'VideoId');
+            if ($scope.id !== 'featured') {
+              $scope.vm.video = $scope.vm.videoById[$scope.id] || {};
+            }
         }
       });
 
@@ -57,19 +57,21 @@
     }
 
     function playVideo() {
-      $scope.vm.video.Thumbnail = gsnApi.isNull($scope.vm.video.Thumbnail, '').replace('http://', 'https://');
-      $scope.vm.video.Url = gsnApi.isNull($scope.vm.video.Url, '').replace('http://', 'https://');
-      $timeout(function() {
-        flowplayer('RecipeVideoPlayer', 'https://cdn.brickinc.net/script/lib/flowplayer-3.2.18.swf', {
-          clip: {
-            url: $scope.vm.video.Url,
-            autoPlay: true,
-            autoBuffering: true // <- do not place a comma here
-          }
-        });
+      if ($scope.vm.video.Url) {
+        $scope.vm.video.Thumbnail = gsnApi.isNull($scope.vm.video.Thumbnail, '').replace('http://', 'https://');
+        $scope.vm.video.Url = gsnApi.isNull($scope.vm.video.Url, '').replace('http://', 'https://');
+        $timeout(function() {
+          flowplayer('RecipeVideoPlayer', 'https://cdn.brickinc.net/script/lib/flowplayer-3.2.18.swf', {
+            clip: {
+              url: $scope.vm.video.Url,
+              autoPlay: true,
+              autoBuffering: true // <- do not place a comma here
+            }
+          });
 
-        $rootScope.$broadcast('gsnevent:loadads');
-      }, 500);
+          $rootScope.$broadcast('gsnevent:loadads');
+        }, 500);
+      }
     }
 
     $scope.$watch('vm.video', playVideo);

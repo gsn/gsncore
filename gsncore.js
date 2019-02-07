@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.12.33
+ * version 1.12.34
  * gsncore repository
- * Build date: Thu Dec 27 2018 15:05:45 GMT-0600 (CST)
+ * Build date: Wed Feb 06 2019 19:33:19 GMT-0600 (CST)
  */
 (function() {
   'use strict';
@@ -8797,20 +8797,20 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     $scope.id = ($location.search().id || pathId || 'featured');
 
     function activate() {
-      if ($scope.id === 'featured' || $scope.id === '') {
+      /*if ($scope.id === 'featured' || $scope.id === '') {
         if ($scope.currentPath.indexOf('featured') < 0) {
           $scope.goUrl($scope.featuredVideoUrl || '/recipevideo/featured');
           return;
         }
-      }
+      }*/
 
       gsnStore.getRecipeVideos().then(function(result) {
         if (result.success) {
-          $scope.vm.videos = result.response;
-          $scope.vm.videoById = gsnApi.mapObject(result.response, 'VideoId');
-          if ($scope.id !== 'featured') {
-            $scope.vm.video = $scope.vm.videoById[$scope.id];
-          }
+            $scope.vm.videos = result.response;
+            $scope.vm.videoById = gsnApi.mapObject(result.response, 'VideoId');
+            if ($scope.id !== 'featured') {
+              $scope.vm.video = $scope.vm.videoById[$scope.id] || {};
+            }
         }
       });
 
@@ -8826,19 +8826,21 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     }
 
     function playVideo() {
-      $scope.vm.video.Thumbnail = gsnApi.isNull($scope.vm.video.Thumbnail, '').replace('http://', 'https://');
-      $scope.vm.video.Url = gsnApi.isNull($scope.vm.video.Url, '').replace('http://', 'https://');
-      $timeout(function() {
-        flowplayer('RecipeVideoPlayer', 'https://cdn.brickinc.net/script/lib/flowplayer-3.2.18.swf', {
-          clip: {
-            url: $scope.vm.video.Url,
-            autoPlay: true,
-            autoBuffering: true // <- do not place a comma here
-          }
-        });
+      if ($scope.vm.video.Url) {
+        $scope.vm.video.Thumbnail = gsnApi.isNull($scope.vm.video.Thumbnail, '').replace('http://', 'https://');
+        $scope.vm.video.Url = gsnApi.isNull($scope.vm.video.Url, '').replace('http://', 'https://');
+        $timeout(function() {
+          flowplayer('RecipeVideoPlayer', 'https://cdn.brickinc.net/script/lib/flowplayer-3.2.18.swf', {
+            clip: {
+              url: $scope.vm.video.Url,
+              autoPlay: true,
+              autoBuffering: true // <- do not place a comma here
+            }
+          });
 
-        $rootScope.$broadcast('gsnevent:loadads');
-      }, 500);
+          $rootScope.$broadcast('gsnevent:loadads');
+        }, 500);
+      }
     }
 
     $scope.$watch('vm.video', playVideo);
