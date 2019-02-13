@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.12.36
+ * version 1.12.37
  * gsncore repository
- * Build date: Tue Feb 12 2019 18:39:44 GMT-0600 (CST)
+ * Build date: Wed Feb 13 2019 10:57:53 GMT-0600 (CST)
  */
 (function() {
   'use strict';
@@ -9548,7 +9548,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       // if (endIndex > 10) endIndex = 10;
 
       for (var i = 0; i < endIndex; i++) {
-        var newMarker = {location: data[i]};
+        var newMarker = { location: data[i], SortBy: data[i].SortBy };
         tempMarkers.push(newMarker);
       }
 

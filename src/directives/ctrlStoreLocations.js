@@ -133,7 +133,7 @@
       // if (endIndex > 10) endIndex = 10;
 
       for (var i = 0; i < endIndex; i++) {
-        var newMarker = {location: data[i]};
+        var newMarker = { location: data[i], SortBy: data[i].SortBy };
         tempMarkers.push(newMarker);
       }
 
