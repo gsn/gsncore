@@ -95,7 +95,8 @@
           marker.location.PostalCode +
           "</address><div><a class=\"btn btn-default btn-xs\" href=\"/?storenbr=" +
           marker.location.StoreNumber +
-          "\">Select Store</a></div></div>";
+          "\">Select Store</a><br><a href=\"https://maps.google.com?saddr=Current+Location&daddr=" +
+          marker.location.Latitude + "," + marker.location.Longitude +"\" target=\"_blank\" style=\"font-weight: bold; text-decoration: underline;\">Get Directions</a></div></div>";
 
         L.marker( [markers[i].location.Latitude, markers[i].location.Longitude], {icon: $scope.myIcon} )
           .bindPopup( html )

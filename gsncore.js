@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.12.37
+ * version 1.12.38
  * gsncore repository
- * Build date: Wed Feb 13 2019 10:57:53 GMT-0600 (CST)
+ * Build date: Wed Feb 13 2019 17:11:37 GMT-0600 (CST)
  */
 (function() {
   'use strict';
@@ -9510,7 +9510,8 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
           marker.location.PostalCode +
           "</address><div><a class=\"btn btn-default btn-xs\" href=\"/?storenbr=" +
           marker.location.StoreNumber +
-          "\">Select Store</a></div></div>";
+          "\">Select Store</a><br><a href=\"https://maps.google.com?saddr=Current+Location&daddr=" +
+          marker.location.Latitude + "," + marker.location.Longitude +"\" target=\"_blank\" style=\"font-weight: bold; text-decoration: underline;\">Get Directions</a></div></div>";
 
         L.marker( [markers[i].location.Latitude, markers[i].location.Longitude], {icon: $scope.myIcon} )
           .bindPopup( html )
