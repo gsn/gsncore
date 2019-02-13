@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.12.38
+ * version 1.12.39
  * gsncore repository
- * Build date: Wed Feb 13 2019 17:11:37 GMT-0600 (CST)
+ * Build date: Wed Feb 13 2019 17:17:41 GMT-0600 (CST)
  */
 (function() {
   'use strict';
@@ -9451,8 +9451,8 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       zoom: defaultZoom
     });
     $scope.myIcon = L.icon({
-        iconUrl: 'https://cdn.brickinc.net/asset/common/images/pin24.png',
-        iconRetinaUrl: 'https://cdn.brickinc.net/asset/common/images/pin48.png',
+        iconUrl: 'https://upload.brickinc.net/asset/common/images/pin24.png',
+        iconRetinaUrl: 'https://upload.brickinc.net/asset/common/images/pin48.png',
         iconSize: [29, 24],
         iconAnchor: [9, 21],
         popupAnchor: [0, -14]

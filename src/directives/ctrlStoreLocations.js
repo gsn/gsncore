@@ -36,8 +36,8 @@
       zoom: defaultZoom
     });
     $scope.myIcon = L.icon({
-        iconUrl: 'https://cdn.brickinc.net/asset/common/images/pin24.png',
-        iconRetinaUrl: 'https://cdn.brickinc.net/asset/common/images/pin48.png',
+        iconUrl: 'https://upload.brickinc.net/asset/common/images/pin24.png',
+        iconRetinaUrl: 'https://upload.brickinc.net/asset/common/images/pin48.png',
         iconSize: [29, 24],
         iconAnchor: [9, 21],
         popupAnchor: [0, -14]
