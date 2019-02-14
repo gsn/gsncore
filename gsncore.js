@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.12.41
+ * version 1.12.42
  * gsncore repository
- * Build date: Wed Feb 13 2019 18:31:38 GMT-0600 (CST)
+ * Build date: Thu Feb 14 2019 14:33:43 GMT-0600 (CST)
  */
 (function() {
   'use strict';
@@ -9413,8 +9413,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
   }
 })(angular);
 
-
-(function(angular, L, undefined) {
+(function(angular, undefined) {
   'use strict';
 
   var myDirectiveName = 'ctrlStoreLocations';
@@ -9598,7 +9597,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     });
   }
 
-})(angular, L);
+})(angular);
 
 (function(angular, undefined) {
   'use strict';

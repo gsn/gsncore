@@ -1,5 +1,4 @@
-
-(function(angular, L, undefined) {
+(function(angular, undefined) {
   'use strict';
 
   var myDirectiveName = 'ctrlStoreLocations';
@@ -183,4 +182,4 @@
     });
   }
 
-})(angular, L);
+})(angular);
