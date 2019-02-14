@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.12.40
+ * version 1.12.41
  * gsncore repository
- * Build date: Wed Feb 13 2019 17:20:54 GMT-0600 (CST)
+ * Build date: Wed Feb 13 2019 18:31:38 GMT-0600 (CST)
  */
 (function() {
   'use strict';
@@ -9508,10 +9508,10 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
           marker.location.StateName +
           " " +
           marker.location.PostalCode +
-          "</address><div><a class=\"btn btn-default btn-xs\" href=\"/?storenbr=" +
+          "</address><div class=\"infoControls\"><a class=\"btn btn-default btn-xs\" href=\"/?storenbr=" +
           marker.location.StoreNumber +
-          "\">Select Store</a><br><a href=\"https://maps.google.com?saddr=Current+Location&daddr=" +
-          marker.location.Latitude + "," + marker.location.Longitude +"\" target=\"_blank\" style=\"font-weight: bold; text-decoration: underline;\">Get Directions</a></div></div>";
+          "\">Select Store</a>&nbsp;&nbsp;<a href=\"https://maps.google.com?saddr=Current+Location&daddr=" +
+          marker.location.Latitude + "," + marker.location.Longitude +"\" target=\"_blank\" style=\"font-weight: bold; text-decoration: underline;\">Get&nbsp;Directions</a></div></div>";
 
         L.marker( [markers[i].location.Latitude, markers[i].location.Longitude], {icon: $scope.myIcon} )
           .bindPopup( html )
