@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.12.42
+ * version 1.12.43
  * gsncore repository
- * Build date: Thu Feb 14 2019 14:33:43 GMT-0600 (CST)
+ * Build date: Wed Jun 19 2019 11:53:42 GMT-0500 (Central Daylight Time)
  */
 (function() {
   'use strict';
@@ -8718,7 +8718,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
   var myDirectiveName = 'ctrlRecipeSearch';
 
   angular.module('gsn.core')
-    .controller(myDirectiveName, ['$scope', 'gsnApi', 'gsnStore', '$routeParams', '$controller', myController])
+    .controller(myDirectiveName, ['$scope', 'gsnApi', 'gsnStore', '$location', '$controller', myController])
     .directive(myDirectiveName, myDirective);
 
   function myDirective() {
@@ -8731,7 +8731,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     return directive;
   }
 
-  function myController($scope, gsnApi, gsnStore, $routeParams, $controller) {
+  function myController($scope, gsnApi, gsnStore, $location, $controller) {
     $controller('ctrlBaseRecipeSearch', {
       $scope: $scope
     });
@@ -8747,7 +8747,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     $scope.itemsPerPage = 24;
 
     function activate() {
-      var search = gsnApi.isNull($routeParams.q, '');
+      var search = gsnApi.isNull($location.search().q, '');
       if (search.indexOf(':') < 0) {
         search = 'SearchTerm:' + search;
       }
