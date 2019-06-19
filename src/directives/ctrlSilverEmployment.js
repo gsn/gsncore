@@ -4,7 +4,7 @@
   var myDirectiveName = 'ctrlSilverEmployment';
 
   angular.module('gsn.core')
-    .controller(myDirectiveName, ['$scope', 'gsnProfile', 'gsnApi', '$timeout', 'gsnStore', '$interpolate', '$http', '$routeParams', myController])
+    .controller(myDirectiveName, ['$scope', 'gsnProfile', 'gsnApi', '$timeout', 'gsnStore', '$interpolate', '$http', '$location', myController])
     .directive(myDirectiveName, myDirective);
 
   function myDirective() {
@@ -18,7 +18,7 @@
     return directive;
   }
 
-  function myController($scope, gsnProfile, gsnApi, $timeout, gsnStore, $interpolate, $http, $routeParams) {
+  function myController($scope, gsnProfile, gsnApi, $timeout, gsnStore, $interpolate, $http, $location) {
 
     $scope.jobPositionList = [];
     $scope.jobOpenings = [];
@@ -108,7 +108,7 @@
 
         //find the store that this job id is associated with
         var openings = $scope.jobOpenings;
-        var storeId = $routeParams.Sid;
+        var storeId = $location.search().sid;
 
         angular.forEach(openings, function(value, key) {
 

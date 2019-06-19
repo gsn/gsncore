@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.12.43
+ * version 1.12.44
  * gsncore repository
- * Build date: Wed Jun 19 2019 11:53:42 GMT-0500 (Central Daylight Time)
+ * Build date: Wed Jun 19 2019 12:01:08 GMT-0500 (Central Daylight Time)
  */
 (function() {
   'use strict';
@@ -9226,7 +9226,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
   var myDirectiveName = 'ctrlSilverEmployment';
 
   angular.module('gsn.core')
-    .controller(myDirectiveName, ['$scope', 'gsnProfile', 'gsnApi', '$timeout', 'gsnStore', '$interpolate', '$http', '$routeParams', myController])
+    .controller(myDirectiveName, ['$scope', 'gsnProfile', 'gsnApi', '$timeout', 'gsnStore', '$interpolate', '$http', '$location', myController])
     .directive(myDirectiveName, myDirective);
 
   function myDirective() {
@@ -9240,7 +9240,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     return directive;
   }
 
-  function myController($scope, gsnProfile, gsnApi, $timeout, gsnStore, $interpolate, $http, $routeParams) {
+  function myController($scope, gsnProfile, gsnApi, $timeout, gsnStore, $interpolate, $http, $location) {
 
     $scope.jobPositionList = [];
     $scope.jobOpenings = [];
@@ -9330,7 +9330,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
 
         //find the store that this job id is associated with
         var openings = $scope.jobOpenings;
-        var storeId = $routeParams.Sid;
+        var storeId = $location.search().sid;
 
         angular.forEach(openings, function(value, key) {
 
@@ -10703,7 +10703,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
   'use strict';
   var myModule = angular.module('gsn.core');
 
-  myModule.directive('gsnFlowPlayer', ['$timeout', 'gsnApi', '$rootScope', '$routeParams', function($timeout, gsnApi, $rootScope, $routeParams) {
+  myModule.directive('gsnFlowPlayer', ['$timeout', 'gsnApi', '$rootScope', '$location', function($timeout, gsnApi, $rootScope, $location) {
     // Usage: add 3rd party videos
     //
     // Creates: 2013-12-12 TomN
@@ -10734,8 +10734,8 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         $rootScope.$broadcast('gsnevent:loadads');
       };
 
-      if ($routeParams.title) {
-        scope.videoTitle = $routeParams.title;
+      if ($location.search().title) {
+        scope.videoTitle = $location.search().title;
       }
 
       $timeout(function() {
@@ -10902,7 +10902,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
   'use strict';
   var myModule = angular.module('gsn.core');
 
-  myModule.directive('gsnLogin', ['gsnApi', '$route', '$routeParams', '$location', 'gsnProfile', function(gsnApi, $route, $routeParams, $location, gsnProfile) {
+  myModule.directive('gsnLogin', ['gsnApi', '$route', '$location', 'gsnProfile', function(gsnApi, $route, $location, gsnProfile) {
     // Usage: login capability
     //
     // Creates: 2013-12-12 TomN
@@ -10923,7 +10923,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       $scope.isSubmitting = false; // true if we're waiting for result from server
 
       function activate() {
-        $scope.fromUrl = decodeURIComponent(gsnApi.isNull($routeParams.fromUrl, ''));
+        $scope.fromUrl = decodeURIComponent(gsnApi.isNull($location.search().fromUrl, ''));
       }
 
       $scope.$on('gsnevent:login-success', function(evt, result) {
@@ -11470,8 +11470,8 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
 (function(angular, undefined) {
 
   angular.module('gsn.core')
-    .directive('gsnShoppingList', ['gsnApi', '$timeout', 'gsnProfile', '$routeParams', '$rootScope', 'gsnStore', '$location', '$filter',
-      function(gsnApi, $timeout, gsnProfile, $routeParams, $rootScope, gsnStore, $location, $filter) {
+    .directive('gsnShoppingList', ['gsnApi', '$timeout', 'gsnProfile', '$rootScope', 'gsnStore', '$location', '$filter',
+      function(gsnApi, $timeout, gsnProfile, $rootScope, gsnStore, $location, $filter) {
         // Usage:  use to manipulate a shopping list on the UI
         //
         // Creates: 2014-01-13 TomN

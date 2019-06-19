@@ -2,7 +2,7 @@
   'use strict';
   var myModule = angular.module('gsn.core');
 
-  myModule.directive('gsnLogin', ['gsnApi', '$route', '$routeParams', '$location', 'gsnProfile', function(gsnApi, $route, $routeParams, $location, gsnProfile) {
+  myModule.directive('gsnLogin', ['gsnApi', '$route', '$location', 'gsnProfile', function(gsnApi, $route, $location, gsnProfile) {
     // Usage: login capability
     //
     // Creates: 2013-12-12 TomN
@@ -23,7 +23,7 @@
       $scope.isSubmitting = false; // true if we're waiting for result from server
 
       function activate() {
-        $scope.fromUrl = decodeURIComponent(gsnApi.isNull($routeParams.fromUrl, ''));
+        $scope.fromUrl = decodeURIComponent(gsnApi.isNull($location.search().fromUrl, ''));
       }
 
       $scope.$on('gsnevent:login-success', function(evt, result) {
