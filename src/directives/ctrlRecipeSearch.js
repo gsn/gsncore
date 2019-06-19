@@ -4,7 +4,7 @@
   var myDirectiveName = 'ctrlRecipeSearch';
 
   angular.module('gsn.core')
-    .controller(myDirectiveName, ['$scope', 'gsnApi', 'gsnStore', '$routeParams', '$controller', myController])
+    .controller(myDirectiveName, ['$scope', 'gsnApi', 'gsnStore', '$location', '$controller', myController])
     .directive(myDirectiveName, myDirective);
 
   function myDirective() {
@@ -17,7 +17,7 @@
     return directive;
   }
 
-  function myController($scope, gsnApi, gsnStore, $routeParams, $controller) {
+  function myController($scope, gsnApi, gsnStore, $location, $controller) {
     $controller('ctrlBaseRecipeSearch', {
       $scope: $scope
     });
@@ -33,7 +33,7 @@
     $scope.itemsPerPage = 24;
 
     function activate() {
-      var search = gsnApi.isNull($routeParams.q, '');
+      var search = gsnApi.isNull($location.search().q, '');
       if (search.indexOf(':') < 0) {
         search = 'SearchTerm:' + search;
       }

@@ -2,7 +2,7 @@
   'use strict';
   var myModule = angular.module('gsn.core');
 
-  myModule.directive('gsnFlowPlayer', ['$timeout', 'gsnApi', '$rootScope', '$routeParams', function($timeout, gsnApi, $rootScope, $routeParams) {
+  myModule.directive('gsnFlowPlayer', ['$timeout', 'gsnApi', '$rootScope', '$location', function($timeout, gsnApi, $rootScope, $location) {
     // Usage: add 3rd party videos
     //
     // Creates: 2013-12-12 TomN
@@ -33,8 +33,8 @@
         $rootScope.$broadcast('gsnevent:loadads');
       };
 
-      if ($routeParams.title) {
-        scope.videoTitle = $routeParams.title;
+      if ($location.search().title) {
+        scope.videoTitle = $location.search().title;
       }
 
       $timeout(function() {
