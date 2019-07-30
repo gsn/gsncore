@@ -92,9 +92,9 @@
           marker.location.StateName +
           " " +
           marker.location.PostalCode +
-          "</address><div class=\"infoControls\"><a class=\"btn btn-default btn-xs\" href=\"/?storenbr=" +
-          marker.location.StoreNumber +
-          "\">Select Store</a>&nbsp;&nbsp;<a href=\"https://maps.google.com?saddr=Current+Location&daddr=" +
+          "</address><div class=\"infoControls\"><a class=\"btn btn-default btn-xs\" href=\"javascript:gsn.$rootScope.gvm.reloadOnStoreSelection = true;gsn.$api.setSelectedStoreId(" +
+          marker.location.StoreId +
+          ", '/');\">Select Store</a>&nbsp;&nbsp;<a href=\"https://maps.google.com?saddr=Current+Location&daddr=" +
           marker.location.Latitude + "," + marker.location.Longitude +"\" target=\"_blank\" style=\"font-weight: bold; text-decoration: underline;\">Get&nbsp;Directions</a></div></div>";
 
         L.marker( [markers[i].location.Latitude, markers[i].location.Longitude], {icon: $scope.myIcon} )
