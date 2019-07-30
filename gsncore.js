@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.12.45
+ * version 1.12.46
  * gsncore repository
- * Build date: Tue Jul 30 2019 10:24:13 GMT-0500 (Central Daylight Time)
+ * Build date: Tue Jul 30 2019 10:35:03 GMT-0500 (Central Daylight Time)
  */
 (function() {
   'use strict';
@@ -9493,6 +9493,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       }
 
       $scope.initializeMarker(storeList);
+      $scope.bounds = [];
 
       var markers = $scope.myMarkers;
       for ( var i=0; i < markers.length; ++i )
@@ -9512,15 +9513,22 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
           ", '/');\">Select Store</a>&nbsp;&nbsp;<a href=\"https://maps.google.com?saddr=Current+Location&daddr=" +
           marker.location.Latitude + "," + marker.location.Longitude +"\" target=\"_blank\" style=\"font-weight: bold; text-decoration: underline;\">Get&nbsp;Directions</a></div></div>";
 
-        L.marker( [markers[i].location.Latitude, markers[i].location.Longitude], {icon: $scope.myIcon} )
+        marker.layer = L.marker( [marker.location.Latitude, marker.location.Longitude], { icon: $scope.myIcon } )
           .bindPopup( html )
           .addTo( $scope.map );
 
-        $scope.bounds.push([markers[i].location.Latitude, markers[i].location.Longitude])
+        $scope.bounds.push([marker.location.Latitude, marker.location.Longitude])
       }
-      var bounds = new L.LatLngBounds($scope.bounds);
-      $scope.map.fitBounds(bounds);
+      $scope.map.fitBounds(new L.LatLngBounds($scope.bounds));
     });
+
+    $scope.openMarkerInfo = function(marker, zoom) {
+      if (marker.layer) {
+        marker.layer.openPopup()
+      }
+
+      $scope.map.fitBounds(new L.LatLngBounds($scope.bounds));
+    };
 
     gsnStore.getStore().then(function(store) {
       var show = gsnApi.isNull($location.search().show, '');
