@@ -78,6 +78,7 @@
       }
 
       $scope.initializeMarker(storeList);
+      $scope.bounds = [];
 
       var markers = $scope.myMarkers;
       for ( var i=0; i < markers.length; ++i )
@@ -92,20 +93,27 @@
           marker.location.StateName +
           " " +
           marker.location.PostalCode +
-          "</address><div class=\"infoControls\"><a class=\"btn btn-default btn-xs\" href=\"/?storenbr=" +
-          marker.location.StoreNumber +
-          "\">Select Store</a>&nbsp;&nbsp;<a href=\"https://maps.google.com?saddr=Current+Location&daddr=" +
+          "</address><div class=\"infoControls\"><a class=\"btn btn-default btn-xs\" href=\"javascript:gsn.$rootScope.gvm.reloadOnStoreSelection = true;gsn.$api.setSelectedStoreId(" +
+          marker.location.StoreId +
+          ", '/');\">Select Store</a>&nbsp;&nbsp;<a href=\"https://maps.google.com?saddr=Current+Location&daddr=" +
           marker.location.Latitude + "," + marker.location.Longitude +"\" target=\"_blank\" style=\"font-weight: bold; text-decoration: underline;\">Get&nbsp;Directions</a></div></div>";
 
-        L.marker( [markers[i].location.Latitude, markers[i].location.Longitude], {icon: $scope.myIcon} )
+        marker.layer = L.marker( [marker.location.Latitude, marker.location.Longitude], { icon: $scope.myIcon } )
           .bindPopup( html )
           .addTo( $scope.map );
 
-        $scope.bounds.push([markers[i].location.Latitude, markers[i].location.Longitude])
+        $scope.bounds.push([marker.location.Latitude, marker.location.Longitude])
       }
-      var bounds = new L.LatLngBounds($scope.bounds);
-      $scope.map.fitBounds(bounds);
+      $scope.map.fitBounds(new L.LatLngBounds($scope.bounds));
     });
+
+    $scope.openMarkerInfo = function(marker, zoom) {
+      if (marker.layer) {
+        marker.layer.openPopup()
+      }
+
+      $scope.map.fitBounds(new L.LatLngBounds($scope.bounds));
+    };
 
     gsnStore.getStore().then(function(store) {
       var show = gsnApi.isNull($location.search().show, '');
