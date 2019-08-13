@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.12.49
+ * version 1.12.50
  * gsncore repository
- * Build date: Tue Aug 13 2019 12:49:38 GMT-0500 (Central Daylight Time)
+ * Build date: Tue Aug 13 2019 12:57:38 GMT-0500 (Central Daylight Time)
  */
 (function() {
   'use strict';
@@ -9613,7 +9613,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
   var myDirectiveName = 'ctrlStoreLocator';
 
   angular.module('gsn.core')
-    .controller(myDirectiveName, ['$scope', 'gsnApi', '$notification', '$timeout', '$rootScope', '$location', 'gsnStore', 'debounce', myController])
+    .controller(myDirectiveName, ['$scope', 'gsnApi', '$notification', '$timeout', '$rootScope', '$location', 'gsnStore', 'debounce', '$sce', myController])
     .directive(myDirectiveName, myDirective);
 
   function myDirective() {
@@ -9626,7 +9626,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     return directive;
   }
 
-  function myController($scope, gsnApi, $notification, $timeout, $rootScope, $location, gsnStore, debounce) {
+  function myController($scope, gsnApi, $notification, $timeout, $rootScope, $location, gsnStore, debounce, $sce) {
     $scope.activate = activate;
 
     var defaultZoom = $scope.defaultZoom || 10;
@@ -10019,10 +10019,11 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     $scope.createMarker = function(location) {
       var point = new google.maps.LatLng(location.Latitude, location.Longitude);
 
-      location.GMapUrl = 'https://maps.google.com/maps?width=100%&amp;height=280&amp;hl=en&amp;coord=' + location.Latitude + '%2C' + location.Longitude + '&amp;';
-      location.GMapUrl += 'q=' + encodeURIComponent(location.PrimaryAddress) + + '%2C ' + encodeURIComponent(location.City) +'%2C%20';
-      location.GMapUrl += encodeURIComponent(location.StateName) + '%20' + location.PostalCode + '%20+(' + encodeURIComponent(location.StoreName);
-      location.GMapUrl += ')&amp;ie=UTF8&amp;t=&amp;z=14&amp;iwloc=B&amp;output=embed';
+      location.zGMapUrl = 'https://maps.google.com/maps?width=100%&amp;height=280&amp;hl=en&amp;coord=' + location.Latitude + '%2C' + location.Longitude + '&amp;';
+      location.zGMapUrl += 'q=' + encodeURIComponent(location.PrimaryAddress) + + '%2C ' + encodeURIComponent(location.City) +'%2C%20';
+      location.zGMapUrl += encodeURIComponent(location.StateName) + '%20' + location.PostalCode + '%20+(' + encodeURIComponent(location.StoreName);
+      location.zGMapUrl += ')&amp;ie=UTF8&amp;t=&amp;z=14&amp;iwloc=B&amp;output=embed';
+      location.GMapUrl = $sce.trustAsResourceUrl(Location.zGMapUrl);
 
       //location.Phone = location.Phone.replace(/\D+/gi, '');
       var marker = new google.maps.Marker({
