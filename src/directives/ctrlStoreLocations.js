@@ -77,7 +77,7 @@
         gsnApi.goUrl($scope.singleStoreRedirect + '/' + $scope.storeList[0].StoreNumber);
       }
 
-      $scope.initializeMarker(storeList);
+      $scope.initializeMarker($scope.storeList);
       $scope.bounds = [];
 
       var markers = $scope.myMarkers;

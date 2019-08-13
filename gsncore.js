@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.12.46
+ * version 1.12.59
  * gsncore repository
- * Build date: Tue Jul 30 2019 10:35:03 GMT-0500 (Central Daylight Time)
+ * Build date: Tue Aug 13 2019 16:39:13 GMT-0500 (Central Daylight Time)
  */
 (function() {
   'use strict';
@@ -9492,7 +9492,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         gsnApi.goUrl($scope.singleStoreRedirect + '/' + $scope.storeList[0].StoreNumber);
       }
 
-      $scope.initializeMarker(storeList);
+      $scope.initializeMarker($scope.storeList);
       $scope.bounds = [];
 
       var markers = $scope.myMarkers;
