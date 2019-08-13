@@ -4,7 +4,7 @@
   var myDirectiveName = 'ctrlStoreLocator';
 
   angular.module('gsn.core')
-    .controller(myDirectiveName, ['$scope', 'gsnApi', '$notification', '$timeout', '$rootScope', '$location', 'gsnStore', 'debounce', '$sce', myController])
+    .controller(myDirectiveName, ['$scope', 'gsnApi', '$notification', '$timeout', '$rootScope', '$location', 'gsnStore', 'debounce', myController])
     .directive(myDirectiveName, myDirective);
 
   function myDirective() {
@@ -17,7 +17,7 @@
     return directive;
   }
 
-  function myController($scope, gsnApi, $notification, $timeout, $rootScope, $location, gsnStore, debounce, $sce) {
+  function myController($scope, gsnApi, $notification, $timeout, $rootScope, $location, gsnStore, debounce) {
     $scope.activate = activate;
 
     var defaultZoom = $scope.defaultZoom || 10;
@@ -409,12 +409,6 @@
     // populate marker array and distance
     $scope.createMarker = function(location) {
       var point = new google.maps.LatLng(location.Latitude, location.Longitude);
-
-      location.zGMapUrl = 'https://maps.google.com/maps?width=100%&height=280&hl=en&coord=' + location.Latitude + ',' + location.Longitude + '&';
-      location.zGMapUrl += 'q=' + encodeURIComponent(location.PrimaryAddress + ', ' + location.City + ', ' + location.StateName + ' ' + location.PostalCode) + '+(' + encodeURIComponent(location.StoreName) + ')@';
-      location.zGMapUrl += location.Latitude + ',' + location.Longitude;
-      location.zGMapUrl += '&ie=UTF8&t=&z=14&iwloc=B&output=embed';
-      location.GMapUrl = $sce.trustAsResourceUrl(location.zGMapUrl);
 
       //location.Phone = location.Phone.replace(/\D+/gi, '');
       var marker = new google.maps.Marker({

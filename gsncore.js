@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.12.58
+ * version 1.12.59
  * gsncore repository
- * Build date: Tue Aug 13 2019 16:12:34 GMT-0500 (Central Daylight Time)
+ * Build date: Tue Aug 13 2019 16:39:13 GMT-0500 (Central Daylight Time)
  */
 (function() {
   'use strict';
@@ -9613,7 +9613,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
   var myDirectiveName = 'ctrlStoreLocator';
 
   angular.module('gsn.core')
-    .controller(myDirectiveName, ['$scope', 'gsnApi', '$notification', '$timeout', '$rootScope', '$location', 'gsnStore', 'debounce', '$sce', myController])
+    .controller(myDirectiveName, ['$scope', 'gsnApi', '$notification', '$timeout', '$rootScope', '$location', 'gsnStore', 'debounce', myController])
     .directive(myDirectiveName, myDirective);
 
   function myDirective() {
@@ -9626,7 +9626,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     return directive;
   }
 
-  function myController($scope, gsnApi, $notification, $timeout, $rootScope, $location, gsnStore, debounce, $sce) {
+  function myController($scope, gsnApi, $notification, $timeout, $rootScope, $location, gsnStore, debounce) {
     $scope.activate = activate;
 
     var defaultZoom = $scope.defaultZoom || 10;
@@ -10018,12 +10018,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     // populate marker array and distance
     $scope.createMarker = function(location) {
       var point = new google.maps.LatLng(location.Latitude, location.Longitude);
-
-      location.zGMapUrl = 'https://maps.google.com/maps?width=100%&height=280&hl=en&coord=' + location.Latitude + ',' + location.Longitude + '&';
-      location.zGMapUrl += 'q=' + encodeURIComponent(location.PrimaryAddress + ', ' + location.City + ', ' + location.StateName + ' ' + location.PostalCode) + '+(' + encodeURIComponent(location.StoreName) + ')@';
-      location.zGMapUrl += location.Latitude + ',' + location.Longitude;
-      location.zGMapUrl += '&ie=UTF8&t=&z=14&iwloc=B&output=embed';
-      location.GMapUrl = $sce.trustAsResourceUrl(location.zGMapUrl);
 
       //location.Phone = location.Phone.replace(/\D+/gi, '');
       var marker = new google.maps.Marker({
