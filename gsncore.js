@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.12.50
+ * version 1.12.51
  * gsncore repository
- * Build date: Tue Aug 13 2019 12:57:38 GMT-0500 (Central Daylight Time)
+ * Build date: Tue Aug 13 2019 13:01:12 GMT-0500 (Central Daylight Time)
  */
 (function() {
   'use strict';
@@ -10023,7 +10023,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       location.zGMapUrl += 'q=' + encodeURIComponent(location.PrimaryAddress) + + '%2C ' + encodeURIComponent(location.City) +'%2C%20';
       location.zGMapUrl += encodeURIComponent(location.StateName) + '%20' + location.PostalCode + '%20+(' + encodeURIComponent(location.StoreName);
       location.zGMapUrl += ')&amp;ie=UTF8&amp;t=&amp;z=14&amp;iwloc=B&amp;output=embed';
-      location.GMapUrl = $sce.trustAsResourceUrl(Location.zGMapUrl);
+      location.GMapUrl = $sce.trustAsResourceUrl(location.zGMapUrl);
 
       //location.Phone = location.Phone.replace(/\D+/gi, '');
       var marker = new google.maps.Marker({
