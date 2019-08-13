@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.12.56
+ * version 1.12.57
  * gsncore repository
- * Build date: Tue Aug 13 2019 15:41:12 GMT-0500 (Central Daylight Time)
+ * Build date: Tue Aug 13 2019 15:55:04 GMT-0500 (Central Daylight Time)
  */
 (function() {
   'use strict';
