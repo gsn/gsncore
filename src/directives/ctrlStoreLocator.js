@@ -411,7 +411,8 @@
       var point = new google.maps.LatLng(location.Latitude, location.Longitude);
 
       location.zGMapUrl = 'https://maps.google.com/maps?width=100%&height=280&hl=en&coord=' + location.Latitude + ',' + location.Longitude + '&';
-      location.zGMapUrl += 'q=' + encodeURIComponent(location.PrimaryAddress + ', ' + location.City + ', ' + location.StateName + ' ' + location.PostalCode) + '+(' + encodeURIComponent(location.StoreName) + '%20)';
+      // location.zGMapUrl += 'q=' + encodeURIComponent(location.PrimaryAddress + ', ' + location.City + ', ' + location.StateName + ' ' + location.PostalCode) + '+(' + encodeURIComponent(location.StoreName) + ')';
+      location.zGMapUrl += 'q=' + encodeURIComponent(location.StoreName);
       location.zGMapUrl += '&ie=UTF8&t=&z=14&iwloc=B&output=embed';
       location.GMapUrl = $sce.trustAsResourceUrl(location.zGMapUrl);
 

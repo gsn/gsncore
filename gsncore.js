@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.12.55
+ * version 1.12.56
  * gsncore repository
- * Build date: Tue Aug 13 2019 15:28:44 GMT-0500 (Central Daylight Time)
+ * Build date: Tue Aug 13 2019 15:41:12 GMT-0500 (Central Daylight Time)
  */
 (function() {
   'use strict';
@@ -10020,7 +10020,8 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       var point = new google.maps.LatLng(location.Latitude, location.Longitude);
 
       location.zGMapUrl = 'https://maps.google.com/maps?width=100%&height=280&hl=en&coord=' + location.Latitude + ',' + location.Longitude + '&';
-      location.zGMapUrl += 'q=' + encodeURIComponent(location.PrimaryAddress + ', ' + location.City + ', ' + location.StateName + ' ' + location.PostalCode) + '+(' + encodeURIComponent(location.StoreName) + '%20)';
+      // location.zGMapUrl += 'q=' + encodeURIComponent(location.PrimaryAddress + ', ' + location.City + ', ' + location.StateName + ' ' + location.PostalCode) + '+(' + encodeURIComponent(location.StoreName) + ')';
+      location.zGMapUrl += 'q=' + encodeURIComponent(location.StoreName);
       location.zGMapUrl += '&ie=UTF8&t=&z=14&iwloc=B&output=embed';
       location.GMapUrl = $sce.trustAsResourceUrl(location.zGMapUrl);
 
