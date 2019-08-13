@@ -410,10 +410,10 @@
     $scope.createMarker = function(location) {
       var point = new google.maps.LatLng(location.Latitude, location.Longitude);
 
-      location.zGMapUrl = 'https://maps.google.com/maps?width=100%&amp;height=280&amp;hl=en&amp;coord=' + location.Latitude + '%2C' + location.Longitude + '&amp;';
-      location.zGMapUrl += 'q=' + encodeURIComponent(location.PrimaryAddress) + + '%2C ' + encodeURIComponent(location.City) +'%2C%20';
+      location.zGMapUrl = 'https://maps.google.com/maps?width=100%&height=280&hl=en&coord=' + location.Latitude + ',' + location.Longitude + '&';
+      location.zGMapUrl += 'q=' + encodeURIComponent(location.PrimaryAddress) + '%2C%20' + encodeURIComponent(location.City) +'%2C%20';
       location.zGMapUrl += encodeURIComponent(location.StateName) + '%20' + location.PostalCode + '%20+(' + encodeURIComponent(location.StoreName);
-      location.zGMapUrl += ')&amp;ie=UTF8&amp;t=&amp;z=14&amp;iwloc=B&amp;output=embed';
+      location.zGMapUrl += ')&ie=UTF8&t=&z=14iwloc=B&output=embed';
       location.GMapUrl = $sce.trustAsResourceUrl(location.zGMapUrl);
 
       //location.Phone = location.Phone.replace(/\D+/gi, '');
