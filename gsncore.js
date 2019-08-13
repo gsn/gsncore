@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.12.53
+ * version 1.12.54
  * gsncore repository
- * Build date: Tue Aug 13 2019 15:13:42 GMT-0500 (Central Daylight Time)
+ * Build date: Tue Aug 13 2019 15:24:36 GMT-0500 (Central Daylight Time)
  */
 (function() {
   'use strict';
@@ -10019,9 +10019,9 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     $scope.createMarker = function(location) {
       var point = new google.maps.LatLng(location.Latitude, location.Longitude);
 
-      location.zGMapUrl = 'https://maps.google.com/maps?width=100%&height=280&hl=en&coord=' + location.Latitude + ',' + location.Longitude + '&';
-      location.zGMapUrl += 'q=' + encodeURIComponent(location.PrimaryAddress + ', ' + location.City + ', ' + location.StateName + ' ' + location.PostalCode + ' +(' + location.StoreName + ')');
-      location.zGMapUrl += '&ie=UTF8&t=&z=14&iwloc=B&output=embed';
+      location.zGMapUrl = 'https://maps.google.com/maps?width=100%&amp;height=280&amp;hl=en&amp;coord=' + location.Latitude + ',' + location.Longitude + '&amp;';
+      location.zGMapUrl += 'q=' + encodeURIComponent(location.PrimaryAddress + ', ' + location.City + ', ' + location.StateName + ' ' + location.PostalCode) + '+(' + encodeURIComponent(location.StoreName) + '%20)';
+      location.zGMapUrl += '&amp;ie=UTF8&amp;t=&amp;z=14&amp;iwloc=B&amp;output=embed';
       location.GMapUrl = $sce.trustAsResourceUrl(location.zGMapUrl);
 
       //location.Phone = location.Phone.replace(/\D+/gi, '');
