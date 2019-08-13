@@ -200,13 +200,7 @@
 
       for (var i = 0; i < endIndex; i++) {
         if ($scope.canShow(data[i])) {
-          var store = data[i];
-          tempMarkers.push($scope.createMarker(store));
-
-          store.GMapUrl = 'https://maps.google.com/maps?width=100%&amp;height=280&amp;hl=en&amp;coord=' + store.Latitude + '%2C' + store.Longitude + '&amp;';
-          store.GMapUrl += 'q=' + encodeURIComponent(store.PrimaryAddress) + + '%2C ' + encodeURIComponent(store.City) +'%2C%20';
-          store.GMapUrl += encodeURIComponent(store.StateName) + '%20' + store.PostalCode + '%20+(' + encodeURIComponent(store.StoreName);
-          store.GMapUrl += ')&amp;ie=UTF8&amp;t=&amp;z=14&amp;iwloc=B&amp;output=embed';
+          tempMarkers.push($scope.createMarker(data[i]));
         }
       }
       if (i === 1) {
@@ -415,6 +409,11 @@
     // populate marker array and distance
     $scope.createMarker = function(location) {
       var point = new google.maps.LatLng(location.Latitude, location.Longitude);
+
+      location.GMapUrl = 'https://maps.google.com/maps?width=100%&amp;height=280&amp;hl=en&amp;coord=' + location.Latitude + '%2C' + location.Longitude + '&amp;';
+      location.GMapUrl += 'q=' + encodeURIComponent(location.PrimaryAddress) + + '%2C ' + encodeURIComponent(location.City) +'%2C%20';
+      location.GMapUrl += encodeURIComponent(location.StateName) + '%20' + location.PostalCode + '%20+(' + encodeURIComponent(location.StoreName);
+      location.GMapUrl += ')&amp;ie=UTF8&amp;t=&amp;z=14&amp;iwloc=B&amp;output=embed';
 
       //location.Phone = location.Phone.replace(/\D+/gi, '');
       var marker = new google.maps.Marker({
