@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.12.52
+ * version 1.12.53
  * gsncore repository
- * Build date: Tue Aug 13 2019 14:04:47 GMT-0500 (Central Daylight Time)
+ * Build date: Tue Aug 13 2019 15:13:42 GMT-0500 (Central Daylight Time)
  */
 (function() {
   'use strict';
@@ -10020,9 +10020,8 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       var point = new google.maps.LatLng(location.Latitude, location.Longitude);
 
       location.zGMapUrl = 'https://maps.google.com/maps?width=100%&height=280&hl=en&coord=' + location.Latitude + ',' + location.Longitude + '&';
-      location.zGMapUrl += 'q=' + encodeURIComponent(location.PrimaryAddress) + '%2C%20' + encodeURIComponent(location.City) +'%2C%20';
-      location.zGMapUrl += encodeURIComponent(location.StateName) + '%20' + location.PostalCode + '%20+(' + encodeURIComponent(location.StoreName);
-      location.zGMapUrl += ')&ie=UTF8&t=&z=14iwloc=B&output=embed';
+      location.zGMapUrl += 'q=' + encodeURIComponent(location.PrimaryAddress + ', ' + location.City + ', ' + location.StateName + ' ' + location.PostalCode + ' +(' + location.StoreName + ')');
+      location.zGMapUrl += '&ie=UTF8&t=&z=14&iwloc=B&output=embed';
       location.GMapUrl = $sce.trustAsResourceUrl(location.zGMapUrl);
 
       //location.Phone = location.Phone.replace(/\D+/gi, '');
