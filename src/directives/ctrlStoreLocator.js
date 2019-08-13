@@ -270,6 +270,11 @@
           if (store.Distance <= searchRadius) {
             result.push(store);
           }
+
+          store.GMapUrl = 'https://maps.google.com/maps?width=100%&amp;height=280&amp;hl=en&amp;coord=' + store.Latitude + '%2C' + store.Longitude + '&amp;';
+          store.GMapUrl += 'q=' + encodeURIComponent(store.PrimaryAddress) + + '%2C ' + encodeURIComponent(store.City) +'%2C%20';
+          store.GMapUrl += encodeURIComponent(store.StateName) + '%20' + store.PostalCode + '%20+(' + encodeURIComponent(store.StoreName);
+          store.GMapUrl += ')&amp;ie=UTF8&amp;t=&amp;z=14&amp;iwloc=B&amp;output=embed';
         });
 
         gsnApi.sortOn(result2, 'Distance');
