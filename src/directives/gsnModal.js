@@ -71,7 +71,7 @@
           }
           templateLoader.then(function() {
             var $modalElement = angular.element($compile(myHtml)(scope));
-            return gmodal.show({
+            gmodal.show({
               content: $modalElement[0],
               hideOn: attrs.hideOn || 'click,esc,tap',
               cls: attrs.cls,
@@ -79,6 +79,12 @@
               closeCls: attrs.closeCls || 'close modal',
               disableScrollTop: attrs.disableScrollTop
             }, hideCallback);
+            $timeout(function() {
+              var af = angular('.myModalForm').find('[autofocus]');
+              if (af && af.focus) {
+                af.focus()
+              }
+            }, 50);
           });
         }
         return scope;
