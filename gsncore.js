@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.12.60
+ * version 1.12.61
  * gsncore repository
- * Build date: Wed Sep 18 2019 14:42:59 GMT-0500 (Central Daylight Time)
+ * Build date: Wed Oct 02 2019 13:07:53 GMT-0500 (Central Daylight Time)
  */
 (function() {
   'use strict';
@@ -11014,6 +11014,15 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         }
       }
 
+      gmodal.on('show', function() {
+        $timeout(function() {
+          var af = angular('.myModalForm').find('#modalTitle');
+          if (af && af.focus) {
+            af.focus()
+          }
+        }, 50);
+      });
+
       scope.closeModal = function(shouldReload) {
         if (timeoutOfOpen)
           $timeout.cancel(timeoutOfOpen);
@@ -11049,12 +11058,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
               closeCls: attrs.closeCls || 'close modal',
               disableScrollTop: attrs.disableScrollTop
             }, hideCallback);
-            $timeout(function() {
-              var af = angular('.myModalForm').find('[autofocus]');
-              if (af && af.focus) {
-                af.focus()
-              }
-            }, 50);
           });
         }
         return scope;
