@@ -44,6 +44,15 @@
         }
       }
 
+      gmodal.on('show', function() {
+        $timeout(function() {
+          var af = angular('.myModalForm').find('#modalTitle');
+          if (af && af.focus) {
+            af.focus()
+          }
+        }, 50);
+      });
+
       scope.closeModal = function(shouldReload) {
         if (timeoutOfOpen)
           $timeout.cancel(timeoutOfOpen);
@@ -79,12 +88,6 @@
               closeCls: attrs.closeCls || 'close modal',
               disableScrollTop: attrs.disableScrollTop
             }, hideCallback);
-            $timeout(function() {
-              var af = angular('.myModalForm').find('[autofocus]');
-              if (af && af.focus) {
-                af.focus()
-              }
-            }, 50);
           });
         }
         return scope;
