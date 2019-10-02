@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.12.61
+ * version 1.12.62
  * gsncore repository
- * Build date: Wed Oct 02 2019 13:07:53 GMT-0500 (Central Daylight Time)
+ * Build date: Wed Oct 02 2019 14:04:24 GMT-0500 (Central Daylight Time)
  */
 (function() {
   'use strict';
@@ -6746,7 +6746,7 @@
 
       gmodal.on('show', function() {
         $timeout(function() {
-          var af = angular('.myModalForm').find('#modalTitle');
+          var af = angular.element('.myModalForm').find('#modalTitle');
           if (af && af.focus) {
             af.focus()
           }
