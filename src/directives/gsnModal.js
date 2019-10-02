@@ -46,7 +46,7 @@
 
       gmodal.on('show', function() {
         $timeout(function() {
-          var af = angular('.myModalForm').find('#modalTitle');
+          var af = angular.element('.myModalForm').find('#modalTitle');
           if (af && af.focus) {
             af.focus()
           }
