@@ -334,6 +334,10 @@
           }
 
           $scope.gvm.currentStore = store;
+          if ((store.StoreNumber + '') === '1') {
+            return;
+          }
+
           gsnProfile.getProfile().then(function(rst) {
             if (rst.success) {
               if (rst.response.PrimaryStoreId !== store.StoreId && !gsnApi.isAnonymous()) {

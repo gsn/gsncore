@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.12.63
+ * version 1.12.64
  * gsncore repository
- * Build date: Thu Oct 31 2019 13:31:10 GMT-0500 (Central Daylight Time)
+ * Build date: Thu Oct 31 2019 13:34:37 GMT-0500 (Central Daylight Time)
  */
 (function() {
   'use strict';
@@ -2568,6 +2568,10 @@
           }
 
           $scope.gvm.currentStore = store;
+          if ((store.StoreNumber + '') === '1') {
+            return;
+          }
+
           gsnProfile.getProfile().then(function(rst) {
             if (rst.success) {
               if (rst.response.PrimaryStoreId !== store.StoreId && !gsnApi.isAnonymous()) {
