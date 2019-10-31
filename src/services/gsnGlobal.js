@@ -326,10 +326,13 @@
       });
       $scope.$on('gsnevent:store-setid', function(event, result) {
         gsnStore.getStore().then(function(store) {
-          $analytics.eventTrack('StoreSelected', {
-            category: store.StoreName,
-            label: store.StoreNumber + ''
-          });
+          if (result.oldValue !== result.newValue) {
+            $analytics.eventTrack('StoreSelected', {
+              category: store.StoreName,
+              label: store.StoreNumber + ''
+            });
+          }
+
           $scope.gvm.currentStore = store;
           gsnProfile.getProfile().then(function(rst) {
             if (rst.success) {

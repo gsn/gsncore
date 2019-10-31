@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.12.62
+ * version 1.12.63
  * gsncore repository
- * Build date: Wed Oct 02 2019 14:04:24 GMT-0500 (Central Daylight Time)
+ * Build date: Thu Oct 31 2019 13:31:10 GMT-0500 (Central Daylight Time)
  */
 (function() {
   'use strict';
@@ -2560,10 +2560,13 @@
       });
       $scope.$on('gsnevent:store-setid', function(event, result) {
         gsnStore.getStore().then(function(store) {
-          $analytics.eventTrack('StoreSelected', {
-            category: store.StoreName,
-            label: store.StoreNumber + ''
-          });
+          if (result.oldValue !== result.newValue) {
+            $analytics.eventTrack('StoreSelected', {
+              category: store.StoreName,
+              label: store.StoreNumber + ''
+            });
+          }
+
           $scope.gvm.currentStore = store;
           gsnProfile.getProfile().then(function(rst) {
             if (rst.success) {
