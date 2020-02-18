@@ -58,7 +58,7 @@
     StoreServiceUrl: '/proxy/store',
     ProfileServiceUrl: '/proxy/profile',
     ShoppingListServiceUrl: '/proxy/shoppinglisttwo',
-    NewCircularUrl: 'https://upload.brickinc.net/apiv2/circular/legacy/{chainId}/{storeNumber}?start_at=',
+    NewCircularUrl: 'https://upload.brickinc.net/apiv2/circular/legacy/{chainId}/{storeNumber}?',
     ApiUrl: '',
 
     // global config

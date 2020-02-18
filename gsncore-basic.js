@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.12.65
+ * version 1.12.66
  * gsncore repository
- * Build date: Tue Feb 18 2020 17:23:34 GMT-0600 (Central Standard Time)
+ * Build date: Tue Feb 18 2020 17:45:15 GMT-0600 (Central Standard Time)
  */
 (function() {
   'use strict';
@@ -64,7 +64,7 @@
     StoreServiceUrl: '/proxy/store',
     ProfileServiceUrl: '/proxy/profile',
     ShoppingListServiceUrl: '/proxy/shoppinglisttwo',
-    NewCircularUrl: 'https://upload.brickinc.net/apiv2/circular/legacy/{chainId}/{storeNumber}?start_at=',
+    NewCircularUrl: 'https://upload.brickinc.net/apiv2/circular/legacy/{chainId}/{storeNumber}?',
     ApiUrl: '',
 
     // global config

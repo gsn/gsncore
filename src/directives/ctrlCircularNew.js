@@ -50,7 +50,7 @@
     function loadServerCircular(store) {
       var dateobj = new Date();
       var url = gsnApi.getConfig().NewCircularUrl;
-      var url = url.replace('{chainId}', gsnApi.getChainId()).replace('{storeNumber}', store.StoreNumber) + dateobj.toISOString().substr(0, 10);
+      var url = url.replace('{chainId}', gsnApi.getChainId()).replace('{storeNumber}', store.StoreNumber).replace('{startAt}', dateobj.toISOString().substr(0, 10));
 
       // clear every hours
       url += '&cb=' +  dateobj.toISOString().substr(0, 13);
