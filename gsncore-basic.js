@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.12.68
+ * version 1.12.69
  * gsncore repository
- * Build date: Tue Feb 18 2020 20:24:09 GMT-0600 (Central Standard Time)
+ * Build date: Wed Feb 19 2020 09:29:43 GMT-0600 (Central Standard Time)
  */
 (function() {
   'use strict';
@@ -4818,8 +4818,13 @@
       var pages = circ.Pages;
       var itemCount = 0;
       gsnApi.sortOn(pages, 'PageNumber');
+      var cType = circularTypes[circ.CircularTypeId]
+      if (!cType) {
+        return;
+      }
+
       circ.pages = pages;
-      circ.CircularType = circularTypes[circ.CircularTypeId].Name;
+      circ.CircularType = cType.Name;
       circ.ImageUrl = gsnApi.isNull(circ.ImageUrl, '').replace('http://', '//');
       var circularMaster = {
         CircularPageId: pages[0].CircularPageId,
