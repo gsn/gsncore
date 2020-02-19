@@ -575,8 +575,13 @@
       var pages = circ.Pages;
       var itemCount = 0;
       gsnApi.sortOn(pages, 'PageNumber');
+      var cType = circularTypes[circ.CircularTypeId]
+      if (!cType) {
+        return;
+      }
+
       circ.pages = pages;
-      circ.CircularType = circularTypes[circ.CircularTypeId].Name;
+      circ.CircularType = cType.Name;
       circ.ImageUrl = gsnApi.isNull(circ.ImageUrl, '').replace('http://', '//');
       var circularMaster = {
         CircularPageId: pages[0].CircularPageId,
