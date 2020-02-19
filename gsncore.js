@@ -1,9 +1,3 @@
-/*!
- * gsncore
- * version 1.12.69
- * gsncore repository
- * Build date: Wed Feb 19 2020 09:29:43 GMT-0600 (Central Standard Time)
- */
 (function() {
   'use strict';
 
