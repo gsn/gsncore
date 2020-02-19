@@ -5396,7 +5396,7 @@
         .replace('{startAt}', dateobj.toISOString().substr(0, 10));
 
       // clear every hours
-      url += '&cb=' +  dateobj.toISOString().substr(0, 13);
+      url += '&cb=' +  dateobj.toISOString().substr(0, 15);
       $http.get(url).success(function(response) {
         $scope.vm.digitalCirc = response.message;
         if (typeof($scope.vm.digitalCirc) === 'string' || $scope.vm.digitalCirc.Circulars.length <= 0) {
