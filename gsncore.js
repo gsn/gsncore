@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.12.66
+ * version 1.12.67
  * gsncore repository
- * Build date: Tue Feb 18 2020 17:45:15 GMT-0600 (Central Standard Time)
+ * Build date: Tue Feb 18 2020 19:22:44 GMT-0600 (Central Standard Time)
  */
 (function() {
   'use strict';
@@ -7622,35 +7622,42 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     function loadServerCircular(store) {
       var dateobj = new Date();
       var url = gsnApi.getConfig().NewCircularUrl;
-      var url = url.replace('{chainId}', gsnApi.getChainId()).replace('{storeNumber}', store.StoreNumber).replace('{startAt}', dateobj.toISOString().substr(0, 10));
+      url = url.replace('{chainId}', gsnApi.getChainId())
+        .replace('{storeNumber}', store.StoreNumber)
+        .replace('{startAt}', dateobj.toISOString().substr(0, 10));
 
       // clear every hours
       url += '&cb=' +  dateobj.toISOString().substr(0, 13);
       $http.get(url).success(function(response) {
-        $scope.vm.newCirc = response.message;
-        loadCircular();
+        $scope.vm.digitalCirc = response.message;
+        if (typeof($scope.vm.digitalCirc) === 'string' || $scope.vm.digitalCirc.Circulars.length <= 0) {
+          $scope.vm.digitalCirc = null;
+        } else {
+          loadCircular();
+        }
+
       }).error(function(response) {
         // do nothing
-        $scope.vm.newCirc    = null;
+        $scope.vm.digitalCirc    = null;
         $scope.vm.noCircular = true;
       });
     }
 
     function loadCircular() {
-      if (!$scope.vm.newCirc) {
+      if (!$scope.vm.digitalCirc) {
         return;
       }
 
       var myPageIdx = parseInt($location.search().p || $location.search().pg || 0);
       var myCircIdx = parseInt($location.search().c || 0);
-      if ($scope.vm.newCirc.Circulars.length === 1) {
+      if ($scope.vm.digitalCirc.Circulars.length === 1) {
         myCircIdx = myCircIdx || 1;
         myPageIdx = myPageIdx || 1;
       }
 
       $scope.allItems.length = 0;
 
-      angular.forEach($scope.vm.newCirc.Circulars, function(c){
+      angular.forEach($scope.vm.digitalCirc.Circulars, function(c){
         angular.forEach(c.Pages, function(p){
           angular.forEach(p.Items, function(i){
             i.PageNumber     = p.PageNumber;
@@ -7669,7 +7676,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     }
 
     function activate() {
-      if ($scope.vm.newCirc) {
+      if ($scope.vm.digitalCirc) {
         return;
       }
 
@@ -7688,7 +7695,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       $rootScope.$broadcast('gsnevent:loadads');
       var store = $scope.gvm.currentStore;
 
-      if (!$scope.vm.newCirc || $scope.vm.newCirc.store_number !== store.StoreNumber) {
+      if (!$scope.vm.digitalCirc || $scope.vm.digitalCirc.store_number !== store.StoreNumber) {
         // attempt to retrieve store specific circular
         loadServerCircular(store);
         return;
@@ -7712,11 +7719,11 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     };
 
     $scope.currentCircular = function() {
-      if (!$scope.vm.newCirc) {
+      if (!$scope.vm.digitalCirc) {
         return null
       }
 
-      return $scope.vm.newCirc.Circulars[$scope.vm.circIdx - 1]
+      return $scope.vm.digitalCirc.Circulars[$scope.vm.circIdx - 1]
     };
 
     $scope.doToggleCircularItem = function(evt, tempItem) {
@@ -7749,7 +7756,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     $scope.$on('gsnevent:digitalcircular-itemselect', $scope.doAddCircularItem);
 
     $scope.doSearchInternal = function() {
-      if (!$scope.vm.newCirc) {
+      if (!$scope.vm.digitalCirc) {
         return;
       }
 
@@ -7758,7 +7765,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       // don't show circular until data and list are both loaded
       if (gsnApi.isNull(list, null) === null) return;
 
-      var circ = $scope.vm.newCirc;
+      var circ = $scope.vm.digitalCirc;
       var searchResult = $filter('filter')($scope.allItems, $scope.vm.filter);
       var sortResult = $filter('orderBy')($filter('filter')(searchResult, $scope.vm.filterBy || ''), $scope.actualSortBy);
 
@@ -7777,9 +7784,9 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
 
     //#region Internal Methods
     function setPage(oldValue, newValue) {
-      if (!$scope.vm.newCirc) return;
-      if (!$scope.vm.newCirc.Circulars) return;
-      if ($scope.vm.newCirc.Circulars.length <= 0) return;
+      if (!$scope.vm.digitalCirc) return;
+      if (!$scope.vm.digitalCirc.Circulars) return;
+      if ($scope.vm.digitalCirc.Circulars.length <= 0) return;
 
       $scope.vm.circular = $scope.currentCircular();
       if ($scope.vm.circular) {

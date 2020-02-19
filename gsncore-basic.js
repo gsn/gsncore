@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.12.66
+ * version 1.12.67
  * gsncore repository
- * Build date: Tue Feb 18 2020 17:45:15 GMT-0600 (Central Standard Time)
+ * Build date: Tue Feb 18 2020 19:22:44 GMT-0600 (Central Standard Time)
  */
 (function() {
   'use strict';
