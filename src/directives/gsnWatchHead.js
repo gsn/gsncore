@@ -152,6 +152,29 @@
     }
   });
 
+  ngModifyElementDirective({
+    name: 'gsnMetaImage2',
+    selector: 'meta[itemprop="image"]',
+    html: '<meta itemprop="image" name="twitter:image" property="og:image"/><meta content="300" property="og:image:width"/><meta content="300" property="og:image:height"/>',
+    get: function(e) {
+      return e.attr('content');
+    },
+    set: function(e, v) {
+      if (v) {
+
+        if (typeof(v) !== 'string' && v.image_url) {
+          var iw = angular.element('head > meta[property="og:image:width"]');
+          var ih = angular.element('head > meta[property="og:image:height"]');
+          e.attr('content', v.image_url);
+          iw.attr('content', v.image_width);
+          iw.attr('content', v.image_height);
+        }
+      }
+
+      return e;
+    }
+  });
+
   // google site verification
   ngModifyElementDirective({
     name: 'gsnMetaGoogleSiteVerification',
