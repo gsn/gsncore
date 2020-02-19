@@ -1,8 +1,8 @@
 /*!
  * gsncore
- * version 1.12.64
+ * version 1.12.68
  * gsncore repository
- * Build date: Thu Oct 31 2019 13:34:37 GMT-0500 (Central Daylight Time)
+ * Build date: Tue Feb 18 2020 20:24:09 GMT-0600 (Central Standard Time)
  */
 (function() {
   'use strict';
@@ -64,6 +64,7 @@
     StoreServiceUrl: '/proxy/store',
     ProfileServiceUrl: '/proxy/profile',
     ShoppingListServiceUrl: '/proxy/shoppinglisttwo',
+    NewCircularUrl: 'https://upload.brickinc.net/apiv2/circular/legacy/{chainId}/{storeNumber}?',
     ApiUrl: '',
 
     // global config
@@ -8210,6 +8211,29 @@
       }
 
       return e.attr('content', v);
+    }
+  });
+
+  ngModifyElementDirective({
+    name: 'gsnMetaImage2',
+    selector: 'meta[itemprop="image"]',
+    html: '<meta itemprop="image" name="twitter:image" property="og:image"/><meta content="300" property="og:image:width"/><meta content="300" property="og:image:height"/>',
+    get: function(e) {
+      return e.attr('content');
+    },
+    set: function(e, v) {
+      if (v) {
+
+        if (typeof(v) !== 'string' && v.image_url) {
+          var iw = angular.element('head > meta[property="og:image:width"]');
+          var ih = angular.element('head > meta[property="og:image:height"]');
+          e.attr('content', v.image_url);
+          iw.attr('content', v.image_width);
+          iw.attr('content', v.image_height);
+        }
+      }
+
+      return e;
     }
   });
 
