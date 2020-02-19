@@ -1,11 +1,11 @@
 (function(angular, undefined) {
   'use strict';
   var serviceId = 'gsnList';
-  angular.module('gsn.core').factory(serviceId, ['$rootScope', '$http', 'gsnApi', '$q', '$sessionStorage', gsnList]);
+  angular.module('gsn.core').factory(serviceId, ['$rootScope', '$http', 'gsnApi', '$q', '$localStorage', gsnList]);
 
-  function gsnList($rootScope, $http, gsnApi, $q, $sessionStorage) {
+  function gsnList($rootScope, $http, gsnApi, $q, $localStorage) {
 
-    var betterStorage = $sessionStorage;
+    var betterStorage = $localStorage;
 
     // just a shopping list object
     function myShoppingList(shoppingListId, shoppingList) {
@@ -54,43 +54,7 @@
           existingItem.Quantity = itemToSync.Quantity;
         }
 
-        if (parseInt(existingItem.Quantity) > 0) {
-          // build new item to make sure posting of only required fields
-          var itemToPost = angular.copy(existingItem);
-
-          itemToPost.Varieties = undefined;
-          itemToPost.PageNumber = undefined;
-          itemToPost.rect = undefined;
-          itemToPost.LinkedItem = undefined;
-          itemToPost.selected = undefined;
-          itemToPost.zIndex = undefined;
-
-          $rootScope.$broadcast('gsnevent:shoppinglistitem-updating', returnObj, existingItem, $mySavedData);
-
-          gsnApi.getAccessToken().then(function() {
-
-            var url = gsnApi.getShoppingListApiUrl() + '/UpdateItem/' + returnObj.ShoppingListId;
-            var hPayload = gsnApi.getApiHeaders();
-            hPayload['X-SHOPPING-LIST-ID'] = returnObj.ShoppingListId;
-            $http.post(url, itemToPost, {
-              headers: hPayload
-            }).success(function(response) {
-              if (response.Id) {
-                processServerItem(response, existingItem);
-              }
-
-              $rootScope.$broadcast('gsnevent:shoppinglist-changed', returnObj);
-              saveListToSession();
-            }).error(function() {
-              // reset to previous quantity on failure
-              if (existingItem.OldQuantity) {
-                existingItem.NewQuantity = existingItem.OldQuantity;
-                existingItem.Quantity = existingItem.OldQuantity;
-                saveListToSession();
-              }
-            });
-          });
-        } else {
+        if (parseInt(existingItem.Quantity) <= 0) {
           returnObj.removeItem(existingItem);
         }
 
@@ -152,42 +116,19 @@
       };
 
       returnObj.addItems = function(items) {
-        var deferred = $q.defer();
         var toAdd = [];
         angular.forEach(items, function(v, k) {
           var rst = angular.copy(returnObj.addItem(v, true));
           toAdd.push(rst);
         });
 
-        $rootScope.$broadcast('gsnevent:shoppinglistitems-updating', returnObj);
         saveListToSession();
 
-        gsnApi.getAccessToken().then(function() {
-
-          var url = gsnApi.getShoppingListApiUrl() + '/SaveItems/' + returnObj.ShoppingListId;
-          var hPayload = gsnApi.getApiHeaders();
-          hPayload['X-SHOPPING-LIST-ID'] = returnObj.ShoppingListId;
-          $http.post(url, toAdd, {
-            headers: hPayload
-          }).success(function(response) {
-            $rootScope.$broadcast('gsnevent:shoppinglist-changed', returnObj);
-            deferred.resolve({
-              success: true,
-              response: response
-            });
-            saveListToSession();
-          }).error(function() {
-            deferred.resolve({
-              success: false
-            });
-          });
-        });
-
-        return deferred.promise;
+        return returnObj;
       };
 
       // remove item from list
-      returnObj.removeItem = function(inputItem, deferRemove) {
+      returnObj.removeItem = function(inputItem) {
         var item = returnObj.getItem(inputItem);
         if (item) {
           item.Quantity = 0;
@@ -208,21 +149,6 @@
           }
 
           saveListToSession();
-
-          if (deferRemove) return returnObj;
-          gsnApi.getAccessToken().then(function() {
-            $rootScope.$broadcast('gsnevent:shoppinglistitem-removing', returnObj, item);
-
-            var url = gsnApi.getShoppingListApiUrl() + '/DeleteItems/' + returnObj.ShoppingListId;
-            var hPayload = gsnApi.getApiHeaders();
-            hPayload['X-SHOPPING-LIST-ID'] = returnObj.ShoppingListId;
-            $http.post(url, [item.Id || item.RowKey], {
-              headers: hPayload
-            }).success(function(response) {
-              $rootScope.$broadcast('gsnevent:shoppinglist-changed', returnObj);
-              saveListToSession();
-            });
-          });
         }
 
         return returnObj;
@@ -315,56 +241,16 @@
         // call DeleteShoppingList
 
         $mySavedData.countCache = 0;
-        gsnApi.getAccessToken().then(function() {
-
-          var url = gsnApi.getShoppingListApiUrl() + '/Delete/' + returnObj.ShoppingListId;
-          var hPayload = gsnApi.getApiHeaders();
-          hPayload['X-SHOPPING-LIST-ID'] = returnObj.ShoppingListId;
-          $http.post(url, {}, {
-            headers: hPayload
-          }).success(function(response) {
-            // do nothing
-            $rootScope.$broadcast('gsnevent:shoppinglist-deleted', returnObj);
-            saveListToSession();
-          });
-        });
-
+        saveListToSession();
         return returnObj;
       };
 
       // cause change to shopping list title
       returnObj.setTitle = function(title) {
-        var deferred = $q.defer();
 
         $mySavedData.countCache = 0;
-        gsnApi.getAccessToken().then(function() {
-
-          var url = gsnApi.getShoppingListApiUrl() + '/Update/' + returnObj.ShoppingListId + '?title=' + encodeURIComponent(title);
-          var hPayload = gsnApi.getApiHeaders();
-          hPayload['X-SHOPPING-LIST-ID'] = returnObj.ShoppingListId;
-          $http.post(url, {}, {
-            headers: hPayload
-          }).success(function(response) {
-            deferred.resolve({
-              success: true,
-              response: returnObj
-            });
-            $mySavedData.list.Title = title;
-
-            // Send these two broadcast messages.
-            $rootScope.$broadcast('gsnevent:shopping-list-saved');
-            $rootScope.$broadcast('gsnevent:shoppinglist-changed', returnObj);
-            saveListToSession();
-          }).error(function(response) {
-            // console.log( returnObj.ShoppingListId + ' setTitle error: ' + response );
-            deferred.resolve({
-              success: false,
-              response: response
-            });
-          });
-        });
-
-        return deferred.promise;
+        $mySavedData.list.Title = title;
+        return returnObj;
       };
 
       returnObj.hasLoaded = function() {
@@ -397,11 +283,11 @@
             $mySavedData.items = list.items;
             $mySavedData.itemIdentity = list.itemIdentity;
             $mySavedData.countCache = list.countCache;
-          } else {
-            $mySavedData.hasLoaded = false;
-            returnObj.updateShoppingList();
+            // returnObj.updateShoppingList();
           }
         }
+
+        $mySavedData.hasLoaded = true;
       }
 
 
@@ -434,39 +320,10 @@
           });
           returnObj.deferred = null;
         } else {
-
           $mySavedData.items = {};
           $mySavedData.countCache = 0;
-
-          gsnApi.getAccessToken().then(function() {
-            // call GetShoppingList(int shoppinglistid, int profileid)
-            var url = gsnApi.getShoppingListApiUrl() + '/ItemsBy/' + returnObj.ShoppingListId + '?nocache=' + (new Date()).getTime();
-
-            var hPayload = gsnApi.getApiHeaders();
-            hPayload['X-SHOPPING-LIST-ID'] = returnObj.ShoppingListId;
-            $http.get(url, {
-              headers: hPayload
-            }).success(function(response) {
-              response = gsnApi.isNull(response, []);
-              processShoppingList(response);
-
-              $rootScope.$broadcast('gsnevent:shoppinglist-loaded', returnObj, $mySavedData.items);
-              deferred.resolve({
-                success: true,
-                response: returnObj
-              });
-              returnObj.deferred = null;
-            }).error(function(response) {
-              $rootScope.$broadcast('gsnevent:shoppinglist-loadfail', response);
-              deferred.resolve({
-                success: false,
-                response: response
-              });
-              returnObj.deferred = null;
-            });
-          });
+          loadListFromSession();
         }
-
 
         return deferred.promise;
       };
