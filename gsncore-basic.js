@@ -5536,9 +5536,7 @@
       // don't show circular until data and list are both loaded
       if (gsnApi.isNull(list, null) === null) return;
 
-      var circ = $scope.currentCircular();
-      var items = circ ? circ.items : $scope.allItems;
-      var searchResult = $filter('filter')(items, $scope.vm.filter);
+      var searchResult = $filter('filter')($scope.allItems, $scope.vm.filter);
       var sortResult = $filter('orderBy')($filter('filter')(searchResult, $scope.vm.filterBy || ''), $scope.actualSortBy);
 
       $scope.vm.categories = $scope.vm.digitalCirc.departments;
