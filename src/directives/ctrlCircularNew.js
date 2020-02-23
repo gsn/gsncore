@@ -100,9 +100,9 @@
 
       $scope.itemsById = gsnApi.mapObject($scope.allItems, 'ItemId');
 
-      $scope.doSearchInternal();
       $scope.vm.circIdx = myCircIdx;
       $scope.vm.pageIdx = myPageIdx;
+      $scope.doSearchInternal();
     }
 
     function activate() {
@@ -196,7 +196,8 @@
       if (gsnApi.isNull(list, null) === null) return;
 
       var circ = $scope.currentCircular();
-      var searchResult = $filter('filter')(circ.items, $scope.vm.filter);
+      var items = circ ? circ.items : $scope.allItems;
+      var searchResult = $filter('filter')(items, $scope.vm.filter);
       var sortResult = $filter('orderBy')($filter('filter')(searchResult, $scope.vm.filterBy || ''), $scope.actualSortBy);
 
       $scope.vm.categories = $scope.vm.digitalCirc.departments;
