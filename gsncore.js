@@ -7657,21 +7657,23 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       $scope.allItems.length = 0;
 
       angular.forEach($scope.vm.digitalCirc.Circulars, function(c){
+        c.items = [];
         angular.forEach(c.Pages, function(p){
           angular.forEach(p.Items, function(i){
             i.PageNumber     = p.PageNumber;
             i.CircularPageId = p.CircularPageId;
             i.CircularId     = c.CircularId;
             $scope.allItems.push(i);
+            c.items.push(i);
           });
         });
       });
 
       $scope.itemsById = gsnApi.mapObject($scope.allItems, 'ItemId');
 
-      $scope.doSearchInternal();
       $scope.vm.circIdx = myCircIdx;
       $scope.vm.pageIdx = myPageIdx;
+      $scope.doSearchInternal();
     }
 
     function activate() {
@@ -7764,13 +7766,13 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       // don't show circular until data and list are both loaded
       if (gsnApi.isNull(list, null) === null) return;
 
-      var circ = $scope.vm.digitalCirc;
       var searchResult = $filter('filter')($scope.allItems, $scope.vm.filter);
       var sortResult = $filter('orderBy')($filter('filter')(searchResult, $scope.vm.filterBy || ''), $scope.actualSortBy);
 
-      $scope.vm.categories = circ.departments;
-      $scope.vm.brands = circ.categories;
+      $scope.vm.categories = $scope.vm.digitalCirc.departments;
+      $scope.vm.brands = $scope.vm.digitalCirc.categories;
       $scope.vm.cacheItems = sortResult;
+      $scope.vm.pageCount = Math.ceil(sortResult.length / $scope.itemsPerPage);
     };
 
     $scope.$watch('vm.filterBy', $scope.doSearchInternal);
