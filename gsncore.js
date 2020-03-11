@@ -7397,14 +7397,17 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     };
 
     function loadServerCircular(store) {
-      var dateobj = new Date();
-      var url = gsnApi.getConfig().NewCircularUrl;
+      var url          = gsnApi.getConfig().NewCircularUrl;
+      var tzoffset     = (new Date()).getTimezoneOffset() * 60000; //offset in milliseconds
+      var localISOTime = (new Date(Date.now() - tzoffset));
+
       url = url.replace('{chainId}', gsnApi.getChainId())
         .replace('{storeNumber}', store.StoreNumber)
-        .replace('{startAt}', dateobj.toISOString().substr(0, 10));
+        .replace('{startAt}', localISOTime.toISOString().substr(0, 10));
 
       // clear every hours
-      url += '&cb=' +  dateobj.toISOString().substr(0, 15);
+      url += '&cb=' + localISOTime.toISOString().substr(0, 15) + '&today=' + localISOTime.toISOString().slice(0, -1);
+
       $http.get(url).success(function(response) {
         $scope.vm.digitalCirc = response.message;
         if (typeof($scope.vm.digitalCirc) === 'string' || $scope.vm.digitalCirc.Circulars.length <= 0) {
@@ -9204,43 +9207,15 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
 
     };
 
-    $scope.startNewList = function() {
-      // Get the previous list
-      var previousList = gsnProfile.getShoppingList();
-
-      // Delete the list if there are no items.
-      if (gsnApi.isNull(previousList.allItems(), []).length <= 0) {
-
-        // Delete the shopping List
-        gsnProfile.deleteShoppingList(previousList);
-      }
-
-      // Create the new list
-      gsnProfile.createNewShoppingList().then(function(rsp) {
-
-        // Activate the object
-        activate();
-
-        // Per Request: signal that the list has been deleted.
-        $scope.$broadcast('gsnevent:shopping-list-created');
-      });
-    };
-
     ////
     // delete Current List
     ////
     $scope.deleteCurrentList = function() {
-      var previousList = gsnProfile.getShoppingList();
-      gsnProfile.deleteShoppingList(previousList);
-      gsnProfile.createNewShoppingList().then(function(rsp) {
-
-        // Activate the object
-        activate();
-
-        // Per Request: signal that the list has been deleted.
-        $scope.$broadcast('gsnevent:shopping-list-deleted');
-      });
+      gsnProfile.deleteShoppingList();
     };
+
+    // start new is delete
+    $scope.startNewList = $scope.deleteCurrentList
 
     $scope.getSelectedShoppingListId = function() {
       return $scope.selectedShoppingListId;
