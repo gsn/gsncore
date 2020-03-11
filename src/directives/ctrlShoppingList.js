@@ -136,10 +136,6 @@
       });
     });
 
-    $scope.$on('gsnevent:shopping-list-saved', function() {
-      gsnProfile.refreshShoppingLists();
-    });
-
     $scope.activate();
   }
 
