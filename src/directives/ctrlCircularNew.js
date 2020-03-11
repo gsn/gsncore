@@ -252,8 +252,8 @@
         var circ = $scope.vm.circular;
         if (circ) {
           $analytics.eventTrack('PageChange', {
-            category: circ.CircularTypeId + '_P' + pageIdx,
-            label: circ.CircularTypeName
+            category:  circ.CircularTypeName,
+            label: circ.CircularTypeId + '_P' + pageIdx
           });
         }
       }

@@ -276,12 +276,6 @@
         }
 
         list.list.Id = shoppingListId;
-        var isValid = true;
-        angular.forEach(list.items, function(v) {
-          if (gsnApi.isNull(v)) {
-            isValid = false;
-          }
-        });
 
         if (isValid) {
           $mySavedData.hasLoaded = list.hasLoaded;
