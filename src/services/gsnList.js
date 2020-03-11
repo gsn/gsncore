@@ -239,7 +239,8 @@
       // cause shopping list delete
       returnObj.deleteList = function() {
         // call DeleteShoppingList
-
+        $mySavedData.items = {};
+        $mySavedData.itemIdentity = 1;
         $mySavedData.countCache = 0;
         saveListToSession();
         return returnObj;
@@ -276,15 +277,10 @@
         }
 
         list.list.Id = shoppingListId;
-
-        if (isValid) {
-          $mySavedData.hasLoaded = list.hasLoaded;
-          $mySavedData.items = list.items;
-          $mySavedData.itemIdentity = list.itemIdentity;
-          $mySavedData.countCache = list.countCache;
-          // returnObj.updateShoppingList();
-        }
-
+        $mySavedData.hasLoaded = list.hasLoaded;
+        $mySavedData.items = list.items;
+        $mySavedData.itemIdentity = list.itemIdentity;
+        $mySavedData.countCache = list.countCache;
         $mySavedData.hasLoaded = true;
       }
 
