@@ -134,6 +134,8 @@
 
     returnObj.keys = gsn.keys;
 
+    returnObj.uuid = gsn.uuid;
+
     returnObj.getContentUrl = function(url) {
       return $sce.trustAsResourceUrl(gsn.getContentUrl(url));
     };
@@ -470,18 +472,24 @@
     };
 
     returnObj.getShoppingListId = function() {
+      var rst = returnObj.uuid();
+
       if (returnObj.isAnonymous()) {
-        return returnObj.isNull(profileStorage.anonShoppingListId, 0);
+        rst = returnObj.isNull(profileStorage.anonShoppingListId, rst);
       } else {
-        return returnObj.isNull(profileStorage.shoppingListId, 0);
+        rst = returnObj.isNull(profileStorage.shoppingListId, rst);
       }
+
+      return rst
     };
 
     returnObj.setShoppingListId = function(shoppingListId, dontBroadcast) {
+      shoppingListId = returnObj.isNull(shoppingListId, returnObj.uuid());
+
       if (returnObj.isAnonymous()) {
-        profileStorage.anonShoppingListId = returnObj.isNull(shoppingListId, 0);
+        profileStorage.anonShoppingListId = shoppingListId;
       } else {
-        profileStorage.shoppingListId = returnObj.isNull(shoppingListId, 0);
+        profileStorage.shoppingListId = shoppingListId;
       }
 
       if (dontBroadcast) return;

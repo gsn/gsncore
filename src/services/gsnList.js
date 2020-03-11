@@ -272,7 +272,7 @@
         var list = betterStorage.currentShoppingList;
         if (list && list.list && list.list.Id === shoppingListId) {
           var isValid = true;
-          angular.forEach(list.items, function(v, k) {
+          angular.forEach(list.items, function(v) {
             if (gsnApi.isNull(v)) {
               isValid = false;
             }
