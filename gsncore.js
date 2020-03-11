@@ -4900,7 +4900,8 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       // cause shopping list delete
       returnObj.deleteList = function() {
         // call DeleteShoppingList
-
+        $mySavedData.items = {};
+        $mySavedData.itemIdentity = 1;
         $mySavedData.countCache = 0;
         saveListToSession();
         return returnObj;
@@ -4937,15 +4938,10 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         }
 
         list.list.Id = shoppingListId;
-
-        if (isValid) {
-          $mySavedData.hasLoaded = list.hasLoaded;
-          $mySavedData.items = list.items;
-          $mySavedData.itemIdentity = list.itemIdentity;
-          $mySavedData.countCache = list.countCache;
-          // returnObj.updateShoppingList();
-        }
-
+        $mySavedData.hasLoaded = list.hasLoaded;
+        $mySavedData.items = list.items;
+        $mySavedData.itemIdentity = list.itemIdentity;
+        $mySavedData.countCache = list.countCache;
         $mySavedData.hasLoaded = true;
       }
 
@@ -5336,7 +5332,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     // delete shopping list provided id
     returnObj.deleteShoppingList = function(list) {
       list.deleteList();
-      $savedData.allShoppingLists[list.ShoppingListId] = {};
     };
 
     // get shopping list provided id
