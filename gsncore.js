@@ -7590,15 +7590,16 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
 
   function myController($scope, $timeout, gsnStore, $rootScope, $location, gsnProfile, gsnApi, $analytics, $filter, $http) {
     $scope.activate = activate;
-    $scope.loadAll = true;
+    $scope.loadAll = $scope.loadAll || false;
     $scope.itemsPerPage = $scope.itemsPerPage || 100;
     $scope.sortBy = $scope.sortBy || 'PageNumber';
     $scope.sortByName = $scope.sortByName || 'Page';
     $scope.actualSortBy = $scope.sortBy;
 
-    $scope.allItems  = [];
-    $scope.itemsById = {};
-    $scope.loadMore  = loadMore;
+    $scope.allItems    = [];
+    $scope.pagingItems = [];
+    $scope.itemsById   = {};
+    $scope.loadMore    = loadMore;
     $scope.vm = {
       noCircular: false,
       currentPage: 1,
@@ -7655,23 +7656,27 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       }
 
       $scope.allItems.length = 0;
+      $scope.pagingItems.length = 0;
 
       angular.forEach($scope.vm.digitalCirc.Circulars, function(c){
+        c.items = [];
         angular.forEach(c.Pages, function(p){
           angular.forEach(p.Items, function(i){
             i.PageNumber     = p.PageNumber;
             i.CircularPageId = p.CircularPageId;
             i.CircularId     = c.CircularId;
             $scope.allItems.push(i);
+            $scope.pagingItems.push(i);
+            c.items.push(i);
           });
         });
       });
 
       $scope.itemsById = gsnApi.mapObject($scope.allItems, 'ItemId');
 
-      $scope.doSearchInternal();
       $scope.vm.circIdx = myCircIdx;
       $scope.vm.pageIdx = myPageIdx;
+      $scope.doSearchInternal();
     }
 
     function activate() {
@@ -7764,13 +7769,13 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       // don't show circular until data and list are both loaded
       if (gsnApi.isNull(list, null) === null) return;
 
-      var circ = $scope.vm.digitalCirc;
-      var searchResult = $filter('filter')($scope.allItems, $scope.vm.filter);
+      var searchResult = $filter('filter')($scope.pagingItems, $scope.vm.filter);
       var sortResult = $filter('orderBy')($filter('filter')(searchResult, $scope.vm.filterBy || ''), $scope.actualSortBy);
 
-      $scope.vm.categories = circ.departments;
-      $scope.vm.brands = circ.categories;
+      $scope.vm.categories = $scope.vm.digitalCirc.departments;
+      $scope.vm.brands = $scope.vm.digitalCirc.categories;
       $scope.vm.cacheItems = sortResult;
+      $scope.vm.pageCount = Math.ceil(sortResult.length / $scope.itemsPerPage);
     };
 
     $scope.$watch('vm.filterBy', $scope.doSearchInternal);
@@ -7818,7 +7823,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         var circ = $scope.vm.circular;
         if (circ) {
           $analytics.eventTrack('PageChange', {
-            category: 'Circular_Type' + circ.CircularTypeId + '_P' + pageIdx,
+            category: circ.CircularTypeId + '_P' + pageIdx,
             label: circ.CircularTypeName
           });
         }
@@ -7826,7 +7831,21 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     }
 
     function loadMore() {
-      // do nothing, for backward compat
+      var items = $scope.vm.cacheItems || [];
+      if (items.length > 0) {
+        var itemsToLoad = $scope.itemsPerPage;
+        if ($scope.loadAll) {
+          itemsToLoad = items.length;
+        }
+
+        var last = $scope.allItems.length - 1;
+        for (var i = 1; i <= itemsToLoad; i++) {
+          var item = items[last + i];
+          if (item) {
+            $scope.allItems.push(item);
+          }
+        }
+      }
     }
 
     //#endregion
