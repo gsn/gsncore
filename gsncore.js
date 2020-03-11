@@ -7406,9 +7406,9 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         .replace('{startAt}', localISOTime.toISOString().substr(0, 10));
 
       // clear every hours
-      url += '&cb=' + localISOTime.toISOString().substr(0, 15) + '&today=' + localISOTime.toISOString().slice(0, -1);
+      url += '&cb=' + localISOTime.toISOString().substr(0, 15);
 
-      $http.get(url).success(function(response) {
+      $http.get(url.replace('?&', '?')).success(function(response) {
         $scope.vm.digitalCirc = response.message;
         if (typeof($scope.vm.digitalCirc) === 'string' || $scope.vm.digitalCirc.Circulars.length <= 0) {
           $scope.vm.digitalCirc = null;
