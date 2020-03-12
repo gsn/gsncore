@@ -2995,9 +2995,9 @@
 
       function loadListFromSession() {
         var list = betterStorage.currentShoppingList;
-        if (!list && !list.list) {
+        if (!list || !list.list) {
           saveListToSession()
-          list = betterStorage.currentShoppingList
+          list = betterStorage.currentShoppingList;
         }
 
         list.list.Id = shoppingListId;
