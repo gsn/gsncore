@@ -62,43 +62,15 @@
 
     };
 
-    $scope.startNewList = function() {
-      // Get the previous list
-      var previousList = gsnProfile.getShoppingList();
-
-      // Delete the list if there are no items.
-      if (gsnApi.isNull(previousList.allItems(), []).length <= 0) {
-
-        // Delete the shopping List
-        gsnProfile.deleteShoppingList(previousList);
-      }
-
-      // Create the new list
-      gsnProfile.createNewShoppingList().then(function(rsp) {
-
-        // Activate the object
-        activate();
-
-        // Per Request: signal that the list has been deleted.
-        $scope.$broadcast('gsnevent:shopping-list-created');
-      });
-    };
-
     ////
     // delete Current List
     ////
     $scope.deleteCurrentList = function() {
-      var previousList = gsnProfile.getShoppingList();
-      gsnProfile.deleteShoppingList(previousList);
-      gsnProfile.createNewShoppingList().then(function(rsp) {
-
-        // Activate the object
-        activate();
-
-        // Per Request: signal that the list has been deleted.
-        $scope.$broadcast('gsnevent:shopping-list-deleted');
-      });
+      gsnProfile.deleteShoppingList();
     };
+
+    // start new is delete
+    $scope.startNewList = $scope.deleteCurrentList
 
     $scope.getSelectedShoppingListId = function() {
       return $scope.selectedShoppingListId;
@@ -134,10 +106,6 @@
       $scope.$broadcast('gsnevent:savedlists-selected', {
         ShoppingListId: $scope.selectedShoppingListId
       });
-    });
-
-    $scope.$on('gsnevent:shopping-list-saved', function() {
-      gsnProfile.refreshShoppingLists();
     });
 
     $scope.activate();

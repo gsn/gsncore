@@ -113,23 +113,6 @@
         }
 
         shoppingList.addItem(item);
-      } else {
-        // at this point, something is wrong
-        // get new lists from API
-        returnObj.refreshShoppingLists().then(function() {
-          $timeout(function() {
-            if (!returnObj.isOnList(item)) {
-              returnObj.addItem(item);
-            }
-          }, 2000);
-        });
-
-        // force item to be on list
-        $timeout(function() {
-          if (!returnObj.isOnList(item)) {
-            returnObj.addItem(item);
-          }
-        }, 2000);
       }
     };
 
@@ -162,7 +145,6 @@
     // delete shopping list provided id
     returnObj.deleteShoppingList = function(list) {
       list.deleteList();
-      $savedData.allShoppingLists[list.ShoppingListId] = null;
     };
 
     // get shopping list provided id
@@ -172,6 +154,10 @@
       }
 
       var result = $savedData.allShoppingLists[shoppingListId];
+      if (!result) {
+        result = gsnList(shoppingListId, {})
+      }
+
       return result;
     };
 
@@ -199,17 +185,6 @@
 
       $profileDefer = $q.defer();
       if (gsnApi.isNull($savedData.profile, null) === null || callApi) {
-        // at this point, we already got the id so proceed to reset other data
-        $timeout(function() {
-          // reset other data
-          $savedData = {
-            allShoppingLists: {},
-            profile: null
-          };
-          returnObj.refreshShoppingLists();
-        }, 5);
-
-
         gsnApi.getAccessToken().then(function() {
 
           // don't need to load profile if anonymous
@@ -405,70 +380,6 @@
           sl.addItems($savedData.anonShoppingList.allItems());
         }
       }
-    };
-
-    // when user is a registered user
-    // allow for shopping lists refresh
-    returnObj.refreshShoppingLists = function() {
-      if (returnObj.refreshingDeferred) return returnObj.refreshingDeferred.promise;
-
-      // determine if logged in
-      // sync list
-      var deferred = $q.defer();
-      returnObj.refreshingDeferred = deferred;
-      $savedData.allShoppingLists = {};
-
-      gsnApi.getAccessToken().then(function() {
-        var url = gsnApi.getShoppingListApiUrl() + '/List/' + gsnApi.getProfileId();
-        $http.get(url, {
-          headers: gsnApi.getApiHeaders()
-        }).success(function(response) {
-          if (response.length > 0) {
-            for (var i = 0; i < response.length; i++) {
-              var list = response[i];
-              list.ShoppingListId = list.Id;
-              var shoppingList = gsnList(list.ShoppingListId, list);
-              $savedData.allShoppingLists[list.ShoppingListId] = shoppingList;
-
-              // grab the first shopping list and make it current list id
-              if (i === 0) {
-                // ajax load first shopping list
-                shoppingList.updateShoppingList();
-
-                gsnApi.setShoppingListId(list.ShoppingListId);
-                if (gsnApi.isAnonymous()) {
-                  $savedData.anonShoppingList = shoppingList;
-                } else {
-                  // merge shopping list
-                  $timeout(returnObj.mergeAnonymousShoppingList, 2000);
-                }
-              }
-            }
-          } else {
-            returnObj.createNewShoppingList();
-          }
-
-          returnObj.refreshingDeferred = null;
-
-          $rootScope.$broadcast('gsnevent:shoppinglists-loaded', {
-            success: true,
-            response: response
-          });
-          deferred.resolve({
-            success: true,
-            response: response
-          });
-        }).error(function(response) {
-
-          returnObj.refreshingDeferred = null;
-          deferred.resolve({
-            success: false,
-            response: response
-          });
-        });
-      });
-
-      return deferred.promise;
     };
 
     returnObj.getMyRecipes = function() {

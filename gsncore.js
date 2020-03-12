@@ -723,6 +723,13 @@
 
     return result;
   };
+
+  gsn.uuid = function () {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  };
 }).call(this);
 
 (function(gsn, angular, undefined) {
@@ -860,6 +867,8 @@
     returnObj.extend = gsn.extend;
 
     returnObj.keys = gsn.keys;
+
+    returnObj.uuid = gsn.uuid;
 
     returnObj.getContentUrl = function(url) {
       return $sce.trustAsResourceUrl(gsn.getContentUrl(url));
@@ -1197,18 +1206,24 @@
     };
 
     returnObj.getShoppingListId = function() {
+      var rst = returnObj.uuid();
+
       if (returnObj.isAnonymous()) {
-        return returnObj.isNull(profileStorage.anonShoppingListId, 0);
+        rst = returnObj.isNull(profileStorage.anonShoppingListId, rst);
       } else {
-        return returnObj.isNull(profileStorage.shoppingListId, 0);
+        rst = returnObj.isNull(profileStorage.shoppingListId, rst);
       }
+
+      return rst
     };
 
     returnObj.setShoppingListId = function(shoppingListId, dontBroadcast) {
+      shoppingListId = returnObj.isNull(shoppingListId, returnObj.uuid());
+
       if (returnObj.isAnonymous()) {
-        profileStorage.anonShoppingListId = returnObj.isNull(shoppingListId, 0);
+        profileStorage.anonShoppingListId = shoppingListId;
       } else {
-        profileStorage.shoppingListId = returnObj.isNull(shoppingListId, 0);
+        profileStorage.shoppingListId = shoppingListId;
       }
 
       if (dontBroadcast) return;
@@ -4647,11 +4662,11 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
 (function(angular, undefined) {
   'use strict';
   var serviceId = 'gsnList';
-  angular.module('gsn.core').factory(serviceId, ['$rootScope', '$http', 'gsnApi', '$q', '$sessionStorage', gsnList]);
+  angular.module('gsn.core').factory(serviceId, ['$rootScope', '$http', 'gsnApi', '$q', '$localStorage', gsnList]);
 
-  function gsnList($rootScope, $http, gsnApi, $q, $sessionStorage) {
+  function gsnList($rootScope, $http, gsnApi, $q, $localStorage) {
 
-    var betterStorage = $sessionStorage;
+    var betterStorage = $localStorage;
 
     // just a shopping list object
     function myShoppingList(shoppingListId, shoppingList) {
@@ -4700,43 +4715,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
           existingItem.Quantity = itemToSync.Quantity;
         }
 
-        if (parseInt(existingItem.Quantity) > 0) {
-          // build new item to make sure posting of only required fields
-          var itemToPost = angular.copy(existingItem);
-
-          itemToPost.Varieties = undefined;
-          itemToPost.PageNumber = undefined;
-          itemToPost.rect = undefined;
-          itemToPost.LinkedItem = undefined;
-          itemToPost.selected = undefined;
-          itemToPost.zIndex = undefined;
-
-          $rootScope.$broadcast('gsnevent:shoppinglistitem-updating', returnObj, existingItem, $mySavedData);
-
-          gsnApi.getAccessToken().then(function() {
-
-            var url = gsnApi.getShoppingListApiUrl() + '/UpdateItem/' + returnObj.ShoppingListId;
-            var hPayload = gsnApi.getApiHeaders();
-            hPayload['X-SHOPPING-LIST-ID'] = returnObj.ShoppingListId;
-            $http.post(url, itemToPost, {
-              headers: hPayload
-            }).success(function(response) {
-              if (response.Id) {
-                processServerItem(response, existingItem);
-              }
-
-              $rootScope.$broadcast('gsnevent:shoppinglist-changed', returnObj);
-              saveListToSession();
-            }).error(function() {
-              // reset to previous quantity on failure
-              if (existingItem.OldQuantity) {
-                existingItem.NewQuantity = existingItem.OldQuantity;
-                existingItem.Quantity = existingItem.OldQuantity;
-                saveListToSession();
-              }
-            });
-          });
-        } else {
+        if (parseInt(existingItem.Quantity) <= 0) {
           returnObj.removeItem(existingItem);
         }
 
@@ -4798,42 +4777,19 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       };
 
       returnObj.addItems = function(items) {
-        var deferred = $q.defer();
         var toAdd = [];
         angular.forEach(items, function(v, k) {
           var rst = angular.copy(returnObj.addItem(v, true));
           toAdd.push(rst);
         });
 
-        $rootScope.$broadcast('gsnevent:shoppinglistitems-updating', returnObj);
         saveListToSession();
 
-        gsnApi.getAccessToken().then(function() {
-
-          var url = gsnApi.getShoppingListApiUrl() + '/SaveItems/' + returnObj.ShoppingListId;
-          var hPayload = gsnApi.getApiHeaders();
-          hPayload['X-SHOPPING-LIST-ID'] = returnObj.ShoppingListId;
-          $http.post(url, toAdd, {
-            headers: hPayload
-          }).success(function(response) {
-            $rootScope.$broadcast('gsnevent:shoppinglist-changed', returnObj);
-            deferred.resolve({
-              success: true,
-              response: response
-            });
-            saveListToSession();
-          }).error(function() {
-            deferred.resolve({
-              success: false
-            });
-          });
-        });
-
-        return deferred.promise;
+        return returnObj;
       };
 
       // remove item from list
-      returnObj.removeItem = function(inputItem, deferRemove) {
+      returnObj.removeItem = function(inputItem) {
         var item = returnObj.getItem(inputItem);
         if (item) {
           item.Quantity = 0;
@@ -4854,21 +4810,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
           }
 
           saveListToSession();
-
-          if (deferRemove) return returnObj;
-          gsnApi.getAccessToken().then(function() {
-            $rootScope.$broadcast('gsnevent:shoppinglistitem-removing', returnObj, item);
-
-            var url = gsnApi.getShoppingListApiUrl() + '/DeleteItems/' + returnObj.ShoppingListId;
-            var hPayload = gsnApi.getApiHeaders();
-            hPayload['X-SHOPPING-LIST-ID'] = returnObj.ShoppingListId;
-            $http.post(url, [item.Id || item.RowKey], {
-              headers: hPayload
-            }).success(function(response) {
-              $rootScope.$broadcast('gsnevent:shoppinglist-changed', returnObj);
-              saveListToSession();
-            });
-          });
         }
 
         return returnObj;
@@ -4959,58 +4900,19 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       // cause shopping list delete
       returnObj.deleteList = function() {
         // call DeleteShoppingList
-
+        $mySavedData.items = {};
+        $mySavedData.itemIdentity = 1;
         $mySavedData.countCache = 0;
-        gsnApi.getAccessToken().then(function() {
-
-          var url = gsnApi.getShoppingListApiUrl() + '/Delete/' + returnObj.ShoppingListId;
-          var hPayload = gsnApi.getApiHeaders();
-          hPayload['X-SHOPPING-LIST-ID'] = returnObj.ShoppingListId;
-          $http.post(url, {}, {
-            headers: hPayload
-          }).success(function(response) {
-            // do nothing
-            $rootScope.$broadcast('gsnevent:shoppinglist-deleted', returnObj);
-            saveListToSession();
-          });
-        });
-
+        saveListToSession();
         return returnObj;
       };
 
       // cause change to shopping list title
       returnObj.setTitle = function(title) {
-        var deferred = $q.defer();
 
         $mySavedData.countCache = 0;
-        gsnApi.getAccessToken().then(function() {
-
-          var url = gsnApi.getShoppingListApiUrl() + '/Update/' + returnObj.ShoppingListId + '?title=' + encodeURIComponent(title);
-          var hPayload = gsnApi.getApiHeaders();
-          hPayload['X-SHOPPING-LIST-ID'] = returnObj.ShoppingListId;
-          $http.post(url, {}, {
-            headers: hPayload
-          }).success(function(response) {
-            deferred.resolve({
-              success: true,
-              response: returnObj
-            });
-            $mySavedData.list.Title = title;
-
-            // Send these two broadcast messages.
-            $rootScope.$broadcast('gsnevent:shopping-list-saved');
-            $rootScope.$broadcast('gsnevent:shoppinglist-changed', returnObj);
-            saveListToSession();
-          }).error(function(response) {
-            // console.log( returnObj.ShoppingListId + ' setTitle error: ' + response );
-            deferred.resolve({
-              success: false,
-              response: response
-            });
-          });
-        });
-
-        return deferred.promise;
+        $mySavedData.list.Title = title;
+        return returnObj;
       };
 
       returnObj.hasLoaded = function() {
@@ -5030,24 +4932,17 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
 
       function loadListFromSession() {
         var list = betterStorage.currentShoppingList;
-        if (list && list.list && list.list.Id === shoppingListId) {
-          var isValid = true;
-          angular.forEach(list.items, function(v, k) {
-            if (gsnApi.isNull(v)) {
-              isValid = false;
-            }
-          });
-
-          if (isValid) {
-            $mySavedData.hasLoaded = list.hasLoaded;
-            $mySavedData.items = list.items;
-            $mySavedData.itemIdentity = list.itemIdentity;
-            $mySavedData.countCache = list.countCache;
-          } else {
-            $mySavedData.hasLoaded = false;
-            returnObj.updateShoppingList();
-          }
+        if (!list || !list.list) {
+          saveListToSession()
+          list = betterStorage.currentShoppingList;
         }
+
+        list.list.Id = shoppingListId;
+        $mySavedData.hasLoaded = list.hasLoaded;
+        $mySavedData.items = list.items;
+        $mySavedData.itemIdentity = list.itemIdentity;
+        $mySavedData.countCache = list.countCache;
+        $mySavedData.hasLoaded = true;
       }
 
 
@@ -5080,39 +4975,10 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
           });
           returnObj.deferred = null;
         } else {
-
           $mySavedData.items = {};
           $mySavedData.countCache = 0;
-
-          gsnApi.getAccessToken().then(function() {
-            // call GetShoppingList(int shoppinglistid, int profileid)
-            var url = gsnApi.getShoppingListApiUrl() + '/ItemsBy/' + returnObj.ShoppingListId + '?nocache=' + (new Date()).getTime();
-
-            var hPayload = gsnApi.getApiHeaders();
-            hPayload['X-SHOPPING-LIST-ID'] = returnObj.ShoppingListId;
-            $http.get(url, {
-              headers: hPayload
-            }).success(function(response) {
-              response = gsnApi.isNull(response, []);
-              processShoppingList(response);
-
-              $rootScope.$broadcast('gsnevent:shoppinglist-loaded', returnObj, $mySavedData.items);
-              deferred.resolve({
-                success: true,
-                response: returnObj
-              });
-              returnObj.deferred = null;
-            }).error(function(response) {
-              $rootScope.$broadcast('gsnevent:shoppinglist-loadfail', response);
-              deferred.resolve({
-                success: false,
-                response: response
-              });
-              returnObj.deferred = null;
-            });
-          });
+          loadListFromSession();
         }
-
 
         return deferred.promise;
       };
@@ -5434,23 +5300,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         }
 
         shoppingList.addItem(item);
-      } else {
-        // at this point, something is wrong
-        // get new lists from API
-        returnObj.refreshShoppingLists().then(function() {
-          $timeout(function() {
-            if (!returnObj.isOnList(item)) {
-              returnObj.addItem(item);
-            }
-          }, 2000);
-        });
-
-        // force item to be on list
-        $timeout(function() {
-          if (!returnObj.isOnList(item)) {
-            returnObj.addItem(item);
-          }
-        }, 2000);
       }
     };
 
@@ -5483,7 +5332,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     // delete shopping list provided id
     returnObj.deleteShoppingList = function(list) {
       list.deleteList();
-      $savedData.allShoppingLists[list.ShoppingListId] = null;
     };
 
     // get shopping list provided id
@@ -5493,6 +5341,10 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       }
 
       var result = $savedData.allShoppingLists[shoppingListId];
+      if (!result) {
+        result = gsnList(shoppingListId, {})
+      }
+
       return result;
     };
 
@@ -5520,17 +5372,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
 
       $profileDefer = $q.defer();
       if (gsnApi.isNull($savedData.profile, null) === null || callApi) {
-        // at this point, we already got the id so proceed to reset other data
-        $timeout(function() {
-          // reset other data
-          $savedData = {
-            allShoppingLists: {},
-            profile: null
-          };
-          returnObj.refreshShoppingLists();
-        }, 5);
-
-
         gsnApi.getAccessToken().then(function() {
 
           // don't need to load profile if anonymous
@@ -5726,70 +5567,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
           sl.addItems($savedData.anonShoppingList.allItems());
         }
       }
-    };
-
-    // when user is a registered user
-    // allow for shopping lists refresh
-    returnObj.refreshShoppingLists = function() {
-      if (returnObj.refreshingDeferred) return returnObj.refreshingDeferred.promise;
-
-      // determine if logged in
-      // sync list
-      var deferred = $q.defer();
-      returnObj.refreshingDeferred = deferred;
-      $savedData.allShoppingLists = {};
-
-      gsnApi.getAccessToken().then(function() {
-        var url = gsnApi.getShoppingListApiUrl() + '/List/' + gsnApi.getProfileId();
-        $http.get(url, {
-          headers: gsnApi.getApiHeaders()
-        }).success(function(response) {
-          if (response.length > 0) {
-            for (var i = 0; i < response.length; i++) {
-              var list = response[i];
-              list.ShoppingListId = list.Id;
-              var shoppingList = gsnList(list.ShoppingListId, list);
-              $savedData.allShoppingLists[list.ShoppingListId] = shoppingList;
-
-              // grab the first shopping list and make it current list id
-              if (i === 0) {
-                // ajax load first shopping list
-                shoppingList.updateShoppingList();
-
-                gsnApi.setShoppingListId(list.ShoppingListId);
-                if (gsnApi.isAnonymous()) {
-                  $savedData.anonShoppingList = shoppingList;
-                } else {
-                  // merge shopping list
-                  $timeout(returnObj.mergeAnonymousShoppingList, 2000);
-                }
-              }
-            }
-          } else {
-            returnObj.createNewShoppingList();
-          }
-
-          returnObj.refreshingDeferred = null;
-
-          $rootScope.$broadcast('gsnevent:shoppinglists-loaded', {
-            success: true,
-            response: response
-          });
-          deferred.resolve({
-            success: true,
-            response: response
-          });
-        }).error(function(response) {
-
-          returnObj.refreshingDeferred = null;
-          deferred.resolve({
-            success: false,
-            response: response
-          });
-        });
-      });
-
-      return deferred.promise;
     };
 
     returnObj.getMyRecipes = function() {
@@ -7590,15 +7367,16 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
 
   function myController($scope, $timeout, gsnStore, $rootScope, $location, gsnProfile, gsnApi, $analytics, $filter, $http) {
     $scope.activate = activate;
-    $scope.loadAll = true;
+    $scope.loadAll = $scope.loadAll || false;
     $scope.itemsPerPage = $scope.itemsPerPage || 100;
     $scope.sortBy = $scope.sortBy || 'PageNumber';
     $scope.sortByName = $scope.sortByName || 'Page';
     $scope.actualSortBy = $scope.sortBy;
 
-    $scope.allItems  = [];
-    $scope.itemsById = {};
-    $scope.loadMore  = loadMore;
+    $scope.allItems    = [];
+    $scope.pagingItems = [];
+    $scope.itemsById   = {};
+    $scope.loadMore    = loadMore;
     $scope.vm = {
       noCircular: false,
       currentPage: 1,
@@ -7619,15 +7397,18 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
     };
 
     function loadServerCircular(store) {
-      var dateobj = new Date();
-      var url = gsnApi.getConfig().NewCircularUrl;
+      var url          = gsnApi.getConfig().NewCircularUrl;
+      var tzoffset     = (new Date()).getTimezoneOffset() * 60000; //offset in milliseconds
+      var localISOTime = (new Date(Date.now() - tzoffset));
+
       url = url.replace('{chainId}', gsnApi.getChainId())
         .replace('{storeNumber}', store.StoreNumber)
-        .replace('{startAt}', dateobj.toISOString().substr(0, 10));
+        .replace('{startAt}', localISOTime.toISOString().substr(0, 10));
 
       // clear every hours
-      url += '&cb=' +  dateobj.toISOString().substr(0, 15);
-      $http.get(url).success(function(response) {
+      url += '&cb=' + localISOTime.toISOString().substr(0, 15);
+
+      $http.get(url.replace('?&', '?')).success(function(response) {
         $scope.vm.digitalCirc = response.message;
         if (typeof($scope.vm.digitalCirc) === 'string' || $scope.vm.digitalCirc.Circulars.length <= 0) {
           $scope.vm.digitalCirc = null;
@@ -7655,6 +7436,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       }
 
       $scope.allItems.length = 0;
+      $scope.pagingItems.length = 0;
 
       angular.forEach($scope.vm.digitalCirc.Circulars, function(c){
         c.items = [];
@@ -7664,6 +7446,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
             i.CircularPageId = p.CircularPageId;
             i.CircularId     = c.CircularId;
             $scope.allItems.push(i);
+            $scope.pagingItems.push(i);
             c.items.push(i);
           });
         });
@@ -7766,7 +7549,7 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       // don't show circular until data and list are both loaded
       if (gsnApi.isNull(list, null) === null) return;
 
-      var searchResult = $filter('filter')($scope.allItems, $scope.vm.filter);
+      var searchResult = $filter('filter')($scope.pagingItems, $scope.vm.filter);
       var sortResult = $filter('orderBy')($filter('filter')(searchResult, $scope.vm.filterBy || ''), $scope.actualSortBy);
 
       $scope.vm.categories = $scope.vm.digitalCirc.departments;
@@ -7820,15 +7603,29 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
         var circ = $scope.vm.circular;
         if (circ) {
           $analytics.eventTrack('PageChange', {
-            category: 'Circular_Type' + circ.CircularTypeId + '_P' + pageIdx,
-            label: circ.CircularTypeName
+            category:  circ.CircularTypeName,
+            label: circ.CircularTypeId + '_P' + pageIdx
           });
         }
       }
     }
 
     function loadMore() {
-      // do nothing, for backward compat
+      var items = $scope.vm.cacheItems || [];
+      if (items.length > 0) {
+        var itemsToLoad = $scope.itemsPerPage;
+        if ($scope.loadAll) {
+          itemsToLoad = items.length;
+        }
+
+        var last = $scope.allItems.length - 1;
+        for (var i = 1; i <= itemsToLoad; i++) {
+          var item = items[last + i];
+          if (item) {
+            $scope.allItems.push(item);
+          }
+        }
+      }
     }
 
     //#endregion
@@ -9410,43 +9207,15 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
 
     };
 
-    $scope.startNewList = function() {
-      // Get the previous list
-      var previousList = gsnProfile.getShoppingList();
-
-      // Delete the list if there are no items.
-      if (gsnApi.isNull(previousList.allItems(), []).length <= 0) {
-
-        // Delete the shopping List
-        gsnProfile.deleteShoppingList(previousList);
-      }
-
-      // Create the new list
-      gsnProfile.createNewShoppingList().then(function(rsp) {
-
-        // Activate the object
-        activate();
-
-        // Per Request: signal that the list has been deleted.
-        $scope.$broadcast('gsnevent:shopping-list-created');
-      });
-    };
-
     ////
     // delete Current List
     ////
     $scope.deleteCurrentList = function() {
-      var previousList = gsnProfile.getShoppingList();
-      gsnProfile.deleteShoppingList(previousList);
-      gsnProfile.createNewShoppingList().then(function(rsp) {
-
-        // Activate the object
-        activate();
-
-        // Per Request: signal that the list has been deleted.
-        $scope.$broadcast('gsnevent:shopping-list-deleted');
-      });
+      gsnProfile.deleteShoppingList();
     };
+
+    // start new is delete
+    $scope.startNewList = $scope.deleteCurrentList
 
     $scope.getSelectedShoppingListId = function() {
       return $scope.selectedShoppingListId;
@@ -9482,10 +9251,6 @@ var mod;mod=angular.module("infinite-scroll",[]),mod.directive("infiniteScroll",
       $scope.$broadcast('gsnevent:savedlists-selected', {
         ShoppingListId: $scope.selectedShoppingListId
       });
-    });
-
-    $scope.$on('gsnevent:shopping-list-saved', function() {
-      gsnProfile.refreshShoppingLists();
     });
 
     $scope.activate();
