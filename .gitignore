@@ -123,3 +123,5 @@ bower_components
 git_components
 .idea
 .DS_Store
+.package-lock.json
+

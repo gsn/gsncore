@@ -3394,7 +3394,8 @@
 
     // delete shopping list provided id
     returnObj.deleteShoppingList = function(list) {
-      list.deleteList();
+      var myList = returnObj.getShoppingList();
+      myList.deleteList();
     };
 
     // get shopping list provided id
